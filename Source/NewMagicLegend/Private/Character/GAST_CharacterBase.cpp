@@ -9,6 +9,10 @@ AGAST_CharacterBase::AGAST_CharacterBase()
  
 	PrimaryActorTick.bCanEverTick = false;
 
+	/* 武器基类设置 */
+	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//实例化组件
+	Weapon->SetupAttachment(GetMesh(),FName("WeaponHandSocket"));//根据插槽名称设置武器的吸附插槽
+	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置组件的碰撞是否开启
 }
 
 void AGAST_CharacterBase::BeginPlay()
