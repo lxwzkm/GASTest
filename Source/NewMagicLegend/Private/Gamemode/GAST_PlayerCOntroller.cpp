@@ -4,10 +4,52 @@
 #include "Gamemode/GAST_PlayerCOntroller.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 AGAST_PlayerCOntroller::AGAST_PlayerCOntroller()
 {
 	bReplicates=true;//可以被复制到客户端
+}
+
+void AGAST_PlayerCOntroller::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
+}
+
+void AGAST_PlayerCOntroller::CursorTrace()
+{
+	FHitResult UnderCursor;
+	GetHitResultUnderCursor(ECC_Visibility,false,UnderCursor);
+
+	if (!UnderCursor.bBlockingHit)return;//如果没有遇到阻挡，就返回
+
+	LastActor=ThisActor;
+	ThisActor=Cast<IEnemyInterface>(UnderCursor.GetActor());
+
+	if (LastActor==nullptr)
+	{
+		if (ThisActor!=nullptr)
+		{
+			ThisActor->HightlightActor();
+		}
+	}
+	else
+	{//Last Actor!=null
+		if (ThisActor==nullptr)
+		{
+			LastActor->UnHighlightActor();
+		}
+		else
+		{
+			if (LastActor!=ThisActor)
+			{
+				LastActor->UnHighlightActor();
+				ThisActor->HightlightActor();
+			}
+		}
+	}
 }
 
 void AGAST_PlayerCOntroller::BeginPlay()
@@ -45,8 +87,8 @@ void AGAST_PlayerCOntroller::Move(const FInputActionValue& InputActionValue)
 	const FRotator ControllerRotation=GetControlRotation();//获取控制器的旋转
 	const FRotator YawRotation(0.f,ControllerRotation.Yaw,0.f);//将控制器的旋转只保留Yaw的旋转包装起来
 
-	const FVector ForwardDirection=FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);//确定向前的向量
-	const FVector RightDirection=FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);//确定向右的向量
+	const FVector ForwardDirection=FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);//确定向前的向量
+	const FVector RightDirection=FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);//确定向右的向量
 
 	if (APawn*ControlledPawn=GetPawn<APawn>())//如果能够获取到控制的角色，就将获取到的向量及玩家输入进来的方向输入进输入系统
 	{
@@ -54,3 +96,4 @@ void AGAST_PlayerCOntroller::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(RightDirection,InputValue.X);
 	}
 }
+
