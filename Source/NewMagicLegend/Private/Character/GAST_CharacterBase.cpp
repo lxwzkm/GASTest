@@ -15,6 +15,16 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置组件的碰撞是否开启
 }
 
+UAbilitySystemComponent* AGAST_CharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+UAttributeSet* AGAST_CharacterBase::GetAttributeSet() const
+{
+	return AttributeSet;
+}
+
 void AGAST_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

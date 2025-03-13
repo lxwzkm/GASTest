@@ -3,7 +3,9 @@
 
 #include "Character/MyGAST_Character.h"
 
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Gamemode/GAST_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -28,4 +30,28 @@ AMyGAST_Character::AMyGAST_Character()
 	bUseControllerRotationYaw=false;
 	
 	
+}
+
+void AMyGAST_Character::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitActorInfo();
+}
+
+void AMyGAST_Character::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitActorInfo();
+}
+
+void AMyGAST_Character::InitActorInfo()
+{
+	AGAST_PlayerState* AuraPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
+	check(AuraPlayerState);
+	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState,this);
+	//顺便设置从父类继承的ASC和AS变量的指针
+	AbilitySystemComponent=AuraPlayerState->GetAbilitySystemComponent();
+	AttributeSet=AuraPlayerState->GetAttributeSet();
 }

@@ -15,11 +15,11 @@ class NEWMAGICLEGEND_API AMyGAST_Enemy : public AGAST_CharacterBase,public IEnem
 {
 	GENERATED_BODY()
 public:
+	AMyGAST_Enemy();
+	virtual void BeginPlay() override;
+	
 	/*--------EnemyInterface-------*/
 	virtual void HightlightActor() override;//高亮显示的函数
 	virtual void UnHighlightActor() override;//取消高亮显示的函数
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bHightLight;
 	
 };
