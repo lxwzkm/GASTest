@@ -4,15 +4,16 @@
 #include "Gamemode/GAST_PlayerState.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/GAST_AttributeSet.h"
 
 AGAST_PlayerState::AGAST_PlayerState()
 {
 	//实例化ASC组件和属性集
-	AbilitySystemComponent=CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent=CreateDefaultSubobject<UGAST_AbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	AttributeSet=CreateDefaultSubobject<UAttributeSet>("AttributeSet");
+	AttributeSet=CreateDefaultSubobject<UGAST_AttributeSet>("AttributeSet");
 	
 	NetUpdateFrequency=100.f;//服务器网络的更新频率设置
 }

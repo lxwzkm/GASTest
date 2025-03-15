@@ -8,6 +8,7 @@
 #include "Gamemode/GAST_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "UI/HUD/GAST_HUD.h"
 
 AMyGAST_Character::AMyGAST_Character()
 {
@@ -37,6 +38,7 @@ void AMyGAST_Character::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitActorInfo();
+	
 }
 
 void AMyGAST_Character::OnRep_PlayerState()
@@ -54,4 +56,12 @@ void AMyGAST_Character::InitActorInfo()
 	//顺便设置从父类继承的ASC和AS变量的指针
 	AbilitySystemComponent=AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet=AuraPlayerState->GetAttributeSet();
+
+	//初始化UI Overlay的相关参数  PC可以有空的，因为客户端只有自己的Controller，服务器有所有的Controller
+	if (APlayerController*PC=Cast<APlayerController>(GetController()))
+	{
+		AGAST_HUD*PlayerHUD=Cast<AGAST_HUD>(PC->GetHUD());
+		if (!PlayerHUD)return;
+		PlayerHUD->InitOverlayControllerParams(PC,AuraPlayerState,AttributeSet,AbilitySystemComponent);
+	}
 }
