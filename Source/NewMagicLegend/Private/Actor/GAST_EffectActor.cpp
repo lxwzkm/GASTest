@@ -39,6 +39,7 @@ void AGAST_EffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		const UGAST_AttributeSet* AS=Cast<UGAST_AttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UGAST_AttributeSet::StaticClass()));
 		UGAST_AttributeSet* MutableAS= const_cast<UGAST_AttributeSet*>(AS);
 		MutableAS->SetHealth(MutableAS->GetHealth()+25.0f);
+		MutableAS->SetMana(25.f);
 		Destroy();
 	}
 }

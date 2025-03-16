@@ -10,3 +10,13 @@ void UGAST_WidgetControllerBase::SetWidgetControllerParams(const FWidgetControll
 	AS=WCParams.AttributeSet;
 	ASC=WCParams.AbilitySystemComponent;
 }
+
+void UGAST_WidgetControllerBase::BroadcastInitValues()
+{
+	
+}
+
+void UGAST_WidgetControllerBase::BindCallbacksToDependencies()
+{
+	
+}
