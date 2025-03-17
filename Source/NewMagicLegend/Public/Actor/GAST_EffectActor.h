@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GAST_EffectActor.generated.h"
 
-class USphereComponent;
+class UGameplayEffect;
 
 UCLASS()
 class NEWMAGICLEGEND_API AGAST_EffectActor : public AActor
@@ -16,21 +16,16 @@ class NEWMAGICLEGEND_API AGAST_EffectActor : public AActor
 public:	
 	AGAST_EffectActor();
 
+	UFUNCTION(BlueprintCallable)
+	void ApplyEffectToTarget(AActor* TargetActor,TSubclassOf<UGameplayEffect> Effect);//这个函数是用来将Actor的GE用在触发重叠的人身上的
 protected:
 
 	virtual void BeginPlay() override;
 
-public:	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="ApplyEffect")
+	TSubclassOf<UGameplayEffect> InstantGameplayEffect;
 
-	//球形碰撞的回调函数，声明自带文件写出
-	UFUNCTION()
-	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-	UFUNCTION()
-	virtual void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-private:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent>StaticMesh;
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USphereComponent>Sphere;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="ApplyEffect")
+	TSubclassOf<UGameplayEffect> DurationGameplayEffect;
 
 };
