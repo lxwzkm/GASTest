@@ -7,6 +7,36 @@
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "GAST_AttributeSet.generated.h"
 
+struct FGameplayEffectModCallbackData;
+
+USTRUCT()
+struct FEffectProperties
+{
+	GENERATED_BODY()
+
+	FEffectProperties(){}
+	
+	FGameplayEffectContextHandle GameplayEffectContextHandle;
+
+	UPROPERTY()
+	UAbilitySystemComponent* SourceASC=nullptr;
+	UPROPERTY()
+	UAbilitySystemComponent* TargetASC=nullptr;
+	UPROPERTY()
+	AActor* SourceAvatarActor=nullptr;
+	UPROPERTY()
+	AActor* TargetAvatarActor=nullptr;
+	UPROPERTY()
+	AController* SourceController=nullptr;
+	UPROPERTY()
+	AController* TargetController=nullptr;
+	UPROPERTY()
+	ACharacter* SourceCharacter=nullptr;
+	UPROPERTY()
+	ACharacter* TargetCharacter=nullptr;
+	
+};
+
 /**
  * 当属性变化时，服务器先通知给客户端，通过GetLifetimeReplicatedProps函数来传递参数，客户端收到新值以后，调用OnRep_Health函数，来执行当属性发生变化以后会执行的动作比如产生伤害数字、血量UI下降、特殊动画特效等操作
  */
@@ -49,4 +79,10 @@ public:
 
 	//2、重写控制LifeTime的函数,控制那些变量可以在服务器和客户端之间同步，任何有需要从服务器赋值到客户端的变量都要重写此函数
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	//父类虚函数，在属性应用前调用，主要用来限制属性
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+private:
+	void SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props);
 };

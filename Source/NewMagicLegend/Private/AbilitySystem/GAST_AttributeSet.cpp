@@ -2,8 +2,8 @@
 
 
 #include "AbilitySystem/GAST_AttributeSet.h"
+#include "GameplayEffectExtension.h"//FGameplayEffectModCallbackData类型必须包含该头文件
 #include "Net/UnrealNetwork.h"
-
 UGAST_AttributeSet::UGAST_AttributeSet()
 {
 	InitHealth(50.f);
@@ -41,4 +41,30 @@ void UGAST_AttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,MaxHealth,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,Mana,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,MaxMana,COND_None,REPNOTIFY_Always);
+}
+
+void UGAST_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute==GetHealthAttribute())
+	{
+		NewValue=FMath::Clamp(GetHealth(),0.f,GetMaxHealth());
+	}
+	if (Attribute==GetManaAttribute())
+	{
+		NewValue=FMath::Clamp(GetMana(),0.f,GetMaxMana());
+	}
+	
+}
+
+void UGAST_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+}
+
+void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,
+                                                   FEffectProperties& Props)
+{
+	
 }

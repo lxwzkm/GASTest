@@ -4,9 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayEffectTypes.h"
 #include "GAST_EffectActor.generated.h"
 
+class UAbilitySystemComponent;
+struct FActiveGameplayEffectHandle;
 class UGameplayEffect;
+
 
 UENUM(BlueprintType)//应用效果的策略枚举
 enum class EApplyEffectPolicy
@@ -59,5 +63,7 @@ protected:
 	EApplyEffectPolicy InfinitApplyEffectPolicy=EApplyEffectPolicy::DoNotApply;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="ApplyEffect")
 	ERemovalEffectPolicy InfinitRemoveEffectPolicy=ERemovalEffectPolicy::RemovalEffect;
+
+	TMap<FActiveGameplayEffectHandle,UAbilitySystemComponent*> ActiveInfiniteEffects;//用来储存所有Infinite效果
 
 };
