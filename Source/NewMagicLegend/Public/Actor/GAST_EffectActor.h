@@ -66,4 +66,7 @@ protected:
 
 	TMap<FActiveGameplayEffectHandle,UAbilitySystemComponent*> ActiveInfiniteEffects;//用来储存所有Infinite效果
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="ApplyEffect")
+	float ActorLevel=1.f;
+
 };

@@ -2,13 +2,16 @@
 
 
 #include "AbilitySystem/GAST_AttributeSet.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"//FGameplayEffectModCallbackData类型必须包含该头文件
+#include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 UGAST_AttributeSet::UGAST_AttributeSet()
 {
 	InitHealth(50.f);
 	InitMaxHealth(100.f);
-	InitMana(50.f);
+	InitMana(10.f);
 	InitMaxMana(50.f);
 }
 
@@ -46,14 +49,14 @@ void UGAST_AttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 void UGAST_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-
+	
 	if (Attribute==GetHealthAttribute())
 	{
-		NewValue=FMath::Clamp(GetHealth(),0.f,GetMaxHealth());
+		NewValue=FMath::Clamp(NewValue,0.f,GetMaxHealth());
 	}
 	if (Attribute==GetManaAttribute())
 	{
-		NewValue=FMath::Clamp(GetMana(),0.f,GetMaxMana());
+		NewValue=FMath::Clamp(NewValue,0.f,GetMaxMana());
 	}
 	
 }
@@ -61,10 +64,44 @@ void UGAST_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute,
 void UGAST_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	FEffectProperties EffectProperties;
+	SetEffectPropertiesByData(Data,EffectProperties);//将Source和Target数据封装成一个结构体，并依据Data内的数据设置好它
+
+	
 }
 
 void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,
                                                    FEffectProperties& Props)
 {
+	
+	
+	Props.GameplayEffectContextHandle=Data.EffectSpec.GetContext();
+	Props.SourceASC=Data.EffectSpec.GetContext().GetOriginalInstigatorAbilitySystemComponent();
+	if (IsValid(Props.SourceASC)&&Props.SourceASC->AbilityActorInfo.IsValid()&&IsValid(Props.SourceASC->AbilityActorInfo->AvatarActor.Get()))
+	{
+		Props.SourceAvatarActor=Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
+		Props.SourceController=Props.SourceASC->AbilityActorInfo->PlayerController.Get();
+		if (Props.SourceController==nullptr&&Props.SourceAvatarActor!=nullptr)
+		{
+			if (APawn* SourceActor=Cast<APawn>(Props.SourceAvatarActor))
+			{
+				Props.SourceController=SourceActor->GetController();
+			}
+		}
+		if (Props.SourceController)
+		{
+			Props.SourceCharacter=Props.SourceController->GetCharacter();//Props.SourceCharacter=Cast<ACharacter>(Props.SourceController->GetPawn());
+		}
+	}
+
+	if (IsValid(&Data.Target)&&Data.Target.AbilityActorInfo.IsValid()&&Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		Props.TargetAvatarActor=Data.Target.AbilityActorInfo->AvatarActor.Get();
+		Props.TargetController=Data.Target.AbilityActorInfo->PlayerController.Get();
+		Props.TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
+		Props.TargetCharacter=Cast<ACharacter>(Props.TargetAvatarActor);
+	}
+
 	
 }

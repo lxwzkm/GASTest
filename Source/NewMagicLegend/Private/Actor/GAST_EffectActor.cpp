@@ -22,7 +22,7 @@ void AGAST_EffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGa
 	check(Effect);
 	FGameplayEffectContextHandle GameplayEffectContextHandle= TargetASC->MakeEffectContext();
 	GameplayEffectContextHandle.AddSourceObject(this);//设置效果的发出对象，就是这个Actor本身
-	FGameplayEffectSpecHandle GameplayEffectSpecHandle= TargetASC->MakeOutgoingSpec(Effect,1.f,GameplayEffectContextHandle);
+	FGameplayEffectSpecHandle GameplayEffectSpecHandle= TargetASC->MakeOutgoingSpec(Effect,ActorLevel,GameplayEffectContextHandle);
 	FActiveGameplayEffectHandle ActiveEffectHandle= TargetASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());//因为是TargetASC调用，所以是ToSelf
 	//处理Infinite效果，将需要移除的效果放入Map容器内
 	const bool bIsInfinite= GameplayEffectSpecHandle.Data.Get()->Def.Get()->DurationPolicy==EGameplayEffectDurationType::Infinite;
