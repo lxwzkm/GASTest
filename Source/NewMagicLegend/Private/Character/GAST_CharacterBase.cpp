@@ -31,3 +31,8 @@ void AGAST_CharacterBase::BeginPlay()
 	
 }
 
+void AGAST_CharacterBase::InitActorInfo()
+{
+	
+}
+

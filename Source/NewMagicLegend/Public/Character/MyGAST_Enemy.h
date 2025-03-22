@@ -21,5 +21,8 @@ public:
 	/*--------EnemyInterface-------*/
 	virtual void HightlightActor() override;//高亮显示的函数
 	virtual void UnHighlightActor() override;//取消高亮显示的函数
+protected:
+	
+	virtual void InitActorInfo() override;//重写父类初始化参数的虚函数
 	
 };

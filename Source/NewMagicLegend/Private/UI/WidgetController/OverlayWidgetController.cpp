@@ -19,29 +19,50 @@ void UOverlayWidgetController::BroadcastInitValues()
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	UGAST_AttributeSet*AttributeSet= Cast<UGAST_AttributeSet>(AS);
-
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this,&UOverlayWidgetController::HealthChanged);
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this,&UOverlayWidgetController::MaxHealthChanged);
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetManaAttribute()).AddUObject(this,&UOverlayWidgetController::ManaChanged);
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxManaAttribute()).AddUObject(this,&UOverlayWidgetController::MaxManaChanged);
-}
-
-void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data)const
-{
-	OnHealthChanged.Broadcast(Data.NewValue);
-}
-
-void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data)const
-{
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
-}
-
-void UOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnManaChanged.Broadcast(Data.NewValue);
-}
-
-void UOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxManaChanged.Broadcast(Data.NewValue);
+	/*---------------------------  属性变化绑定  ----------------------------*/
+	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddLambda(
+   [this](const FOnAttributeChangeData& Data)
+   {
+   	    OnHealthChanged.Broadcast(Data.NewValue);
+   }
+	);
+	
+	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddLambda(
+    [this](const FOnAttributeChangeData& Data)
+    {
+    	OnMaxHealthChanged.Broadcast(Data.NewValue);
+    }
+	);
+	
+	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetManaAttribute()).AddLambda(
+    [this](const FOnAttributeChangeData& Data)
+    {
+    	OnManaChanged.Broadcast(Data.NewValue);
+    }
+	);
+	
+	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxManaAttribute()).AddLambda(
+    [this](const FOnAttributeChangeData& Data)
+    {
+    	OnMaxManaChanged.Broadcast(Data.NewValue); 
+    }
+	);
+	/*---------------------------  发消息给UI  ----------------------------*/
+	if (UGAST_AbilitySystemComponent*GAST_ASC=Cast<UGAST_AbilitySystemComponent>(ASC))
+	{
+		GAST_ASC->AllAssetTagsContainerDelegate.AddLambda(
+         [this](const FGameplayTagContainer& TagContainer)
+         {
+         	for (const auto& tag:TagContainer)
+         	{
+         		FGameplayTag MessageTag= FGameplayTag::RequestGameplayTag(FName("Message"));
+         		if (tag.MatchesTag(MessageTag))
+         		{
+         			FMessageDataRow* Row= GetDataTableRowByTag<FMessageDataRow>(MessageData,tag);
+         			SendUIMessageDelegate.Broadcast(*Row);
+         		}
+         	}
+         }
+		);
+	}
 }

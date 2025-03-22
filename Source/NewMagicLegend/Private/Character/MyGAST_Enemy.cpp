@@ -4,11 +4,12 @@
 #include "Character/MyGAST_Enemy.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/GAST_AbilitySystemComponent.h"
 
 AMyGAST_Enemy::AMyGAST_Enemy()
 {
 	//实例化ASC组件和属性集
-	AbilitySystemComponent=CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent=CreateDefaultSubobject<UGAST_AbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);//AIController按照最小模式复制
 
@@ -18,9 +19,8 @@ AMyGAST_Enemy::AMyGAST_Enemy()
 void AMyGAST_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
-	//初始化ASC的OwnerActor和AvatarActor
-	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	
+	InitActorInfo();
 }
 
 void AMyGAST_Enemy::HightlightActor()
@@ -35,4 +35,12 @@ void AMyGAST_Enemy::UnHighlightActor()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void AMyGAST_Enemy::InitActorInfo()
+{
+	//初始化ASC的OwnerActor和AvatarActor
+	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+	Cast<UGAST_AbilitySystemComponent>(AbilitySystemComponent)->AbilitySystemComponentSet();//通知已经初始化完成，可以进行委托绑定了
+
 }

@@ -6,10 +6,31 @@
 #include "UI/WidgetController/GAST_WidgetControllerBase.h"
 #include "OverlayWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature,float,NewHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature,float,NewMaxHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangedSignature,float,NewMana);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangedSignature,float,NewMaxMana);
+class UGAST_UserWidgetBase;
+
+//这个是作为DT的行结构，为了方便根据Tag来查找数据发送给widget
+USTRUCT(BlueprintType)
+struct FMessageDataRow:public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	FGameplayTag MessageTag;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	FText MessageText;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TSubclassOf<UGAST_UserWidgetBase> MessageWidget;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	UTexture2D* MessageImage;
+	
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendUIMessageSignature,FMessageDataRow,Row);
+
 /**
  * 
  */
@@ -21,23 +42,35 @@ public:
 	virtual void BroadcastInitValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
-	/*----回调函数----*/
-	void HealthChanged(const FOnAttributeChangeData& Data) const;
-	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
-	void ManaChanged(const FOnAttributeChangeData& Data)const;
-	void MaxManaChanged(const FOnAttributeChangeData& Data)const;
+protected:
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	TObjectPtr<UDataTable>MessageData;
+
+	template<typename T>
+	T* GetDataTableRowByTag(UDataTable* DataTable,FGameplayTag Tag);
+	/*---------------------------  属性变化绑定  ----------------------------*/
+	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
+	FOnAttributeChangeSignature OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
-	FOnHealthChangedSignature OnHealthChanged;
+	FOnAttributeChangeSignature OnMaxHealthChanged;
 
 	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
-	FOnMaxHealthChangedSignature OnMaxHealthChanged;
+	FOnAttributeChangeSignature OnManaChanged;
 
 	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
-	FOnManaChangedSignature OnManaChanged;
+	FOnAttributeChangeSignature OnMaxManaChanged;
+	/*---------------------------  发送消息给UI  ----------------------------*/
+	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
+	FOnSendUIMessageSignature SendUIMessageDelegate;
 
-	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
-	FOnMaxManaChangedSignature OnMaxManaChanged;
 };
+
+template <typename T>
+T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag)
+{
+	return DataTable->FindRow<T>(Tag.GetTagName(),TEXT(""));
+}
 
 

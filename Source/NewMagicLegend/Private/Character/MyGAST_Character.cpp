@@ -4,6 +4,7 @@
 #include "Character/MyGAST_Character.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Gamemode/GAST_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -53,6 +54,7 @@ void AMyGAST_Character::InitActorInfo()
 	AGAST_PlayerState* AuraPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
 	check(AuraPlayerState);
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState,this);
+	Cast<UGAST_AbilitySystemComponent>(AuraPlayerState->GetAbilitySystemComponent())->AbilitySystemComponentSet();//通知ASC初始化已经完成，可以进行委托绑定了
 	//顺便设置从父类继承的ASC和AS变量的指针
 	AbilitySystemComponent=AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet=AuraPlayerState->GetAttributeSet();

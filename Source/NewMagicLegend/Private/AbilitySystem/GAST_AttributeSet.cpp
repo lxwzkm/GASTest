@@ -68,7 +68,14 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectM
 	FEffectProperties EffectProperties;
 	SetEffectPropertiesByData(Data,EffectProperties);//将Source和Target数据封装成一个结构体，并依据Data内的数据设置好它
 
-	
+	if (Data.EvaluatedData.Attribute==GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
+	}
+	if (Data.EvaluatedData.Attribute==GetManaAttribute())
+	{
+		SetMana(FMath::Clamp(GetMana(),0.f,GetMaxMana()));
+	}
 }
 
 void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,

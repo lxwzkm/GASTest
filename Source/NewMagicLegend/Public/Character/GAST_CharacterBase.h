@@ -32,4 +32,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet>AttributeSet;//属性集，敌人在本身上实现，玩家在PlayerSate上实现
+	
+	virtual void InitActorInfo();//初始化所有信息
 };

@@ -28,5 +28,5 @@ protected:
 	//在客户端调用的函数，为了在客户端初始化ASC的Actor信息
 	virtual void OnRep_PlayerState() override;
 private:
-	void InitActorInfo();
+	virtual void InitActorInfo() override;
 };
