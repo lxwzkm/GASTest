@@ -6,6 +6,7 @@
 #include "Character/GAST_CharacterBase.h"
 #include "MyGAST_Character.generated.h"
 
+class UGameplayEffect;
 class UCameraComponent;
 class USpringArmComponent;
 /**
@@ -27,6 +28,7 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 	//在客户端调用的函数，为了在客户端初始化ASC的Actor信息
 	virtual void OnRep_PlayerState() override;
+
 private:
 	virtual void InitActorInfo() override;
 };

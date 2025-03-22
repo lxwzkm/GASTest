@@ -3,6 +3,7 @@
 
 
 #include "Character/GAST_CharacterBase.h"
+#include "AbilitySystemComponent.h"
 
 AGAST_CharacterBase::AGAST_CharacterBase()
 {
@@ -34,5 +35,23 @@ void AGAST_CharacterBase::BeginPlay()
 void AGAST_CharacterBase::InitActorInfo()
 {
 	
+}
+
+void AGAST_CharacterBase::InitializePrimaryAttribute()const
+{
+	check(GetAbilitySystemComponent());
+	check(PrimaryAttributes);
+	const FGameplayEffectContextHandle EffectContextHandle= GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle= GetAbilitySystemComponent()->MakeOutgoingSpec(PrimaryAttributes,1.f,EffectContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+void AGAST_CharacterBase::InitializeSecondaryAttribute() const
+{
+	check(GetAbilitySystemComponent());
+	check(SecondaryAttributes);
+	const FGameplayEffectContextHandle EffectContextHandle= GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle= GetAbilitySystemComponent()->MakeOutgoingSpec(SecondaryAttributes,1.f,EffectContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 

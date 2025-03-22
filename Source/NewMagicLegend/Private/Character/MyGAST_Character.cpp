@@ -49,6 +49,7 @@ void AMyGAST_Character::OnRep_PlayerState()
 	InitActorInfo();
 }
 
+
 void AMyGAST_Character::InitActorInfo()
 {
 	AGAST_PlayerState* AuraPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
@@ -66,4 +67,7 @@ void AMyGAST_Character::InitActorInfo()
 		if (!PlayerHUD)return;
 		PlayerHUD->InitOverlayControllerParams(PC,AuraPlayerState,AttributeSet,AbilitySystemComponent);
 	}
+
+	//初始化主要信息，调用父类函数
+	InitializePrimaryAttribute();
 }

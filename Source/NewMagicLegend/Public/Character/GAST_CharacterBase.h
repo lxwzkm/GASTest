@@ -9,6 +9,7 @@
 
 class UAttributeSet;
 class UAbilitySystemComponent;
+class UGameplayEffect;
 
 UCLASS(Abstract)//表明该类是一个抽象类
 class NEWMAGICLEGEND_API AGAST_CharacterBase : public ACharacter,public IAbilitySystemInterface
@@ -34,4 +35,17 @@ protected:
 	TObjectPtr<UAttributeSet>AttributeSet;//属性集，敌人在本身上实现，玩家在PlayerSate上实现
 	
 	virtual void InitActorInfo();//初始化所有信息
+	
+	//主要属性类
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect>PrimaryAttributes;
+
+	//次要熟悉
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect>SecondaryAttributes;
+
+	//初始化主要属性
+	void InitializePrimaryAttribute() const;
+	//初始化次要属性
+	void InitializeSecondaryAttribute()const;
 };

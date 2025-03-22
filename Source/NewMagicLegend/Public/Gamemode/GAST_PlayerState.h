@@ -24,7 +24,7 @@ public:
 	/*-------IAbilitySystemInterface  end-------*/
 	UAttributeSet* GetAttributeSet()const;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent>AbilitySystemComponent;
 
 	UPROPERTY()
