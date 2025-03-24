@@ -37,21 +37,18 @@ void AGAST_CharacterBase::InitActorInfo()
 	
 }
 
-void AGAST_CharacterBase::InitializePrimaryAttribute()const
+void AGAST_CharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffect, int level)
 {
 	check(GetAbilitySystemComponent());
-	check(PrimaryAttributes);
+	check(GameplayEffect);
 	const FGameplayEffectContextHandle EffectContextHandle= GetAbilitySystemComponent()->MakeEffectContext();
-	const FGameplayEffectSpecHandle SpecHandle= GetAbilitySystemComponent()->MakeOutgoingSpec(PrimaryAttributes,1.f,EffectContextHandle);
+	const FGameplayEffectSpecHandle SpecHandle= GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffect,level,EffectContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
-void AGAST_CharacterBase::InitializeSecondaryAttribute() const
+void AGAST_CharacterBase::InitializeAttributes()
 {
-	check(GetAbilitySystemComponent());
-	check(SecondaryAttributes);
-	const FGameplayEffectContextHandle EffectContextHandle= GetAbilitySystemComponent()->MakeEffectContext();
-	const FGameplayEffectSpecHandle SpecHandle= GetAbilitySystemComponent()->MakeOutgoingSpec(SecondaryAttributes,1.f,EffectContextHandle);
-	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	ApplyEffectToSelf(PrimaryAttributes,1.f);
+	ApplyEffectToSelf(SecondaryAttributes,1.f);
 }
 

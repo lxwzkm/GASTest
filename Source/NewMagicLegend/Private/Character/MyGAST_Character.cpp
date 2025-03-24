@@ -49,6 +49,13 @@ void AMyGAST_Character::OnRep_PlayerState()
 	InitActorInfo();
 }
 
+int32 AMyGAST_Character::GetPlayerLevel()
+{
+	AGAST_PlayerState* AuraPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
+	check(AuraPlayerState);
+	return AuraPlayerState->GetPlayerLevel();
+}
+
 
 void AMyGAST_Character::InitActorInfo()
 {
@@ -69,5 +76,5 @@ void AMyGAST_Character::InitActorInfo()
 	}
 
 	//初始化主要信息，调用父类函数
-	InitializePrimaryAttribute();
+	InitializeAttributes();
 }

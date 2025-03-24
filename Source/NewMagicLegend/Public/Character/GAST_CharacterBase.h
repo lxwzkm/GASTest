@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
 #include "GAST_CharacterBase.generated.h"
 
 class UAttributeSet;
@@ -12,7 +13,7 @@ class UAbilitySystemComponent;
 class UGameplayEffect;
 
 UCLASS(Abstract)//表明该类是一个抽象类
-class NEWMAGICLEGEND_API AGAST_CharacterBase : public ACharacter,public IAbilitySystemInterface
+class NEWMAGICLEGEND_API AGAST_CharacterBase : public ACharacter,public IAbilitySystemInterface,public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -40,12 +41,12 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect>PrimaryAttributes;
 
-	//次要熟悉
+	//次要属性
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect>SecondaryAttributes;
 
-	//初始化主要属性
-	void InitializePrimaryAttribute() const;
-	//初始化次要属性
-	void InitializeSecondaryAttribute()const;
+	//将属性效果应用在自己身上
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect>GameplayEffect,int level);
+	//初始化属性
+	void InitializeAttributes();
 };

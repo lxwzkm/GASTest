@@ -10,9 +10,7 @@
 UGAST_AttributeSet::UGAST_AttributeSet()
 {
 	InitHealth(50.f);
-	InitMaxHealth(100.f);
 	InitMana(10.f);
-	InitMaxMana(50.f);
 }
 
 void UGAST_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
@@ -75,6 +73,11 @@ void UGAST_AttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& O
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,BlockChance,OldCriticalHitChance);
 }
 
+void UGAST_AttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,CriticalHitDamage,OldCriticalHitDamage);
+}
+
 void UGAST_AttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,CriticalHitResistance,OldCriticalHitResistance);
@@ -109,6 +112,7 @@ void UGAST_AttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,ArmorPenetration,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,BlockChance,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,CriticalHitChance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,CriticalHitDamage,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,CriticalHitResistance,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,HealthRegeneration,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,ManaRegeneration,COND_None,REPNOTIFY_Always);

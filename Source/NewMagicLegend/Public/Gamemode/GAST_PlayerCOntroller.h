@@ -32,8 +32,8 @@ private:
 	UPROPERTY(EditAnywhere,Category="Input")
 	TObjectPtr<UInputAction>MoveAction;
 
-	TObjectPtr<IEnemyInterface>LastActor;
-	TObjectPtr<IEnemyInterface>ThisActor;
+	IEnemyInterface* LastActor;
+	IEnemyInterface* ThisActor;
 
 	void Move(const FInputActionValue& InputActionValue);//移动操作的回调函数
 

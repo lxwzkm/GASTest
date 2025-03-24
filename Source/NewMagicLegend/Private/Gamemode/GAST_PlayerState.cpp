@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 AGAST_PlayerState::AGAST_PlayerState()
 {
@@ -18,6 +19,13 @@ AGAST_PlayerState::AGAST_PlayerState()
 	NetUpdateFrequency=100.f;//服务器网络的更新频率设置
 }
 
+void AGAST_PlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AGAST_PlayerState,Level);//将Level标记为可以被复制的
+}
+
 UAbilitySystemComponent* AGAST_PlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -26,4 +34,9 @@ UAbilitySystemComponent* AGAST_PlayerState::GetAbilitySystemComponent() const
 UAttributeSet* AGAST_PlayerState::GetAttributeSet() const
 {
 	return AttributeSet;
+}
+
+void AGAST_PlayerState::Rep_Level(int32 OldLevel)
+{
+	
 }

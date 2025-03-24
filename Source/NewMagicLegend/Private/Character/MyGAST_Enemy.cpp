@@ -37,6 +37,11 @@ void AMyGAST_Enemy::UnHighlightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
+int32 AMyGAST_Enemy::GetPlayerLevel()
+{
+	return Level;
+}
+
 void AMyGAST_Enemy::InitActorInfo()
 {
 	//初始化ASC的OwnerActor和AvatarActor
