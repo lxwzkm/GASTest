@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect>SecondaryAttributes;
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect>InitializeAttribute;
+
 	//将属性效果应用在自己身上
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect>GameplayEffect,int level);
 	//初始化属性

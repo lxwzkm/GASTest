@@ -41,14 +41,16 @@ void AGAST_CharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Gamepla
 {
 	check(GetAbilitySystemComponent());
 	check(GameplayEffect);
-	const FGameplayEffectContextHandle EffectContextHandle= GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectContextHandle EffectContextHandle= GetAbilitySystemComponent()->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);//设置效果的发出对象就是本身，主要是应用属性在自身身上
 	const FGameplayEffectSpecHandle SpecHandle= GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffect,level,EffectContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 }
 
 void AGAST_CharacterBase::InitializeAttributes()
 {
-	ApplyEffectToSelf(PrimaryAttributes,1.f);
-	ApplyEffectToSelf(SecondaryAttributes,1.f);
+	ApplyEffectToSelf(PrimaryAttributes,GetPlayerLevel());
+	ApplyEffectToSelf(SecondaryAttributes,GetPlayerLevel());
+	ApplyEffectToSelf(InitializeAttribute,GetPlayerLevel());
 }
 
