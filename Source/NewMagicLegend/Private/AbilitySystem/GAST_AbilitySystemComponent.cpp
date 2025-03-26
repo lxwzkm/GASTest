@@ -3,9 +3,15 @@
 
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 
+#include "AssetManager/GAST_AssetManager.h"
+#include "GameplayTag/GAST_GameplayTags.h"
+
 void UGAST_AbilitySystemComponent::AbilitySystemComponentSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this,&UGAST_AbilitySystemComponent::AppliedGameplayEffect);
+
+	
+	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Cyan,FString::Printf(TEXT("Tag:%s"),*FGameplayTags::Get().Attributes_Secondary_Armor.ToString()));
 }
 
 void UGAST_AbilitySystemComponent::AppliedGameplayEffect(UAbilitySystemComponent* AbilitySystemComponent,
