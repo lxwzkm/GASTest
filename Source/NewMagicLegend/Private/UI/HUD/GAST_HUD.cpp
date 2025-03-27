@@ -4,6 +4,7 @@
 #include "UI/HUD/GAST_HUD.h"
 
 #include "Blueprint/UserWidget.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 UOverlayWidgetController* AGAST_HUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
@@ -17,8 +18,19 @@ UOverlayWidgetController* AGAST_HUD::GetOverlayWidgetController(const FWidgetCon
 	return OverlayWidgetController;
 }
 
+UAttributeMenuWidgetController* AGAST_HUD::GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (AttributeMenuWidgetController==nullptr)
+	{
+		AttributeMenuWidgetController=NewObject<UAttributeMenuWidgetController>(this,AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParams(WCParams);
+		AttributeMenuWidgetController->BindCallbacksToDependencies();
+	}
+	return AttributeMenuWidgetController;
+}
+
 void AGAST_HUD::InitOverlayControllerParams(APlayerController* InPC, APlayerState* InPS, UAttributeSet* InAS,
-	UAbilitySystemComponent* InASC)
+                                            UAbilitySystemComponent* InASC)
 {//1 获取OverlayWidget  2 获取OverlayWidgetController  3 将两者绑定在一起，即SetUserWidgetController  4 通过Controller初始化属性值
 	checkf(OverlayWidgetClass,TEXT("OverlayWidgetClass未初始化"));
 	checkf(OverlayWidgetControllerClass,TEXT("OverlayWidgetControllerClass未初始化"));

@@ -45,6 +45,7 @@ public:
 	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
 
 	//提供给子类重写的虚函数，作用是广播属性的初始化数值
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitValues();
 	//提供给子类重写的虚函数，作用是用来绑定属性变化时的回调函数
 	virtual void BindCallbacksToDependencies();
