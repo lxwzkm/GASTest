@@ -2,15 +2,30 @@
 
 
 #include "AbilitySystem/GAST_AttributeSet.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"//FGameplayEffectModCallbackData类型必须包含该头文件
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
+
 UGAST_AttributeSet::UGAST_AttributeSet()
 {
-	InitHealth(50.f);
-	InitMana(10.f);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Strength,GetStrengthAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Intelligence,GetIntelligenceAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Resilience,GetResilienceAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Vigor,GetVigorAttribute());
+
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_Armor,GetArmorAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_ArmorPenetration,GetArmorPenetrationAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_BlockChance,GetBlockChanceAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitChance,GetCriticalHitChanceAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitDamage,GetCriticalHitDamageAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitResistance,GetCriticalHitResistanceAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_HealthRegeneration,GetHealthRegenerationAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_ManaRegeneration,GetManaRegenerationAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxHealth,GetMaxHealthAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxMana,GetMaxManaAttribute());
 }
 
 void UGAST_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)

@@ -7,7 +7,7 @@
 #include "Data/AttributeInfo.h"
 #include "AttributeMenuWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeDataChangedSignature,const FGAST_AttributeInfo&,NewInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature,const FGAST_AttributeInfo&,Info);
 
 /**
  * 
@@ -21,9 +21,12 @@ public:
 	virtual void BindCallbacksToDependencies() override;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnAttributeDataChangedSignature AttributeInfoDelegate;
+	FAttributeInfoSignature AttributeInfoDelegate;
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeInfo> AttributeInformation;
+
+private:
+	void BroadcastAttributeInfo(const FGameplayAttribute& Attribute,const FGameplayTag& GameplayTag) const;
 };

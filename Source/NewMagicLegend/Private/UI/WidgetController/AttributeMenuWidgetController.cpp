@@ -8,16 +8,34 @@
 
 void UAttributeMenuWidgetController::BroadcastInitValues()
 {
-	UGAST_AttributeSet* AttributeSet=Cast<UGAST_AttributeSet>(AS);
+	UGAST_AttributeSet* AttributeSet=CastChecked<UGAST_AttributeSet>(AS);
 
 	check(AttributeInformation);
-	FGAST_AttributeInfo AttributeInfo= AttributeInformation->GetAttributeInfoByTag(FGameplayTags::Get().Attributes_Primary_Strength);
-	AttributeInfo.AttributeValue=AttributeSet->GetStrength();
-
-	AttributeInfoDelegate.Broadcast(AttributeInfo);
+	for (auto& Pair:AttributeSet->TagsToAttribute)
+	{
+		BroadcastAttributeInfo(Pair.Value,Pair.Key);
+	}
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
-	
+	UGAST_AttributeSet* AttributeSet=CastChecked<UGAST_AttributeSet>(AS);
+
+	for (auto& Pair:AttributeSet->TagsToAttribute)
+	{
+		ASC->GetGameplayAttributeValueChangeDelegate(Pair.Value).AddLambda(
+[this,Pair,AttributeSet](const FOnAttributeChangeData& Data)
+{
+	BroadcastAttributeInfo(Pair.Value,Pair.Key);
+}
+		);
+	}
+}
+
+void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayAttribute& Attribute,
+	const FGameplayTag& GameplayTag) const
+{
+	FGAST_AttributeInfo AttributeInfo= AttributeInformation->GetAttributeInfoByTag(GameplayTag);
+	AttributeInfo.AttributeValue=Attribute.GetNumericValue(AS);
+	AttributeInfoDelegate.Broadcast(AttributeInfo);
 }
