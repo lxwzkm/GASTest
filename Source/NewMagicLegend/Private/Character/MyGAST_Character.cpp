@@ -38,8 +38,8 @@ void AMyGAST_Character::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	InitActorInfo();
-	
+	InitActorInfo();//初始化角色属性信息
+	GiveCharacterAbilites();//初始化角色技能
 }
 
 void AMyGAST_Character::OnRep_PlayerState()

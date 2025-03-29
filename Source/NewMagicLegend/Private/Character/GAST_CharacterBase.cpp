@@ -4,6 +4,7 @@
 
 #include "Character/GAST_CharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/GAST_AbilitySystemComponent.h"
 
 AGAST_CharacterBase::AGAST_CharacterBase()
 {
@@ -52,5 +53,13 @@ void AGAST_CharacterBase::InitializeAttributes()
 	ApplyEffectToSelf(PrimaryAttributes,GetPlayerLevel());
 	ApplyEffectToSelf(SecondaryAttributes,GetPlayerLevel());
 	ApplyEffectToSelf(InitializeAttribute,GetPlayerLevel());
+}
+
+void AGAST_CharacterBase::GiveCharacterAbilites()
+{
+	if (!HasAuthority())return;
+
+	UGAST_AbilitySystemComponent*ASC=CastChecked<UGAST_AbilitySystemComponent>(AbilitySystemComponent);
+	ASC->GiveCharacterAbilities(StartupAbilities);
 }
 

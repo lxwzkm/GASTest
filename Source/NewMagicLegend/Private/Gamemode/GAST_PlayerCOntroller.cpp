@@ -2,13 +2,22 @@
 
 
 #include "Gamemode/GAST_PlayerCOntroller.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
+#include "Components/SplineComponent.h"
+#include "GameplayTag/GAST_GameplayTags.h"
+#include "Input/GAST_EnhancedInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 AGAST_PlayerCOntroller::AGAST_PlayerCOntroller()
 {
 	bReplicates=true;//可以被复制到客户端
+
+	SplineComponent=CreateDefaultSubobject<USplineComponent>("Spline");//实例化样条曲线
 }
 
 void AGAST_PlayerCOntroller::PlayerTick(float DeltaTime)
@@ -16,6 +25,24 @@ void AGAST_PlayerCOntroller::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	CursorTrace();
+	AutoRun();
+}
+
+void AGAST_PlayerCOntroller::AutoRun()
+{
+	if (!bAutoRuning)return;
+	if (APawn*ControlledPawn=GetPawn())
+	{
+		const FVector ClosedLocation=SplineComponent->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(),ESplineCoordinateSpace::World);
+		const FVector ClosedDirection=SplineComponent->FindDirectionClosestToWorldLocation(ClosedLocation,ESplineCoordinateSpace::World);
+		ControlledPawn->AddMovementInput(ClosedDirection);
+		
+		float Length= (ClosedLocation-CachedDestination).Length();
+		if (Length<=AutoRunAcceptionRadius)
+		{
+			bAutoRuning=false;
+		}
+	}
 }
 
 void AGAST_PlayerCOntroller::CursorTrace()
@@ -52,23 +79,118 @@ void AGAST_PlayerCOntroller::CursorTrace()
 	}
 }
 
+void AGAST_PlayerCOntroller::AbilityInputPressed(FGameplayTag InputTag)
+{
+	if (InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
+	{
+		bTargeting=ThisActor?true:false;//通过ThisActor是否为空来判断bTargeting是否为真
+		bAutoRuning=false;//此时还不知道是否是短按，所以设置为false
+	}
+
+}
+
+void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
+{
+	if (!InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputHeld(InputTag);
+		}
+		return;
+	}
+	
+	if (bTargeting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputHeld(InputTag);
+		}
+	}
+	else
+	{
+		FollowTime+=GetWorld()->GetDeltaSeconds();
+		FHitResult Hit;
+		if (GetHitResultUnderCursor(ECC_Visibility,false,Hit))
+		{
+			CachedDestination=Hit.ImpactPoint;
+			APawn* ControlledPawn=GetPawn();
+			FVector Direction=(CachedDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(Direction);
+		}
+	}
+}
+
+void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
+{
+	if (!InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputReleased(InputTag);
+		}
+		return;
+	}
+	
+	if (bTargeting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputReleased(InputTag);
+		}
+	}
+	else
+	{
+		APawn* ControlledPawn=GetPawn();
+		if (FollowTime<=ShortPressThread&&ControlledPawn)
+		{
+			if (UNavigationPath* Path= UNavigationSystemV1::FindPathToLocationSynchronously(this,ControlledPawn->GetActorLocation(),CachedDestination))
+			{
+				SplineComponent->ClearSplinePoints();
+				for (auto& PointsLoc:Path->PathPoints)
+				{
+					SplineComponent->AddSplinePoint(PointsLoc,ESplineCoordinateSpace::World);
+					DrawDebugSphere(GetWorld(),PointsLoc,5.f,8,FColor::Cyan,false,3.f);
+				}
+				bAutoRuning=true;
+			}
+		}
+		FollowTime=0.f;
+		bTargeting=false;
+	}
+}
+
+UGAST_AbilitySystemComponent* AGAST_PlayerCOntroller::GetASC()
+{
+	if (PlayerAbilitySystemComponent==nullptr)
+	{
+		PlayerAbilitySystemComponent=Cast<UGAST_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
+	return PlayerAbilitySystemComponent;
+}
+
 void AGAST_PlayerCOntroller::BeginPlay()
 {
 	Super::BeginPlay();
 
-	check(PlayerContext);//检查输入映射上下文是否设置
-	UEnhancedInputLocalPlayerSubsystem* LocalPlayerSubsystem=ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());//获取本地增强输入子系统
+	if (IsLocalController())
+	{
+		check(PlayerContext);
+		if (UEnhancedInputLocalPlayerSubsystem* LocalPlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		{
+			LocalPlayerSubsystem->AddMappingContext(PlayerContext, 0);
+		}
 
-	check(LocalPlayerSubsystem);//检测本地增强子系统是否为空
-	LocalPlayerSubsystem->AddMappingContext(PlayerContext,0);//添加增强输入上下文
+		// 设置鼠标光标
+		bShowMouseCursor = true;
+		DefaultMouseCursor = EMouseCursor::Default;
 
-	bShowMouseCursor=true;//设置显示鼠标
-	DefaultMouseCursor=EMouseCursor::Type::Default;//设置鼠标样式为默认样式
-
-	FInputModeGameAndUI InputModeData;//实例化一个可以设置输入模式数据的变量
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);//不将鼠标锁定到视口
-	InputModeData.SetHideCursorDuringCapture(false);//在捕获输入时，不隐藏鼠标光标
-	SetInputMode(InputModeData);//将前面设置的结果设置为当前使用的模式
+		// 设置输入模式
+		FInputModeGameAndUI InputModeData;
+		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputModeData.SetHideCursorDuringCapture(false);
+		SetInputMode(InputModeData);
+	}
 }
 
 void AGAST_PlayerCOntroller::SetupInputComponent()
@@ -76,8 +198,10 @@ void AGAST_PlayerCOntroller::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	//首先获取增强输入组件，InputComponent继承自父类，之后通过组件来绑定输入操作
-	UEnhancedInputComponent*EnhancedInputComponent=CastChecked<UEnhancedInputComponent>(InputComponent);
+	UGAST_EnhancedInputComponent*EnhancedInputComponent=CastChecked<UGAST_EnhancedInputComponent>(InputComponent);
 	EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&AGAST_PlayerCOntroller::Move);
+	//调用GAST_EnhancedInputComponent中的绑定函数，将InputConfig中的输入行为、Tag与回调函数进行绑定
+	EnhancedInputComponent->BindAbilityActions(InputConfig,this,&ThisClass::AbilityInputPressed,&ThisClass::AbilityInputHeld,&ThisClass::AbilityInputReleased);
 }
 
 void AGAST_PlayerCOntroller::Move(const FInputActionValue& InputActionValue)

@@ -8,6 +8,7 @@
 #include "Interaction/CombatInterface.h"
 #include "GAST_CharacterBase.generated.h"
 
+class UGameplayAbility;
 class UAttributeSet;
 class UAbilitySystemComponent;
 class UGameplayEffect;
@@ -46,10 +47,17 @@ protected:
 	TSubclassOf<UGameplayEffect>SecondaryAttributes;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect>InitializeAttribute;
+	TSubclassOf<UGameplayEffect>InitializeAttribute;//用来初始化属性
 
 	//将属性效果应用在自己身上
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect>GameplayEffect,int level);
 	//初始化属性
 	void InitializeAttributes();
+	//激活角色技能
+	void GiveCharacterAbilites();
+
+private:
+
+	UPROPERTY(EditAnywhere,Category="Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;//用来保存初始技能
 };
