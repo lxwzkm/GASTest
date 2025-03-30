@@ -13,7 +13,7 @@ void UAttributeMenuWidgetController::BroadcastInitValues()
 	check(AttributeInformation);
 	for (auto& Pair:AttributeSet->TagsToAttribute)
 	{
-		BroadcastAttributeInfo(Pair.Value,Pair.Key);
+		BroadcastAttributeInfo(Pair.Value(),Pair.Key);
 	}
 }
 
@@ -23,10 +23,10 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 
 	for (auto& Pair:AttributeSet->TagsToAttribute)
 	{
-		ASC->GetGameplayAttributeValueChangeDelegate(Pair.Value).AddLambda(
+		ASC->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
 [this,Pair,AttributeSet](const FOnAttributeChangeData& Data)
 {
-	BroadcastAttributeInfo(Pair.Value,Pair.Key);
+	BroadcastAttributeInfo(Pair.Value(),Pair.Key);
 }
 		);
 	}

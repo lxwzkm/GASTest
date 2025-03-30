@@ -11,21 +11,21 @@
 
 UGAST_AttributeSet::UGAST_AttributeSet()
 {
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Strength,GetStrengthAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Intelligence,GetIntelligenceAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Resilience,GetResilienceAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Vigor,GetVigorAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Strength,GetStrengthAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Intelligence,GetIntelligenceAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Resilience,GetResilienceAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Primary_Vigor,GetVigorAttribute);
 
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_Armor,GetArmorAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_ArmorPenetration,GetArmorPenetrationAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_BlockChance,GetBlockChanceAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitChance,GetCriticalHitChanceAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitDamage,GetCriticalHitDamageAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitResistance,GetCriticalHitResistanceAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_HealthRegeneration,GetHealthRegenerationAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_ManaRegeneration,GetManaRegenerationAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxHealth,GetMaxHealthAttribute());
-	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxMana,GetMaxManaAttribute());
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_Armor,GetArmorAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_ArmorPenetration,GetArmorPenetrationAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_BlockChance,GetBlockChanceAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitChance,GetCriticalHitChanceAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitDamage,GetCriticalHitDamageAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_CriticalHitResistance,GetCriticalHitResistanceAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_HealthRegeneration,GetHealthRegenerationAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_ManaRegeneration,GetManaRegenerationAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxHealth,GetMaxHealthAttribute);
+	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxMana,GetMaxManaAttribute);
 }
 
 void UGAST_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)

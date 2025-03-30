@@ -47,7 +47,6 @@ void AGAST_PlayerCOntroller::AutoRun()
 
 void AGAST_PlayerCOntroller::CursorTrace()
 {
-	FHitResult UnderCursor;
 	GetHitResultUnderCursor(ECC_Visibility,false,UnderCursor);
 
 	if (!UnderCursor.bBlockingHit)return;//如果没有遇到阻挡，就返回
@@ -110,10 +109,10 @@ void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
 	else
 	{
 		FollowTime+=GetWorld()->GetDeltaSeconds();
-		FHitResult Hit;
-		if (GetHitResultUnderCursor(ECC_Visibility,false,Hit))
+		
+		if (UnderCursor.bBlockingHit)
 		{
-			CachedDestination=Hit.ImpactPoint;
+			CachedDestination=UnderCursor.ImpactPoint;
 			APawn* ControlledPawn=GetPawn();
 			FVector Direction=(CachedDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
 			ControlledPawn->AddMovementInput(Direction);
@@ -150,7 +149,7 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 				for (auto& PointsLoc:Path->PathPoints)
 				{
 					SplineComponent->AddSplinePoint(PointsLoc,ESplineCoordinateSpace::World);
-					DrawDebugSphere(GetWorld(),PointsLoc,5.f,8,FColor::Cyan,false,3.f);
+					
 				}
 				bAutoRuning=true;
 			}
@@ -172,25 +171,23 @@ UGAST_AbilitySystemComponent* AGAST_PlayerCOntroller::GetASC()
 void AGAST_PlayerCOntroller::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (IsLocalController())
+	
+	check(PlayerContext);
+	if (UEnhancedInputLocalPlayerSubsystem* LocalPlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		check(PlayerContext);
-		if (UEnhancedInputLocalPlayerSubsystem* LocalPlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-		{
-			LocalPlayerSubsystem->AddMappingContext(PlayerContext, 0);
-		}
-
-		// 设置鼠标光标
-		bShowMouseCursor = true;
-		DefaultMouseCursor = EMouseCursor::Default;
-
-		// 设置输入模式
-		FInputModeGameAndUI InputModeData;
-		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		InputModeData.SetHideCursorDuringCapture(false);
-		SetInputMode(InputModeData);
+		LocalPlayerSubsystem->AddMappingContext(PlayerContext, 0);
 	}
+
+	// 设置鼠标光标
+	bShowMouseCursor = true;
+	DefaultMouseCursor = EMouseCursor::Default;
+
+	// 设置输入模式
+	FInputModeGameAndUI InputModeData;
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputModeData.SetHideCursorDuringCapture(false);
+	SetInputMode(InputModeData);
+
 }
 
 void AGAST_PlayerCOntroller::SetupInputComponent()

@@ -27,6 +27,11 @@ UAttributeSet* AGAST_CharacterBase::GetAttributeSet() const
 	return AttributeSet;
 }
 
+FVector AGAST_CharacterBase::GetWeaponSocketLocation()
+{
+	return Weapon->GetSocketLocation(WeaponSocketName);
+}
+
 void AGAST_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -45,7 +50,7 @@ void AGAST_CharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Gamepla
 	FGameplayEffectContextHandle EffectContextHandle= GetAbilitySystemComponent()->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);//设置效果的发出对象就是本身，主要是应用属性在自身身上
 	const FGameplayEffectSpecHandle SpecHandle= GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffect,level,EffectContextHandle);
-	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),GetAbilitySystemComponent());
 }
 
 void AGAST_CharacterBase::InitializeAttributes()

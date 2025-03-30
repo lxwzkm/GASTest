@@ -40,6 +40,9 @@ struct FEffectProperties
 
 DECLARE_DELEGATE_RetVal(FGameplayAttribute,FOnGetAttribtueSignature)
 
+template<class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 /**
  * 当属性变化时，服务器先通知给客户端，通过GetLifetimeReplicatedProps函数来传递参数，客户端收到新值以后，调用OnRep_Health函数，来执行当属性发生变化以后会执行的动作比如产生伤害数字、血量UI下降、特殊动画特效等操作
  */
@@ -55,7 +58,7 @@ class NEWMAGICLEGEND_API UGAST_AttributeSet : public UAttributeSet
 public:
 	UGAST_AttributeSet();
 	
-	TMap<FGameplayTag,FGameplayAttribute> TagsToAttribute;
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttribute;
 
 	/*---------------------  Primary Attributes  --------------------*/
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_Strength,Category="Primary Attributes")

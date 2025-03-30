@@ -37,6 +37,7 @@ private:
 
 	IEnemyInterface* LastActor;
 	IEnemyInterface* ThisActor;
+	FHitResult UnderCursor;
 
 	void Move(const FInputActionValue& InputActionValue);//移动操作的回调函数
 

@@ -24,11 +24,18 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/*-------IAbilitySystemInterface  end-------*/
 	UAttributeSet* GetAttributeSet()const;
+	
+	/*-------IAbilitySystemInterface  end-------*/
+	virtual FVector GetWeaponSocketLocation() override;
+	
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;//给玩家和敌人装备的武器的骨骼体组件
+
+	UPROPERTY(EditAnywhere,Category="Combat")
+	FName WeaponSocketName;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;//ASC组件敌人在身上实现，玩家在PlayerState上实现
