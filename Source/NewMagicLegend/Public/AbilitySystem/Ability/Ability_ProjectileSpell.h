@@ -17,6 +17,12 @@ class NEWMAGICLEGEND_API UAbility_ProjectileSpell : public UGAST_GameplayAbility
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	/**
+	 * 生成发射物的函数，蓝图调用
+	 */
+	UFUNCTION(BlueprintCallable)
+	void SpawnPrijectile();
+	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AGAST_Projectile> ProjectileClass;
 };

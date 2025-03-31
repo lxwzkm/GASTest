@@ -2,6 +2,8 @@
 
 
 #include "AssetManager/GAST_AssetManager.h"
+
+#include "AbilitySystemGlobals.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 
 UGAST_AssetManager& UGAST_AssetManager::Get()
@@ -16,4 +18,7 @@ void UGAST_AssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FGameplayTags::InitializeGameplayTags();
+
+	//初始化TargetData
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }

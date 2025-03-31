@@ -12,7 +12,12 @@ void UAbility_ProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle 
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	bool IsServer = HasAuthority(&ActivationInfo);
+
+}
+
+void UAbility_ProjectileSpell::SpawnPrijectile()
+{
+	bool IsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!IsServer)return;
 
 	ICombatInterface* CombatInterface=Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
