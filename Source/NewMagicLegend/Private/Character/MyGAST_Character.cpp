@@ -57,7 +57,6 @@ int32 AMyGAST_Character::GetPlayerLevel()
 	return AuraPlayerState->GetPlayerLevel();
 }
 
-
 void AMyGAST_Character::InitActorInfo()
 {
 	AGAST_PlayerState* AuraPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数

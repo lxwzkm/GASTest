@@ -35,11 +35,17 @@ private:
 	UPROPERTY(EditAnywhere,Category="Input")
 	TObjectPtr<UInputAction>MoveAction;
 
+	UPROPERTY(EditAnywhere,Category="Input")
+	TObjectPtr<UInputAction>ShiftAction;
+	bool bShiftPressed=false;
+
 	IEnemyInterface* LastActor;
 	IEnemyInterface* ThisActor;
 	FHitResult UnderCursor;
 
 	void Move(const FInputActionValue& InputActionValue);//移动操作的回调函数
+	void ShiftPressed(const FInputActionValue& InputActionValue) {bShiftPressed=true;}
+	void ShiftReleased(const FInputActionValue& InputActionValue){bShiftPressed=false;}
 
 	void CursorTrace();//内部给PlayerTick调用的函数，主要用来处理鼠标下面是否是敌人来显示或删除高光
 

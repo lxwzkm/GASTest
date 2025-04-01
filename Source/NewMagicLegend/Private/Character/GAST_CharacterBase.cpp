@@ -5,11 +5,15 @@
 #include "Character/GAST_CharacterBase.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
 
 AGAST_CharacterBase::AGAST_CharacterBase()
 {
  
 	PrimaryActorTick.bCanEverTick = false;
+
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 
 	/* 武器基类设置 */
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//实例化组件

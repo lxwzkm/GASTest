@@ -25,10 +25,10 @@ void UTargetDataUnderMouse::Activate()
 		const FPredictionKey OriginalPredictionKey=GetActivationPredictionKey();
 		//绑定监听
 		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(SpecHandle,OriginalPredictionKey).AddUObject(this,&UTargetDataUnderMouse::OnTargetDataReplicatedCallBacks);
-		//由于可能会数据先到达，所以判断是否有成功广播数据
+		//判断数据是否已经到达，如果到达，会被ASC缓存
 		const bool IsDelegate= AbilitySystemComponent.Get()->CallReplicatedTargetDataDelegatesIfSet(SpecHandle,OriginalPredictionKey);
 		if (!IsDelegate)
-		{
+		{//数据未到达，等待接收数据，Ability会被挂起而不是直接结束
 			SetWaitingOnRemotePlayerData();//没有成功广播数据会让服务器等待接收数据
 		}
 	}
@@ -38,7 +38,7 @@ void UTargetDataUnderMouse::Activate()
 
 void UTargetDataUnderMouse::SendMouseCursor()
 {
-
+    //获取要发送的数据TargetData
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 	
 	FHitResult Hit;
@@ -61,7 +61,7 @@ void UTargetDataUnderMouse::SendMouseCursor()
 		FGameplayTag(),
 		AbilitySystemComponent->ScopedPredictionKey);
 
-	if (ShouldBroadcastAbilityTaskDelegates())//判断当前Ability是否还在激活状态
+	if (ShouldBroadcastAbilityTaskDelegates())//判断当前Ability是否还在激活状态，本地广播数据
 	{
 		ValiedData.Broadcast(DataHandle);
 	}
@@ -74,7 +74,7 @@ void UTargetDataUnderMouse::OnTargetDataReplicatedCallBacks(const FGameplayAbili
 	//通知ASC已经收到复制过来的TargetData,ASC的缓存可以被清除了
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(),GetActivationPredictionKey());
 	if (ShouldBroadcastAbilityTaskDelegates())
-	{
+	{//将从客户端收到的数据广播出去
 		ValiedData.Broadcast(DataHandle);
 	}
 }

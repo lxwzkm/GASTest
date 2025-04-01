@@ -19,6 +19,6 @@ void UGAST_AssetManager::StartInitialLoading()
 
 	FGameplayTags::InitializeGameplayTags();
 
-	//初始化TargetData
+	//初始化TargetData  5.4版本不需要调了
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }

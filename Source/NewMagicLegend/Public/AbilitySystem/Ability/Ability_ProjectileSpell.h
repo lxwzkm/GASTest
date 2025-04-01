@@ -21,7 +21,7 @@ protected:
 	 * 生成发射物的函数，蓝图调用
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SpawnPrijectile();
+	void SpawnPrijectile(const FVector& TargetLocation);
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AGAST_Projectile> ProjectileClass;

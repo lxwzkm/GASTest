@@ -15,16 +15,18 @@ void UAbility_ProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle 
 
 }
 
-void UAbility_ProjectileSpell::SpawnPrijectile()
+void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 {
 	bool IsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!IsServer)return;
 
 	ICombatInterface* CombatInterface=Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	FVector SocketLocation=CombatInterface->GetWeaponSocketLocation();
+	FRotator Rotation=(TargetLocation-SocketLocation).Rotation();
+	Rotation.Pitch=0.f;
 	FTransform SpawnTranform;
 	SpawnTranform.SetLocation(SocketLocation);
-	//TODO:设置Rotation
+	SpawnTranform.SetRotation(Rotation.Quaternion());
 	
 	AGAST_Projectile*ProjectileSpawn= GetWorld()->SpawnActorDeferred<AGAST_Projectile>(
 		ProjectileClass,SpawnTranform,

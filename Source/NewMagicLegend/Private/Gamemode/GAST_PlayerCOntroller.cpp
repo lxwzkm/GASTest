@@ -89,7 +89,7 @@ void AGAST_PlayerCOntroller::AbilityInputPressed(FGameplayTag InputTag)
 }
 
 void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
-{
+{//只要输入的不是左键，就直接释放技能，因为普通输入没有Tag传入
 	if (!InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
 	{
 		if (GetASC())
@@ -98,8 +98,8 @@ void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
 		}
 		return;
 	}
-	
-	if (bTargeting)
+	//如果敌人高亮或shift被按下就释放技能，否则就移动
+	if (bTargeting||bShiftPressed)
 	{
 		if (GetASC())
 		{
@@ -130,15 +130,10 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 		}
 		return;
 	}
-	
-	if (bTargeting)
-	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputReleased(InputTag);
-		}
-	}
-	else
+	//输入是鼠标左键，直接通知ASC释放按键释放的技能
+	GetASC()->AbilityInputReleased(InputTag);
+	//如果敌人没有高亮且shift按键也松开了，移动到鼠标点击的目的地
+	if (!bTargeting&&!bShiftPressed)
 	{
 		APawn* ControlledPawn=GetPawn();
 		if (FollowTime<=ShortPressThread&&ControlledPawn)
@@ -197,6 +192,8 @@ void AGAST_PlayerCOntroller::SetupInputComponent()
 	//首先获取增强输入组件，InputComponent继承自父类，之后通过组件来绑定输入操作
 	UGAST_EnhancedInputComponent*EnhancedInputComponent=CastChecked<UGAST_EnhancedInputComponent>(InputComponent);
 	EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&AGAST_PlayerCOntroller::Move);
+	EnhancedInputComponent->BindAction(ShiftAction,ETriggerEvent::Started,this,&AGAST_PlayerCOntroller::ShiftPressed);
+	EnhancedInputComponent->BindAction(ShiftAction,ETriggerEvent::Completed,this,&AGAST_PlayerCOntroller::ShiftReleased);
 	//调用GAST_EnhancedInputComponent中的绑定函数，将InputConfig中的输入行为、Tag与回调函数进行绑定
 	EnhancedInputComponent->BindAbilityActions(InputConfig,this,&ThisClass::AbilityInputPressed,&ThisClass::AbilityInputHeld,&ThisClass::AbilityInputReleased);
 }
