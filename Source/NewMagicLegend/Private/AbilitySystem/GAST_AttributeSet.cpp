@@ -158,6 +158,7 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectM
 	if (Data.EvaluatedData.Attribute==GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
+		UE_LOG(LogTemp,Warning,TEXT("血量变化来自%s,血量：%f"),*EffectProperties.TargetAvatarActor->GetName(),GetHealth());
 	}
 	if (Data.EvaluatedData.Attribute==GetManaAttribute())
 	{

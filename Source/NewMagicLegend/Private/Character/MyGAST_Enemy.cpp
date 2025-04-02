@@ -48,4 +48,6 @@ void AMyGAST_Enemy::InitActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UGAST_AbilitySystemComponent>(AbilitySystemComponent)->AbilitySystemComponentSet();//通知已经初始化完成，可以进行委托绑定了
 
+	InitializeAttributes();
+
 }

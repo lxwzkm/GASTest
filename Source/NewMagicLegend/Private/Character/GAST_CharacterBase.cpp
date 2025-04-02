@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "NewMagicLegend/NewMagicLegend.h"
 
 AGAST_CharacterBase::AGAST_CharacterBase()
 {
@@ -14,6 +15,8 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile,ECR_Overlap);
+	GetMesh()->SetGenerateOverlapEvents(true);
 
 	/* 武器基类设置 */
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//实例化组件

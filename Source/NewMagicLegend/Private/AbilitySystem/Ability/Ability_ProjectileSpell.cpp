@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Ability/Ability_ProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Actor/GAST_Projectile.h"
 #include "Interaction/CombatInterface.h"
 
@@ -21,7 +23,7 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 	if (!IsServer)return;
 
 	ICombatInterface* CombatInterface=Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
-	FVector SocketLocation=CombatInterface->GetWeaponSocketLocation();
+	const FVector SocketLocation=CombatInterface->GetWeaponSocketLocation();
 	FRotator Rotation=(TargetLocation-SocketLocation).Rotation();
 	Rotation.Pitch=0.f;
 	FTransform SpawnTranform;
@@ -34,7 +36,9 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 		Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
-	//TODO:应用gameplayeffect
+	const UAbilitySystemComponent*SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+	const FGameplayEffectSpecHandle SpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+	ProjectileSpawn->DamageSpecHandle=SpecHandle;
 
 	ProjectileSpawn->FinishSpawning(SpawnTranform);
 }

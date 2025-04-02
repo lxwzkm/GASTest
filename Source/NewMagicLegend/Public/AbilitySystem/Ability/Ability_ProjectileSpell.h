@@ -7,6 +7,8 @@
 #include "Ability_ProjectileSpell.generated.h"
 
 class AGAST_Projectile;
+class UGameplayEffect;
+
 /**
  * 
  */
@@ -25,4 +27,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AGAST_Projectile> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect>DamageEffectClass;
 };
