@@ -70,7 +70,6 @@ void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AA
 		if (UAbilitySystemComponent* TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			TargetASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),TargetASC);
-			UE_LOG(LogTemp,Warning,TEXT("TargetASC:%s,Damage:%s"),*TargetASC->GetName(),*DamageSpecHandle.Data.Get()->Def.GetName());
 		}
 		
 		Destroy();

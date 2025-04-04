@@ -5,6 +5,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
+#include "AbilitySystem/GAST_AttributeSet.h"
+#include "Components/WidgetComponent.h"
+#include "UI/Widget/GAST_UserWidgetBase.h"
 
 AMyGAST_Enemy::AMyGAST_Enemy()
 {
@@ -13,7 +16,11 @@ AMyGAST_Enemy::AMyGAST_Enemy()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);//AIController按照最小模式复制
 
-	AttributeSet=CreateDefaultSubobject<UAttributeSet>("AttributeSet");
+	AttributeSet=CreateDefaultSubobject<UGAST_AttributeSet>("AttributeSet");
+
+	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+	HealthBar->SetupAttachment(GetRootComponent());
+	
 }
 
 void AMyGAST_Enemy::BeginPlay()
@@ -21,6 +28,27 @@ void AMyGAST_Enemy::BeginPlay()
 	Super::BeginPlay();
 	
 	InitActorInfo();
+
+	if (UGAST_UserWidgetBase* WidgetBase= Cast<UGAST_UserWidgetBase>(HealthBar->GetUserWidgetObject()))
+	{
+		WidgetBase->SetUserWidgetController(this);
+	}
+
+	if (UGAST_AttributeSet*AS= Cast<UGAST_AttributeSet>(AttributeSet))
+	{
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetHealthAttribute()).AddLambda(
+[this](const FOnAttributeChangeData& Data){OnHealthChangedDelegate.Broadcast(Data.NewValue);}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AS->GetMaxHealthAttribute()).AddLambda(
+[this](const FOnAttributeChangeData& Data){OnMaxHealthChangedDelegate.Broadcast(Data.NewValue);}
+		);
+		
+		
+		OnHealthChangedDelegate.Broadcast(AS->GetHealth());
+		OnMaxHealthChangedDelegate.Broadcast(AS->GetMaxHealth());
+	}
 }
 
 void AMyGAST_Enemy::HightlightActor()

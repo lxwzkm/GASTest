@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "Character/GAST_CharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "MyGAST_Enemy.generated.h"
+
+class UWidgetComponent;
 
 /**
  * 
@@ -24,6 +27,17 @@ public:
 
 	/*--------CombatInterface-------*/
 	virtual int32 GetPlayerLevel() override;
+
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent>HealthBar;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnHealthChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangeSignature OnMaxHealthChangedDelegate;
+	
 protected:
 	
 	virtual void InitActorInfo() override;//重写父类初始化参数的虚函数
