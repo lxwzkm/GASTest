@@ -6,6 +6,7 @@
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Input/GAST_InputConfig.h"
+#include "UI/Widget/GAST_FloatTextWidgetComponent.h"
 #include "GAST_PlayerCOntroller.generated.h"
 
 class USplineComponent;
@@ -23,6 +24,10 @@ class NEWMAGICLEGEND_API AGAST_PlayerCOntroller : public APlayerController
 	GENERATED_BODY()
 public:
 	AGAST_PlayerCOntroller();
+
+	UFUNCTION(Client,Reliable)
+	void ShowFloatingText(float Damage,ACharacter* TargetCharacter);
+	
 protected:
 	/* ----系统自带的虚函数重写---- */
 	virtual void PlayerTick(float DeltaTime) override;
@@ -49,6 +54,8 @@ private:
 
 	void CursorTrace();//内部给PlayerTick调用的函数，主要用来处理鼠标下面是否是敌人来显示或删除高光
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGAST_FloatTextWidgetComponent>FloatingTextComponent;
 
 	/**
 	 * @brief AbilityInput的回调

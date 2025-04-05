@@ -7,7 +7,9 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"//FGameplayEffectModCallbackData类型必须包含该头文件
 #include "GameFramework/Character.h"
+#include "Gamemode/GAST_PlayerCOntroller.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 UGAST_AttributeSet::UGAST_AttributeSet()
@@ -193,6 +195,13 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 				{
 					CombatInterface->Die();
 				}
+			}
+
+			//TODO:生成展示伤害数字的WidgetComponent
+			if (EffectProperties.SourceCharacter!=EffectProperties.TargetCharacter)
+			{
+				AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(EffectProperties.SourceController);
+				PC->ShowFloatingText(LocalDamage,EffectProperties.TargetCharacter);
 			}
 		}
 	}

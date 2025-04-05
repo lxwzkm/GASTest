@@ -9,6 +9,7 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/Character.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Input/GAST_EnhancedInputComponent.h"
 #include "Interaction/EnemyInterface.h"
@@ -18,6 +19,18 @@ AGAST_PlayerCOntroller::AGAST_PlayerCOntroller()
 	bReplicates=true;//可以被复制到客户端
 
 	SplineComponent=CreateDefaultSubobject<USplineComponent>("Spline");//实例化样条曲线
+}
+
+void AGAST_PlayerCOntroller::ShowFloatingText_Implementation(float Damage, ACharacter* TargetCharacter)
+{
+	if (IsValid(TargetCharacter)&&FloatingTextComponent)
+	{
+		UGAST_FloatTextWidgetComponent*DamageComponent= NewObject<UGAST_FloatTextWidgetComponent>(TargetCharacter,FloatingTextComponent);
+		DamageComponent->RegisterComponent();
+		DamageComponent->AttachToComponent(TargetCharacter->GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);
+		DamageComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageComponent->SetDamageText(Damage);
+	}
 }
 
 void AGAST_PlayerCOntroller::PlayerTick(float DeltaTime)
