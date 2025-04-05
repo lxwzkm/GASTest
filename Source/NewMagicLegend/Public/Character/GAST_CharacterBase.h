@@ -22,11 +22,14 @@ public:
 	AGAST_CharacterBase();
 	/*-------IAbilitySystemInterface-------*/
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	/*-------IAbilitySystemInterface  end-------*/
 	UAttributeSet* GetAttributeSet()const;
-	
-	/*-------IAbilitySystemInterface  end-------*/
 	virtual FVector GetWeaponSocketLocation() override;
+	/*-------CombatInterface-------*/
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual void Die() override;//处理角色死亡事件，只在服务器调用
+
+	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
+	virtual void Multicast_HandleDie();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -59,12 +62,32 @@ protected:
 	//将属性效果应用在自己身上
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect>GameplayEffect,int level);
 	//初始化属性
-	void InitializeAttributes();
+	virtual void InitializeAttributes();
 	//激活角色技能
 	void GiveCharacterAbilites();
+
+	/**
+	 * Dissove效果
+	 */
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Dissove")
+	TObjectPtr<UMaterialInstance>DissoveMaterialInstance;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Dissove")
+	TObjectPtr<UMaterialInstance>WeaponDissoveMaterialInstance;
+
+	void Dissove();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissove(UMaterialInstanceDynamic* DynamicMaterila);
+	UFUNCTION(BlueprintImplementableEvent)
+	void WeaponStartDissove(UMaterialInstanceDynamic* DynamicMaterila);
 
 private:
 
 	UPROPERTY(EditAnywhere,Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;//用来保存初始技能
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage>HitReactMontage;
 };

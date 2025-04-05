@@ -7,6 +7,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"//FGameplayEffectModCallbackData类型必须包含该头文件
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
 #include "Net/UnrealNetwork.h"
 
 UGAST_AttributeSet::UGAST_AttributeSet()
@@ -27,6 +28,7 @@ UGAST_AttributeSet::UGAST_AttributeSet()
 	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxHealth,GetMaxHealthAttribute);
 	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxMana,GetMaxManaAttribute);
 }
+
 
 void UGAST_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
@@ -108,6 +110,7 @@ void UGAST_AttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& Ol
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,ManaRegeneration,OldManaRegeneration);
 }
 
+
 void UGAST_AttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -145,10 +148,12 @@ void UGAST_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute,
 	{
 		NewValue=FMath::Clamp(NewValue,0.f,GetMaxMana());
 	}
+
+	
 	
 }
 
-void UGAST_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -158,11 +163,38 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectM
 	if (Data.EvaluatedData.Attribute==GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
-		UE_LOG(LogTemp,Warning,TEXT("血量变化来自%s,血量：%f"),*EffectProperties.TargetAvatarActor->GetName(),GetHealth());
 	}
 	if (Data.EvaluatedData.Attribute==GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(),0.f,GetMaxMana()));
+	}
+
+	if (Data.EvaluatedData.Attribute==GetIncomingDamageAttribute())
+	{
+		const float LocalDamage=GetIncomingDamage();
+		SetIncomingDamage(0.f);
+
+		if (LocalDamage>0.f)
+		{
+			const float NewHealth=GetHealth()-LocalDamage;
+			SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
+
+			const bool bFatal=NewHealth<=0.f;//是否是致命伤害
+			if (!bFatal)
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FGameplayTags::Get().Effect_HitReact);
+				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+			else
+			{
+				ICombatInterface* CombatInterface= Cast<ICombatInterface>(EffectProperties.TargetAvatarActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Die();
+				}
+			}
+		}
 	}
 }
 

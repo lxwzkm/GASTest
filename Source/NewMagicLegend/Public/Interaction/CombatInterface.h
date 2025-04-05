@@ -25,6 +25,13 @@ public:
 	virtual int32 GetPlayerLevel();
 	virtual FVector GetWeaponSocketLocation();
 
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	UAnimMontage* GetHitReactMontage();
+
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void UpdateWarppingTarget(const FVector& TargetLocation);
+
+	virtual void Die()=0;
+
+	
 };

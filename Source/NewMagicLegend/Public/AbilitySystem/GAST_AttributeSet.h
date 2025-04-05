@@ -115,6 +115,12 @@ public:
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,Mana);
 
+	/*---------------------  Meta Attributes  --------------------*/
+	//占位符，只在服务器帮助计算，不复制到客户端
+	UPROPERTY(BlueprintReadOnly,Category="Meta Attribute")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,IncomingDamage);
+
 	
 	
 	//3、书写通知ASC的调用函数  当服务器更改数据时,通知客户端

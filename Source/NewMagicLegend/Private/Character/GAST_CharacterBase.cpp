@@ -39,6 +39,32 @@ FVector AGAST_CharacterBase::GetWeaponSocketLocation()
 	return Weapon->GetSocketLocation(WeaponSocketName);
 }
 
+UAnimMontage* AGAST_CharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
+void AGAST_CharacterBase::Die()
+{
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld,true));
+	Multicast_HandleDie();
+}
+
+void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
+{
+	Weapon->SetEnableGravity(true);
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Dissove();
+}
+
 void AGAST_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -73,5 +99,21 @@ void AGAST_CharacterBase::GiveCharacterAbilites()
 
 	UGAST_AbilitySystemComponent*ASC=CastChecked<UGAST_AbilitySystemComponent>(AbilitySystemComponent);
 	ASC->GiveCharacterAbilities(StartupAbilities);
+}
+
+void AGAST_CharacterBase::Dissove()
+{
+	if (IsValid(DissoveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* Dynamicinst= UMaterialInstanceDynamic::Create(DissoveMaterialInstance,this);
+		GetMesh()->SetMaterial(0,Dynamicinst);
+		StartDissove(Dynamicinst);
+	}
+	if (IsValid(WeaponDissoveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* WeaponDynamicinst=UMaterialInstanceDynamic::Create(WeaponDissoveMaterialInstance,this);
+		Weapon->SetMaterial(0,WeaponDynamicinst);
+		WeaponStartDissove(WeaponDynamicinst);
+	}
 }
 

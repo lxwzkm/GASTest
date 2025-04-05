@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+class UAbilitySystemComponent;
+enum class ECharacterClass;
 class UAttributeMenuWidgetController;
 class UOverlayWidgetController;
 /**
@@ -22,4 +24,13 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(UObject* WordContext);
+
+	/**
+	 * 初始化属性（敌人）
+	 */
+	static void InitializeDefaultsAttributes(const UObject* WordContext,ECharacterClass CharacterClass,float Level,UAbilitySystemComponent*ASC);
+	/*
+	 * 初始化敌人技能
+	 */
+	static void InitializeDefaultsAbilities(const UObject*WordContext,UAbilitySystemComponent* ASC);
 };

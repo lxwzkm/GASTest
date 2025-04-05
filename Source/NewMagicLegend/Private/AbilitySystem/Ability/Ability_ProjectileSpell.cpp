@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Actor/GAST_Projectile.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 void UAbility_ProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -38,6 +39,11 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 	
 	const UAbilitySystemComponent*SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 	const FGameplayEffectSpecHandle SpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+
+	FGameplayTags GameplayTags= FGameplayTags::Get();
+	const float ScaleDamage= Damage.GetValueAtLevel(40);
+	
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Damage,ScaleDamage);
 	ProjectileSpawn->DamageSpecHandle=SpecHandle;
 
 	ProjectileSpawn->FinishSpawning(SpawnTranform);
