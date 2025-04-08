@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Ability/GAST_GameplayAbilityBase.h"
+#include "AbilitySystem/Ability/DamageGameplayAbility.h"
 #include "Ability_ProjectileSpell.generated.h"
 
 class AGAST_Projectile;
@@ -13,7 +13,7 @@ class UGameplayEffect;
  * 
  */
 UCLASS()
-class NEWMAGICLEGEND_API UAbility_ProjectileSpell : public UGAST_GameplayAbilityBase
+class NEWMAGICLEGEND_API UAbility_ProjectileSpell : public UDamageGameplayAbility
 {
 	GENERATED_BODY()
 protected:
@@ -27,7 +27,5 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AGAST_Projectile> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect>DamageEffectClass;
+	
 };

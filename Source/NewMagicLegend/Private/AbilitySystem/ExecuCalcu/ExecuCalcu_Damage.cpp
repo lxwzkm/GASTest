@@ -75,7 +75,12 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 	EvaluateParameters.TargetTags=OwningSpec.CapturedTargetTags.GetAggregatedTags();
 
 	//获取SetByCall的伤害
-	float Damage= OwningSpec.GetSetByCallerMagnitude(FGameplayTags::Get().Damage);
+	float Damage=0.f;
+	for (FGameplayTag DamageTypeTag:FGameplayTags::Get().DamageTypes)
+	{
+		float TempDamage= OwningSpec.GetSetByCallerMagnitude(DamageTypeTag);
+		Damage+=TempDamage;
+	}
 	//是否被格挡
 	float BlockChance=0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetMyDamageStatics().BlockChanceDef,EvaluateParameters,BlockChance);

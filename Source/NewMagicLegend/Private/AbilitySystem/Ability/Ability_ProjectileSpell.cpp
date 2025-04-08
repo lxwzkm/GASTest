@@ -41,23 +41,23 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 	FGameplayEffectContextHandle ContextHandle=SourceASC->MakeEffectContext();
 	
 	//尝试填充Context
-	// ContextHandle.SetAbility(this);
-	// ContextHandle.AddSourceObject(ProjectileSpawn);
-	// TArray<TWeakObjectPtr<AActor>>Actors;
-	// ContextHandle.AddActors(Actors);
-	// FHitResult Hit;
-	// Hit.Location=TargetLocation;
-	// ContextHandle.AddHitResult(Hit);
+	ContextHandle.SetAbility(this);
+	ContextHandle.AddSourceObject(ProjectileSpawn);
+	TArray<TWeakObjectPtr<AActor>>Actors;
+	ContextHandle.AddActors(Actors);
+	FHitResult Hit;
+	Hit.Location=TargetLocation;
+	ContextHandle.AddHitResult(Hit);
 	
 	const FGameplayEffectSpecHandle SpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),ContextHandle);
 	
-
-	FGameplayTags GameplayTags= FGameplayTags::Get();
-	const float ScaleDamage= Damage.GetValueAtLevel(20);
-
-	/** Sets a gameplay tag Set By Caller magnitude value */
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Damage,ScaleDamage);
+	for (auto & pair:DamageTypes)
+	{
+		const float ScaleDamage= pair.Value.GetValueAtLevel(20);
+		/** Sets a gameplay tag Set By Caller magnitude value  将Tag与伤害绑定在一起，存在spechandle里  SetByCaller是一个键值对 */
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,pair.Key,ScaleDamage);
+	}
+	
 	ProjectileSpawn->DamageSpecHandle=SpecHandle;
-
 	ProjectileSpawn->FinishSpawning(SpawnTranform);
 }
