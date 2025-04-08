@@ -6,6 +6,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"//FGameplayEffectModCallbackData类型必须包含该头文件
+#include "GAST_AbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Gamemode/GAST_PlayerCOntroller.h"
 #include "Interaction/CombatInterface.h"
@@ -31,7 +32,7 @@ UGAST_AttributeSet::UGAST_AttributeSet()
 	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxMana,GetMaxManaAttribute);
 }
 
-
+#pragma region OnRep_函数
 void UGAST_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,Health,OldHealth);
@@ -51,7 +52,7 @@ void UGAST_AttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,MaxMana,OldMaxMana);
 }
-/*------------------------------------------------------------------------------------o*/
+/*------------------------------------------------------------------------------------*/
 void UGAST_AttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,Strength,OldStrength);
@@ -111,7 +112,7 @@ void UGAST_AttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& Ol
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,ManaRegeneration,OldManaRegeneration);
 }
-
+#pragma endregion 
 
 void UGAST_AttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -197,14 +198,24 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 				}
 			}
 
-			//TODO:生成展示伤害数字的WidgetComponent
-			if (EffectProperties.SourceCharacter!=EffectProperties.TargetCharacter)
-			{
-				AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(EffectProperties.SourceController);
-				PC->ShowFloatingText(LocalDamage,EffectProperties.TargetCharacter);
-			}
+			
+			const bool bIsBlockedHit=UGAST_AbilitySystemLibrary::IsBlockedHit(EffectProperties.GameplayEffectContextHandle);
+			const bool bIsCriticalHit=UGAST_AbilitySystemLibrary::IsCriticalHit(EffectProperties.GameplayEffectContextHandle);
+			ShowFloatingText(EffectProperties,LocalDamage,bIsBlockedHit,bIsCriticalHit);
 		}
 	}
+}
+
+void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bIsBlockedHit,
+	bool bIsCriticalHit)
+{
+	if (Props.SourceCharacter!=Props.TargetCharacter)
+	{
+		AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.SourceController);
+		PC->ShowFloatingText(Damage,Props.TargetCharacter,bIsBlockedHit,bIsCriticalHit);
+	}
+
+	
 }
 
 void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,
@@ -213,7 +224,7 @@ void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallb
 	
 	
 	Props.GameplayEffectContextHandle=Data.EffectSpec.GetContext();
-	Props.SourceASC=Data.EffectSpec.GetContext().GetOriginalInstigatorAbilitySystemComponent();
+	Props.SourceASC=Props.GameplayEffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 	if (IsValid(Props.SourceASC)&&Props.SourceASC->AbilityActorInfo.IsValid()&&IsValid(Props.SourceASC->AbilityActorInfo->AvatarActor.Get()))
 	{
 		Props.SourceAvatarActor=Props.SourceASC->AbilityActorInfo->AvatarActor.Get();

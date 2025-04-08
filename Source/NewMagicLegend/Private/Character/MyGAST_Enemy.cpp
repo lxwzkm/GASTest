@@ -29,9 +29,12 @@ AMyGAST_Enemy::AMyGAST_Enemy()
 void AMyGAST_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	InitActorInfo();
-	UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(this,AbilitySystemComponent);
+	if (HasAuthority())
+	{
+		UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(this,AbilitySystemComponent);
+	}
 
 	GetCharacterMovement()->MaxWalkSpeed=BaseWalkSpeed;
 
@@ -104,12 +107,15 @@ void AMyGAST_Enemy::Multicast_HandleDie()
 
 void AMyGAST_Enemy::InitActorInfo()
 {
-	//初始化ASC的OwnerActor和AvatarActor
+	//初始化ASC的OwnerActor和AvatarActor  客户端服务器都调用
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UGAST_AbilitySystemComponent>(AbilitySystemComponent)->AbilitySystemComponentSet();//通知已经初始化完成，可以进行委托绑定了
 
-	InitializeAttributes();
-
+	if (HasAuthority())
+	{
+		InitializeAttributes();
+	}
+	
 }
 
 void AMyGAST_Enemy::InitializeAttributes()

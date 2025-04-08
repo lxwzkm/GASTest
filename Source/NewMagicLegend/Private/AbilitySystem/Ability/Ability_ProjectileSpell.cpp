@@ -38,11 +38,24 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
 	const UAbilitySystemComponent*SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-	const FGameplayEffectSpecHandle SpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+	FGameplayEffectContextHandle ContextHandle=SourceASC->MakeEffectContext();
+	
+	//尝试填充Context
+	// ContextHandle.SetAbility(this);
+	// ContextHandle.AddSourceObject(ProjectileSpawn);
+	// TArray<TWeakObjectPtr<AActor>>Actors;
+	// ContextHandle.AddActors(Actors);
+	// FHitResult Hit;
+	// Hit.Location=TargetLocation;
+	// ContextHandle.AddHitResult(Hit);
+	
+	const FGameplayEffectSpecHandle SpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),ContextHandle);
+	
 
 	FGameplayTags GameplayTags= FGameplayTags::Get();
-	const float ScaleDamage= Damage.GetValueAtLevel(40);
-	
+	const float ScaleDamage= Damage.GetValueAtLevel(20);
+
+	/** Sets a gameplay tag Set By Caller magnitude value */
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Damage,ScaleDamage);
 	ProjectileSpawn->DamageSpecHandle=SpecHandle;
 

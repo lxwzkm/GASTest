@@ -16,5 +16,5 @@ class NEWMAGICLEGEND_API UGAST_FloatTextWidgetComponent : public UWidgetComponen
 public:
 
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
-	void SetDamageText(float Damge);
+	void SetDamageText(float Damge, bool bIsBlockedHit,bool bIsCriticalHit);
 };

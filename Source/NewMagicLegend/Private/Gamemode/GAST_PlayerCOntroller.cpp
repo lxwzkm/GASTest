@@ -21,15 +21,15 @@ AGAST_PlayerCOntroller::AGAST_PlayerCOntroller()
 	SplineComponent=CreateDefaultSubobject<USplineComponent>("Spline");//实例化样条曲线
 }
 
-void AGAST_PlayerCOntroller::ShowFloatingText_Implementation(float Damage, ACharacter* TargetCharacter)
+void AGAST_PlayerCOntroller::ShowFloatingText_Implementation(float Damage, ACharacter* TargetCharacter, bool bIsBlockedHit,bool bIsCriticalHit)
 {
-	if (IsValid(TargetCharacter)&&FloatingTextComponent)
+	if (IsValid(TargetCharacter)&&FloatingTextComponent&&IsLocalController())
 	{
 		UGAST_FloatTextWidgetComponent*DamageComponent= NewObject<UGAST_FloatTextWidgetComponent>(TargetCharacter,FloatingTextComponent);
 		DamageComponent->RegisterComponent();
 		DamageComponent->AttachToComponent(TargetCharacter->GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);
 		DamageComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		DamageComponent->SetDamageText(Damage);
+		DamageComponent->SetDamageText(Damage,bIsBlockedHit,bIsCriticalHit);
 	}
 }
 

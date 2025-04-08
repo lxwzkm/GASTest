@@ -169,4 +169,6 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 private:
 	void SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props);
+
+	void ShowFloatingText(const FEffectProperties& Props,float Damage,bool bIsBlockedHit,bool bIsCriticalHit);
 };

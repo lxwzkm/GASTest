@@ -26,7 +26,7 @@ public:
 	AGAST_PlayerCOntroller();
 
 	UFUNCTION(Client,Reliable)
-	void ShowFloatingText(float Damage,ACharacter* TargetCharacter);
+	void ShowFloatingText(float Damage,ACharacter* TargetCharacter, bool bIsBlockedHit,bool bIsCriticalHit);
 	
 protected:
 	/* ----系统自带的虚函数重写---- */

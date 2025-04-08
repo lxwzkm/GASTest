@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/CharacterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
 enum class ECharacterClass;
 class UAttributeMenuWidgetController;
@@ -19,10 +21,10 @@ class NEWMAGICLEGEND_API UGAST_AbilitySystemLibrary : public UBlueprintFunctionL
 	GENERATED_BODY()
 public:
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure,Category="UI")
 	static UOverlayWidgetController* GetOverlayWidgetController(UObject* WordContext);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure,Category="UI")
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(UObject* WordContext);
 
 	/**
@@ -33,4 +35,23 @@ public:
 	 * 初始化敌人技能
 	 */
 	static void InitializeDefaultsAbilities(const UObject*WordContext,UAbilitySystemComponent* ASC);
+
+	/*
+	 * 获取CharacterClassInfo
+	 */
+	UFUNCTION(BlueprintCallable,Category="Character")
+	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WordContext);
+
+	/**
+	 * 处理自定义的GameplayEffectContext事件
+	 */
+	UFUNCTION(BlueprintPure,Category="Context")
+	static bool IsBlockedHit(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static bool IsCriticalHit(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsBlocked);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsCritical);
 };
