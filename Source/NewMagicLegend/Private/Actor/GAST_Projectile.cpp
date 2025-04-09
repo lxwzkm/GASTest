@@ -60,9 +60,14 @@ void AGAST_Projectile::BeginPlay()
 
 void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AActor* OtherActor,UPrimitiveComponent* OtherComp,int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
 {
-	UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-	if (LoopSoundComponent) LoopSoundComponent->Stop();
+	if (DamageSpecHandle.Data.Get()&&DamageSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser()==OtherActor)return;
+
+	if (!bHit)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
+		if (LoopSoundComponent) LoopSoundComponent->Stop();
+	}
 
 	if (HasAuthority())
 	{

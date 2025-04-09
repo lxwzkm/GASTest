@@ -30,6 +30,11 @@ UGAST_AttributeSet::UGAST_AttributeSet()
 	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_ManaRegeneration,GetManaRegenerationAttribute);
 	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxHealth,GetMaxHealthAttribute);
 	TagsToAttribute.Add( FGameplayTags::Get().Attributes_Secondary_MaxMana,GetMaxManaAttribute);
+
+	TagsToAttribute.Add(FGameplayTags::Get().Attributes_Resistance_Fire,GetFireResistanceAttribute);
+	TagsToAttribute.Add(FGameplayTags::Get().Attributes_Resistance_Lightning,GetLightningResistanceAttribute);
+	TagsToAttribute.Add(FGameplayTags::Get().Attributes_Resistance_Arcane,GetArcaneResistanceAttribute);
+	TagsToAttribute.Add(FGameplayTags::Get().Attributes_Resistance_Physical,GetPhysicalResistanceAttribute);
 }
 
 #pragma region OnRep_函数
@@ -52,6 +57,28 @@ void UGAST_AttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,MaxMana,OldMaxMana);
 }
+
+void UGAST_AttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,FireResistance,OldFireResistance);
+}
+
+void UGAST_AttributeSet::OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,LightningResistance,OldLightningResistance);
+}
+
+
+void UGAST_AttributeSet::OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,ArcaneResistance,OldArcaneResistance);
+}
+
+void UGAST_AttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGAST_AttributeSet,PhysicalResistance,OldPhysicalResistance);
+}
+
 /*------------------------------------------------------------------------------------*/
 void UGAST_AttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength)
 {
@@ -137,6 +164,11 @@ void UGAST_AttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,CriticalHitResistance,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,HealthRegeneration,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,ManaRegeneration,COND_None,REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,FireResistance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,LightningResistance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,ArcaneResistance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGAST_AttributeSet,PhysicalResistance,COND_None,REPNOTIFY_Always);
 }
 
 void UGAST_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)

@@ -25,6 +25,8 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 
 	ICombatInterface* CombatInterface=Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	const FVector SocketLocation=CombatInterface->GetWeaponSocketLocation();
+	
+	
 	FRotator Rotation=(TargetLocation-SocketLocation).Rotation();
 	Rotation.Pitch=0.f;
 	FTransform SpawnTranform;

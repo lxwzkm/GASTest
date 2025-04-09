@@ -25,9 +25,9 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 	{
 		ASC->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
 [this,Pair,AttributeSet](const FOnAttributeChangeData& Data)
-{
-	BroadcastAttributeInfo(Pair.Value(),Pair.Key);
-}
+			{
+				BroadcastAttributeInfo(Pair.Value(),Pair.Key);
+			}
 		);
 	}
 }

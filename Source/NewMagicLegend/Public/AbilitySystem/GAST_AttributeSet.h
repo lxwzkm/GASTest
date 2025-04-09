@@ -58,7 +58,7 @@ class NEWMAGICLEGEND_API UGAST_AttributeSet : public UAttributeSet
 public:
 	UGAST_AttributeSet();
 	
-	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttribute;
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttribute;//用来帮助广播Tag和属性
 
 	/*---------------------  Primary Attributes  --------------------*/
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_Strength,Category="Primary Attributes")
@@ -105,6 +105,19 @@ public:
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_MaxMana,Category="Vital Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,MaxMana);
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_FireResistance,Category="Resitance Attributes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,FireResistance);
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_LightningResistance,Category="Resitance Attributes")
+	FGameplayAttributeData LightningResistance;
+	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,LightningResistance);
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_ArcaneResistance,Category="Resitance Attributes")
+	FGameplayAttributeData ArcaneResistance;
+	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,ArcaneResistance);
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_PhysicalResistance,Category="Resitance Attributes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,PhysicalResistance);
 	
 	/*---------------------  Vital Attributes  --------------------*/
 	//1、设置属性变量  可以复制给客户端
@@ -159,6 +172,15 @@ public:
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana);
+
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance);
+	UFUNCTION()
+	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance);
+	UFUNCTION()
+	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance);
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance);
 	
 
 	//2、重写控制LifeTime的函数,控制那些变量可以在服务器和客户端之间同步，任何有需要从服务器赋值到客户端的变量都要重写此函数
