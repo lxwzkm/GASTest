@@ -16,6 +16,9 @@ AGAST_EffectActor::AGAST_EffectActor()
 
 void AGAST_EffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> Effect)
 {//1 获取目标人物的ASC  2 让目标人物的ASC将效果应用在自己身上
+
+	if (TargetActor->ActorHasTag("Enemy")&&!bApplyEffectToEnemy)return;
+	
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	if (TargetASC==nullptr)return;
 
@@ -30,6 +33,10 @@ void AGAST_EffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGa
 	{
 		ActiveInfiniteEffects.Add(ActiveEffectHandle,TargetASC);
 	}
+	if (!bIsInfinite)
+	{
+		Destroy();
+	}
 }
 
 
@@ -41,6 +48,8 @@ void AGAST_EffectActor::BeginPlay()
 
 void AGAST_EffectActor::OnOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag("Enemy")&&!bApplyEffectToEnemy)return;
+	
 	if (InstantApplyEffectPolicy==EApplyEffectPolicy::ApplyOnOverlap)
 	{
 		ApplyEffectToTarget(TargetActor,InstantGameplayEffect);
@@ -57,6 +66,8 @@ void AGAST_EffectActor::OnOverlap(AActor* TargetActor)
 
 void AGAST_EffectActor::OnEndOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag("Enemy")&&!bApplyEffectToEnemy)return;
+	
 	if (InstantApplyEffectPolicy==EApplyEffectPolicy::ApplyOnEndOverlap)
 	{
 		ApplyEffectToTarget(TargetActor,InstantGameplayEffect);
@@ -74,7 +85,7 @@ void AGAST_EffectActor::OnEndOverlap(AActor* TargetActor)
 		UAbilitySystemComponent* TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 
 		TArray<FActiveGameplayEffectHandle> RemoveHandle;//用来记录需要移除的效果的数组
-		for (auto PairHandle:ActiveInfiniteEffects)
+		for (TTuple<FActiveGameplayEffectHandle, UAbilitySystemComponent*> PairHandle:ActiveInfiniteEffects)
 		{//遍历Map找到需要移除的效果，记录在RemoveHandle数组内
 			if (TargetASC==PairHandle.Value)
 			{
@@ -82,7 +93,7 @@ void AGAST_EffectActor::OnEndOverlap(AActor* TargetActor)
 				RemoveHandle.Add(PairHandle.Key);
 			}
 		}
-		for (auto Handle:RemoveHandle)
+		for (auto& Handle:RemoveHandle)
 		{
 			ActiveInfiniteEffects.FindAndRemoveChecked(Handle);
 		}

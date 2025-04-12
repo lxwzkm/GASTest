@@ -10,6 +10,8 @@
 #include "MyGAST_Enemy.generated.h"
 
 
+class AGAST_AIController;
+class UBehaviorTree;
 class UWidgetComponent;
 
 /**
@@ -22,6 +24,7 @@ class NEWMAGICLEGEND_API AMyGAST_Enemy : public AGAST_CharacterBase,public IEnem
 public:
 	AMyGAST_Enemy();
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 	
 	/*--------EnemyInterface-------*/
 	virtual void HightlightActor() override;//高亮显示的函数
@@ -63,5 +66,11 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="EnemyClassDefaults")
 	ECharacterClass CharacterClass=ECharacterClass::Warrior;
+
+	UPROPERTY(EditAnywhere,Category="AI")
+	TObjectPtr<UBehaviorTree>AIBehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AGAST_AIController>MyAIController;
 	
 };

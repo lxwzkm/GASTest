@@ -7,6 +7,9 @@
 #include "GAST_AbilitySystemLibrary.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AttributeSet.h"
+#include "AI/GAST_AIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
@@ -23,6 +26,11 @@ AMyGAST_Enemy::AMyGAST_Enemy()
 
 	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	
 }
 
@@ -61,10 +69,23 @@ void AMyGAST_Enemy::BeginPlay()
 	}
 }
 
+void AMyGAST_Enemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!HasAuthority())return;
+	MyAIController=Cast<AGAST_AIController>(NewController);
+	MyAIController->GetBlackboardComponent()->InitializeBlackboard(*AIBehaviorTree->BlackboardAsset);
+	MyAIController->RunBehaviorTree(AIBehaviorTree);
+	MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsHitReacting"),false);
+	MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsRanger"),CharacterClass!=ECharacterClass::Warrior);
+}
+
 void AMyGAST_Enemy::HitReactTagChanged(FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReact=NewCount>0.f;
 	GetCharacterMovement()->MaxWalkSpeed=bHitReact?0.f:BaseWalkSpeed;
+	MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsHitReacting"),bHitReact);
 }
 
 void AMyGAST_Enemy::HightlightActor()

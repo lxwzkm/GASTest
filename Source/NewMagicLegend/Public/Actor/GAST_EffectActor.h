@@ -47,6 +47,12 @@ protected:
 	UFUNCTION(BlueprintCallable)//根据效果应用策略来判断在离开时是否应用效果
 	void OnEndOverlap(AActor*TargetActor);
 
+	UPROPERTY(BlueprintReadOnly,EditAnywhere, Category="Effect")
+	bool bDestoryOnEffectApplication=false;
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere, Category="Effect")
+	bool bApplyEffectToEnemy=false;
+
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="ApplyEffect")
 	TSubclassOf<UGameplayEffect> InstantGameplayEffect;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="ApplyEffect")
