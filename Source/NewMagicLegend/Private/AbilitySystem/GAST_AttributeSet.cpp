@@ -241,10 +241,18 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bIsBlockedHit,
 	bool bIsCriticalHit)
 {
+	if (!IsValid(Props.SourceCharacter) || !IsValid(Props.TargetCharacter)) return;
 	if (Props.SourceCharacter!=Props.TargetCharacter)
 	{
-		AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.SourceController);
-		PC->ShowFloatingText(Damage,Props.TargetCharacter,bIsBlockedHit,bIsCriticalHit);
+		if (AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.SourceController))
+		{
+			PC->ShowFloatingText(Damage,Props.TargetCharacter,bIsBlockedHit,bIsCriticalHit);
+			return;
+		}
+		if (AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.TargetController))
+		{
+			PC->ShowFloatingText(Damage,Props.TargetCharacter,bIsBlockedHit,bIsCriticalHit);
+		}
 	}
 
 	

@@ -41,7 +41,7 @@ void AMyGAST_Enemy::BeginPlay()
 	InitActorInfo();
 	if (HasAuthority())
 	{
-		UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(this,AbilitySystemComponent);
+		UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(this,AbilitySystemComponent,CharacterClass);
 	}
 
 	GetCharacterMovement()->MaxWalkSpeed=BaseWalkSpeed;
@@ -85,7 +85,10 @@ void AMyGAST_Enemy::HitReactTagChanged(FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReact=NewCount>0.f;
 	GetCharacterMovement()->MaxWalkSpeed=bHitReact?0.f:BaseWalkSpeed;
-	MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsHitReacting"),bHitReact);
+	if (MyAIController&&MyAIController->GetBlackboardComponent())
+	{
+		MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsHitReacting"),bHitReact);
+	}
 }
 
 void AMyGAST_Enemy::HightlightActor()
@@ -100,6 +103,16 @@ void AMyGAST_Enemy::UnHighlightActor()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void AMyGAST_Enemy::SetCombatTarget_Implementation(AActor* Target)
+{
+	CombatTarget=Target;
+}
+
+AActor* AMyGAST_Enemy::GetCombatTarget_Implementation()
+{
+	return CombatTarget;
 }
 
 int32 AMyGAST_Enemy::GetPlayerLevel()

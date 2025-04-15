@@ -54,9 +54,16 @@ public:
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 
+	/*---------Montage Tag------------*/
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_LeftHand;
+	FGameplayTag Montage_Attack_RightHand;
+
 	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
 	
 	FGameplayTag Effect_HitReact;
+
+	FGameplayTag Ability_Attack;
 	
 private:
 	static FGameplayTags GameplayTags;

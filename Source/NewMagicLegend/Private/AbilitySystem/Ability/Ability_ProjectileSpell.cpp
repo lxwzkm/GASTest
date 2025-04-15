@@ -22,10 +22,8 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 {
 	bool IsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!IsServer)return;
-
-	ICombatInterface* CombatInterface=Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
-	const FVector SocketLocation=CombatInterface->GetWeaponSocketLocation();
 	
+	const FVector SocketLocation=ICombatInterface::Execute_GetWeaponSocketLocation(GetAvatarActorFromActorInfo(),FGameplayTags::Get().Montage_Attack_Weapon);
 	
 	FRotator Rotation=(TargetLocation-SocketLocation).Rotation();
 	Rotation.Pitch=0.f;

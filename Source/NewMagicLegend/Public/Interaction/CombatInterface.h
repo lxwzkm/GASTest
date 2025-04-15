@@ -3,8 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
+
+/*---- 这个结构体是为了能够方便找到MontageTag对应的Montage是哪个 ----*/
+USTRUCT(BlueprintType)
+struct FTagMontage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	UAnimMontage* AttackMontage=nullptr;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	FGameplayTag MontageTag;
+};
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI,BlueprintType)
@@ -23,13 +37,23 @@ class NEWMAGICLEGEND_API ICombatInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual int32 GetPlayerLevel();
-	virtual FVector GetWeaponSocketLocation();
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	FVector GetWeaponSocketLocation(const FGameplayTag& MontageTag);
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	UAnimMontage* GetHitReactMontage();
 
-	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void UpdateWarppingTarget(const FVector& TargetLocation);
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	TArray<FTagMontage> GetTagMontages();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	bool IsDead()const;
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	AActor* GetAvatar();
 
 	virtual void Die()=0;
 

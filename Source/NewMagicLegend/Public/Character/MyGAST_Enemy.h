@@ -29,6 +29,8 @@ public:
 	/*--------EnemyInterface-------*/
 	virtual void HightlightActor() override;//高亮显示的函数
 	virtual void UnHighlightActor() override;//取消高亮显示的函数
+	virtual void SetCombatTarget_Implementation(AActor* Target) override;
+	virtual AActor* GetCombatTarget_Implementation() override;
 
 	/*--------CombatInterface-------*/
 	virtual int32 GetPlayerLevel() override;
@@ -39,7 +41,7 @@ public:
 	UPROPERTY(BlueprintReadOnly,Category="Combat")
 	bool bHitReact=false;
 
-	UPROPERTY(BlueprintReadOnly,Category="Walk")
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Walk")
 	float BaseWalkSpeed=250.f;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
@@ -72,5 +74,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AGAST_AIController>MyAIController;
+
+	UPROPERTY(BlueprintReadWrite,Category="Combat")
+	TObjectPtr<AActor>CombatTarget;
 	
 };

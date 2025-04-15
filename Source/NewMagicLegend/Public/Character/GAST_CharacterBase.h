@@ -23,10 +23,13 @@ public:
 	/*-------IAbilitySystemInterface-------*/
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet()const;
-	virtual FVector GetWeaponSocketLocation() override;
+	virtual FVector GetWeaponSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	/*-------CombatInterface-------*/
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void Die() override;//处理角色死亡事件，只在服务器调用
+	virtual bool IsDead_Implementation() const override;
+	virtual AActor* GetAvatar_Implementation() override;
+	virtual TArray<FTagMontage> GetTagMontages_Implementation() override;
 
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie();
@@ -39,6 +42,12 @@ protected:
 
 	UPROPERTY(EditAnywhere,Category="Combat")
 	FName WeaponSocketName;
+	UPROPERTY(EditAnywhere,Category="Combat")
+	FName LeftHandSocketName;
+	UPROPERTY(EditAnywhere,Category="Combat")
+	FName RightHandSocketName;
+
+	bool IsDead=false;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;//ASC组件敌人在身上实现，玩家在PlayerState上实现
@@ -82,6 +91,12 @@ protected:
 	void StartDissove(UMaterialInstanceDynamic* DynamicMaterila);
 	UFUNCTION(BlueprintImplementableEvent)
 	void WeaponStartDissove(UMaterialInstanceDynamic* DynamicMaterila);
+
+	/*
+	 * 攻击动画蒙太奇与对应的Tag
+	 */
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TArray<FTagMontage>AttackMontageToTag;
 
 private:
 

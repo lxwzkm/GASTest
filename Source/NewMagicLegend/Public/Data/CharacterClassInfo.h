@@ -28,8 +28,12 @@ struct FCharacterAttribute
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly,Category="CharacterAttribute")
+	UPROPERTY(EditDefaultsOnly,Category="ClassDefaultsInfo")
 	TSubclassOf<UGameplayEffect>PrimaryAttribute;
+
+	//每个职业不同的起始技能
+	UPROPERTY(EditDefaultsOnly,Category="ClassDefaultsInfo")
+	TArray<TSubclassOf<UGameplayAbility>>StartupAbility;
 };
 
 /**

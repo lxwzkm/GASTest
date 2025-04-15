@@ -7,6 +7,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "Gamemode/GAST_Gamemodebase.h"
 #include "Gamemode/GAST_PlayerState.h"
+#include "Interaction/CombatInterface.h"
 #include "UI/WidgetController/GAST_WidgetControllerBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/HUD/GAST_HUD.h"
@@ -73,7 +74,7 @@ void UGAST_AbilitySystemLibrary::InitializeDefaultsAttributes(const UObject* Wor
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalEffectSpecHandle.Data.Get());
 }
 
-void UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(const UObject* WordContext, UAbilitySystemComponent* ASC)
+void UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(const UObject* WordContext, UAbilitySystemComponent* ASC,ECharacterClass CharacterClass)
 {
 	UCharacterClassInfo* ClassInfo= GetCharacterClassInfo(WordContext);
 	if (!ClassInfo)return;
@@ -83,6 +84,17 @@ void UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(const UObject* Word
 		FGameplayAbilitySpec AbilitySpec= FGameplayAbilitySpec(Ability,1);
 		ASC->GiveAbility(AbilitySpec);
 	}
+
+	const FCharacterAttribute StartUpAttribute=ClassInfo->GetCharacterAttribute(CharacterClass);
+	if (ICombatInterface* CombatInterface= Cast<ICombatInterface>(ASC->GetAvatarActor()))
+	{
+		for (auto Ability:StartUpAttribute.StartupAbility)
+		{
+			FGameplayAbilitySpec AbilitySpec= FGameplayAbilitySpec(Ability,CombatInterface->GetPlayerLevel());
+			ASC->GiveAbility(AbilitySpec);
+		}
+	}
+
 }
 
 UCharacterClassInfo* UGAST_AbilitySystemLibrary::GetCharacterClassInfo(const UObject* WordContext)
@@ -130,4 +142,33 @@ void UGAST_AbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& 
 	FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
 	FMyGameplayEffectContext* MyEffectContext=static_cast<FMyGameplayEffectContext*>(EffectContext);
 	MyEffectContext->SetIsCriticalHit(bInIsCritical);
+}
+
+void UGAST_AbilitySystemLibrary::GetLivePlayersWithInRadius(const UObject* WordContext,
+	TArray<AActor*>& OutOverlapActors, const TArray<AActor*>& ActorsToIgnore, float Radius,const FVector& SphereOrigin)
+{
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActors(ActorsToIgnore);
+
+	TArray<FOverlapResult> Overlaps;
+	if (UWorld* Word=GEngine->GetWorldFromContextObject(WordContext,EGetWorldErrorMode::LogAndReturnNull))
+	{
+		Word->OverlapMultiByObjectType(Overlaps,SphereOrigin,FQuat::Identity,FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),FCollisionShape::MakeSphere(Radius),CollisionParams);
+		//获取OverlapResult之后判断其中的Actor是否具有ICombatInterface和是否存活
+		for (const FOverlapResult& Overlap:Overlaps)
+		{
+			if (Overlap.GetActor()->Implements<UCombatInterface>()&&!ICombatInterface::Execute_IsDead(Overlap.GetActor()))
+			{
+				OutOverlapActors.AddUnique(Overlap.GetActor());
+			}
+		}
+	}
+}
+
+bool UGAST_AbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
+{
+	const bool bIsPlayer=FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
+	const bool bIsEnemy=FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
+	const bool bIsFriend=bIsEnemy || bIsPlayer;
+	return !bIsFriend;
 }

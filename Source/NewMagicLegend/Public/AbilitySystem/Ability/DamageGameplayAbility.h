@@ -14,6 +14,9 @@ UCLASS()
 class NEWMAGICLEGEND_API UDamageGameplayAbility : public UGAST_GameplayAbilityBase
 {
 	GENERATED_BODY()
+public:
+	UFUNCTION(BlueprintCallable)
+	void CauseDamageToTarget(AActor* TargetActor);
 protected:
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)

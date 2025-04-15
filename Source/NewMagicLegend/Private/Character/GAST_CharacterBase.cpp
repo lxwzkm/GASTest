@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 #include "NewMagicLegend/NewMagicLegend.h"
 
 AGAST_CharacterBase::AGAST_CharacterBase()
@@ -34,9 +35,22 @@ UAttributeSet* AGAST_CharacterBase::GetAttributeSet() const
 	return AttributeSet;
 }
 
-FVector AGAST_CharacterBase::GetWeaponSocketLocation()
+FVector AGAST_CharacterBase::GetWeaponSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	return Weapon->GetSocketLocation(WeaponSocketName);
+	const FGameplayTags& GameplayTags=FGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon)&&IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponSocketName);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand))
+	{
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand))
+	{
+		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+	return FVector();
 }
 
 UAnimMontage* AGAST_CharacterBase::GetHitReactMontage_Implementation()
@@ -48,6 +62,21 @@ void AGAST_CharacterBase::Die()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld,true));
 	Multicast_HandleDie();
+}
+
+bool AGAST_CharacterBase::IsDead_Implementation() const
+{
+	return IsDead;
+}
+
+AActor* AGAST_CharacterBase::GetAvatar_Implementation()
+{
+	return this;
+}
+
+TArray<FTagMontage> AGAST_CharacterBase::GetTagMontages_Implementation()
+{
+	return AttackMontageToTag;
 }
 
 void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
@@ -63,6 +92,7 @@ void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissove();
+	IsDead=true;
 }
 
 void AGAST_CharacterBase::BeginPlay()

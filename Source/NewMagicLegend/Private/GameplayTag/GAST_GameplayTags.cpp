@@ -54,4 +54,11 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical,GameplayTags.Attributes_Resistance_Physical);
 
 	GameplayTags.Effect_HitReact=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"),FString("受击反应标签"));
+
+	GameplayTags.Ability_Attack=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Attack"),FString("物理攻击标签"));
+	/*----------------------------------GetMontageSocketTag----------------------------*/
+	GameplayTags.Montage_Attack_Weapon=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.Weapon"),FString("武器攻击蒙太奇动画"));
+	GameplayTags.Montage_Attack_LeftHand=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.LeftHand"),FString("左手攻击蒙太奇动画"));
+	GameplayTags.Montage_Attack_RightHand=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.RightHand"),FString("右手攻击蒙太奇动画"));
+
 }

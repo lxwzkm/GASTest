@@ -34,7 +34,7 @@ public:
 	/*
 	 * 初始化敌人技能
 	 */
-	static void InitializeDefaultsAbilities(const UObject*WordContext,UAbilitySystemComponent* ASC);
+	static void InitializeDefaultsAbilities(const UObject*WordContext,UAbilitySystemComponent* ASC,ECharacterClass CharacterClass);
 
 	/*
 	 * 获取CharacterClassInfo
@@ -54,4 +54,18 @@ public:
 	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsBlocked);
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsCritical);
+
+	/**
+	 * 获取半径内存活的所有玩家
+	 * @param WordContext 
+	 * @param OutOverlapActors 输出结果，存货的player
+	 * @param ActorsToIgnore 需要忽视的actors
+	 * @param Radius 检测的半径
+	 * @param SphereOrigin 检测球形的圆心坐标
+	 */
+	UFUNCTION(BlueprintCallable,Category="Combat")
+	static void GetLivePlayersWithInRadius(const UObject* WordContext,TArray<AActor*>& OutOverlapActors,const TArray<AActor*>&ActorsToIgnore,float Radius,const FVector& SphereOrigin);
+
+	UFUNCTION(BlueprintPure,Category="Combat")
+	static bool IsNotFriend(AActor* FirstActor,AActor* SecondActor);
 };

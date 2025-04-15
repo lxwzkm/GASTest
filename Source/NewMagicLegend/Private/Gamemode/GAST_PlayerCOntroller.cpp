@@ -159,7 +159,13 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 					SplineComponent->AddSplinePoint(PointsLoc,ESplineCoordinateSpace::World);
 					
 				}
-				bAutoRuning=true;
+				if (Path->PathPoints.Num()>0)
+				{
+					//更新路径的终点为可达路线的终点，以防点击的位置不可达且大于可接受停止范围，导致人物无法正确停止
+					CachedDestination=Path->PathPoints[Path->PathPoints.Num()-1];
+					//启动自动移动
+					bAutoRuning=true;
+				}
 			}
 		}
 		FollowTime=0.f;
