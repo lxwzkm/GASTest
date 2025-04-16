@@ -154,6 +154,7 @@ void UGAST_AbilitySystemLibrary::GetLivePlayersWithInRadius(const UObject* WordC
 	if (UWorld* Word=GEngine->GetWorldFromContextObject(WordContext,EGetWorldErrorMode::LogAndReturnNull))
 	{
 		Word->OverlapMultiByObjectType(Overlaps,SphereOrigin,FQuat::Identity,FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),FCollisionShape::MakeSphere(Radius),CollisionParams);
+		//DrawDebugSphere(Word,SphereOrigin,Radius,10,FColor::Green,false,20);
 		//获取OverlapResult之后判断其中的Actor是否具有ICombatInterface和是否存活
 		for (const FOverlapResult& Overlap:Overlaps)
 		{
@@ -170,5 +171,5 @@ bool UGAST_AbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondA
 	const bool bIsPlayer=FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
 	const bool bIsEnemy=FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
 	const bool bIsFriend=bIsEnemy || bIsPlayer;
-	//return !bIsFriend;
+	return !bIsFriend;
 }

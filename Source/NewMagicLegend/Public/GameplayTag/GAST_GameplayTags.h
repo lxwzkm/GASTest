@@ -63,7 +63,9 @@ public:
 	
 	FGameplayTag Effect_HitReact;
 
+	//AI来激活攻击任务的标签
 	FGameplayTag Ability_Attack;
+	
 	
 private:
 	static FGameplayTags GameplayTags;

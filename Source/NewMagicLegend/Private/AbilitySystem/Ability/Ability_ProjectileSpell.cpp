@@ -26,7 +26,7 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
 	const FVector SocketLocation=ICombatInterface::Execute_GetWeaponSocketLocation(GetAvatarActorFromActorInfo(),FGameplayTags::Get().Montage_Attack_Weapon);
 	
 	FRotator Rotation=(TargetLocation-SocketLocation).Rotation();
-	Rotation.Pitch=0.f;
+	//Rotation.Pitch=0.f;
 	FTransform SpawnTranform;
 	SpawnTranform.SetLocation(SocketLocation);
 	SpawnTranform.SetRotation(Rotation.Quaternion());

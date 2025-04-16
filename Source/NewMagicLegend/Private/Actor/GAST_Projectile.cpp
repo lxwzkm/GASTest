@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "GAST_AbilitySystemLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -69,6 +70,9 @@ void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AA
 		if (LoopSoundComponent) LoopSoundComponent->Stop();
 	}
 
+	if (!UGAST_AbilitySystemLibrary::IsNotFriend(OtherActor,DamageSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser()))
+		return;
+	
 	if (HasAuthority())
 	{
 
