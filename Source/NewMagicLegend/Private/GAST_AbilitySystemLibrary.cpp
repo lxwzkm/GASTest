@@ -170,5 +170,5 @@ bool UGAST_AbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondA
 	const bool bIsPlayer=FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
 	const bool bIsEnemy=FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
 	const bool bIsFriend=bIsEnemy || bIsPlayer;
-	return !bIsFriend;
+	//return !bIsFriend;
 }
