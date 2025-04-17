@@ -78,6 +78,7 @@ void AMyGAST_Enemy::PossessedBy(AController* NewController)
 	MyAIController->GetBlackboardComponent()->InitializeBlackboard(*AIBehaviorTree->BlackboardAsset);
 	MyAIController->RunBehaviorTree(AIBehaviorTree);
 	MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsHitReacting"),false);
+	MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("TargetIsDead"),false);
 	MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsRanger"),CharacterClass!=ECharacterClass::Warrior);
 }
 

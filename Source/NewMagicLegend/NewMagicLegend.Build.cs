@@ -8,9 +8,9 @@ public class NewMagicLegend : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" ,"EnhancedInput","GameplayAbilities","GameplayTags","GameplayTasks"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" ,"EnhancedInput","GameplayAbilities"});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "NavigationSystem","Niagara","AIModule" });
+		PrivateDependencyModuleNames.AddRange(new string[] {"GameplayTags","GameplayTasks", "NavigationSystem", "Niagara","AIModule" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

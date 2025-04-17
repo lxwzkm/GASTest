@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "NiagaraSystem.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "GAST_CharacterBase.generated.h"
@@ -30,6 +31,7 @@ public:
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTagMontage> GetTagMontages_Implementation() override;
+	virtual UNiagaraSystem* GetImpactEffect_Implementation() override;
 
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie();
@@ -97,6 +99,10 @@ protected:
 	 */
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TArray<FTagMontage>AttackMontageToTag;
+
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	UNiagaraSystem* ImpactEffect;
 
 private:
 

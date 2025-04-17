@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+class UNiagaraSystem;
 /*---- 这个结构体是为了能够方便找到MontageTag对应的Montage是哪个 ----*/
 USTRUCT(BlueprintType)
 struct FTagMontage
@@ -18,6 +19,9 @@ struct FTagMontage
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	FGameplayTag MontageTag;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	USoundBase* ImpactSound=nullptr;
 };
 
 // This class does not need to be modified.
@@ -54,6 +58,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	AActor* GetAvatar();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	UNiagaraSystem* GetImpactEffect();
 
 	virtual void Die()=0;
 

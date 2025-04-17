@@ -4,9 +4,10 @@
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "GameplayTagsManager.h"
 
+FGameplayTags FGameplayTags::GameplayTags;
+
 void FGameplayTags::InitializeGameplayTags()
 {
-
 	/*------------------- Primary Attributes Tag --------------------*/
 	GameplayTags.Attributes_Primary_Strength=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.Strength"),FString("力量"));
 	GameplayTags.Attributes_Primary_Intelligence=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.Intrlligence"),FString("智力"));

@@ -71,4 +71,3 @@ private:
 	static FGameplayTags GameplayTags;
 };
 
-FGameplayTags FGameplayTags::GameplayTags;

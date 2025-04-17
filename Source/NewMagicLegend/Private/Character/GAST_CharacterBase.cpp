@@ -79,6 +79,11 @@ TArray<FTagMontage> AGAST_CharacterBase::GetTagMontages_Implementation()
 	return AttackMontageToTag;
 }
 
+UNiagaraSystem* AGAST_CharacterBase::GetImpactEffect_Implementation()
+{
+	return ImpactEffect;
+}
+
 void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
 {
 	Weapon->SetEnableGravity(true);
