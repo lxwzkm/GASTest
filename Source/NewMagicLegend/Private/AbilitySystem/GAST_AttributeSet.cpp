@@ -208,7 +208,6 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 	{
 		const float LocalDamage=GetIncomingDamage();
 		SetIncomingDamage(0.f);
-
 		if (LocalDamage>0.f)
 		{
 			const float NewHealth=GetHealth()-LocalDamage;
@@ -244,12 +243,12 @@ void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float 
 	if (!IsValid(Props.SourceCharacter) || !IsValid(Props.TargetCharacter)) return;
 	if (Props.SourceCharacter!=Props.TargetCharacter)
 	{
-		if (AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.SourceController))
+		if (AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.SourceCharacter->Controller))
 		{
 			PC->ShowFloatingText(Damage,Props.TargetCharacter,bIsBlockedHit,bIsCriticalHit);
 			return;
 		}
-		if (AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.TargetController))
+		if (AGAST_PlayerCOntroller*PC= Cast<AGAST_PlayerCOntroller>(Props.TargetCharacter->Controller))
 		{
 			PC->ShowFloatingText(Damage,Props.TargetCharacter,bIsBlockedHit,bIsCriticalHit);
 		}

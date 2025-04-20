@@ -128,6 +128,10 @@ void AMyGAST_Enemy::Die()
 	{
 		HealthBar->SetVisibility(false);
 	}
+	if (MyAIController&&MyAIController->GetBlackboardComponent())
+	{
+		MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("AmIDead"),true);
+	}
 	Super::Die();
 }
 

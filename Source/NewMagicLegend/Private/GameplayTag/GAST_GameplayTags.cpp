@@ -57,9 +57,18 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.Effect_HitReact=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"),FString("受击反应标签"));
 
 	GameplayTags.Ability_Attack=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Attack"),FString("物理攻击标签"));
+	GameplayTags.Ability_Summom=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Summon"),FString("召唤攻击标签"));
 	/*----------------------------------GetMontageSocketTag----------------------------*/
-	GameplayTags.Montage_Attack_Weapon=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.Weapon"),FString("武器攻击蒙太奇动画"));
-	GameplayTags.Montage_Attack_LeftHand=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.LeftHand"),FString("左手攻击蒙太奇动画"));
-	GameplayTags.Montage_Attack_RightHand=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.RightHand"),FString("右手攻击蒙太奇动画"));
+	GameplayTags.CombatSocket_Weapon=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.Weapon"),FString("武器插槽位置"));
+	GameplayTags.CombatSocket_LeftHand=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.LeftHand"),FString("左手攻击插槽位置"));
+	GameplayTags.CombatSocket_RightHand=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.RightHand"),FString("右手攻击插槽位置"));
+	GameplayTags.CombatSocket_Tail=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.Tail"),FString("尾巴攻击插槽位置"));
+
+	/*----------------------------------MontageAttackTag----------------------------*/
+	GameplayTags.Montage_Attack_1=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.1"),FString("蒙太奇攻击1"));
+	GameplayTags.Montage_Attack_2=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.2"),FString("蒙太奇攻击2"));
+	GameplayTags.Montage_Attack_3=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.3"),FString("蒙太奇攻击3"));
+	GameplayTags.Montage_Attack_4=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.4"),FString("蒙太奇攻击4"));
+
 
 }

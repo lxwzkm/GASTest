@@ -54,10 +54,17 @@ public:
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 
-	/*---------Montage Tag------------*/
-	FGameplayTag Montage_Attack_Weapon;
-	FGameplayTag Montage_Attack_LeftHand;
-	FGameplayTag Montage_Attack_RightHand;
+	/*---------CombatSocket Tag------------*/
+	FGameplayTag CombatSocket_Weapon;
+	FGameplayTag CombatSocket_LeftHand;
+	FGameplayTag CombatSocket_RightHand;
+	FGameplayTag CombatSocket_Tail;
+
+	/*---------MontageAttack Tag------------*/
+	FGameplayTag Montage_Attack_1;
+	FGameplayTag Montage_Attack_2;
+	FGameplayTag Montage_Attack_3;
+	FGameplayTag Montage_Attack_4;
 
 	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
 	
@@ -65,6 +72,7 @@ public:
 
 	//AI来激活攻击任务的标签
 	FGameplayTag Ability_Attack;
+	FGameplayTag Ability_Summom;
 	
 	
 private:

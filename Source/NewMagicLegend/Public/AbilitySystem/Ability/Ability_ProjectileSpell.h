@@ -23,7 +23,7 @@ protected:
 	 * 生成发射物的函数，蓝图调用
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SpawnPrijectile(const FVector& TargetLocation);
+	void SpawnPrijectile(const FVector& TargetLocation,const FGameplayTag& CombatSocketTag,bool bOverridePitch=false,float PitchOverride=0.f);
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AGAST_Projectile> ProjectileClass;

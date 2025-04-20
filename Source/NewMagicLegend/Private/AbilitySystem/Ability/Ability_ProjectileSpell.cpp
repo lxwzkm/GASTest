@@ -18,15 +18,18 @@ void UAbility_ProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle 
 
 }
 
-void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation)
+void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation,const FGameplayTag& CombatSocketTag,bool bOverridePitch,float PitchOverride)
 {
 	bool IsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!IsServer)return;
 	
-	const FVector SocketLocation=ICombatInterface::Execute_GetWeaponSocketLocation(GetAvatarActorFromActorInfo(),FGameplayTags::Get().Montage_Attack_Weapon);
+	const FVector SocketLocation=ICombatInterface::Execute_GetWeaponSocketLocation(GetAvatarActorFromActorInfo(),CombatSocketTag);
 	
 	FRotator Rotation=(TargetLocation-SocketLocation).Rotation();
-	//Rotation.Pitch=0.f;
+	if (bOverridePitch)
+	{
+		Rotation.Pitch=PitchOverride;
+	}
 	FTransform SpawnTranform;
 	SpawnTranform.SetLocation(SocketLocation);
 	SpawnTranform.SetRotation(Rotation.Quaternion());

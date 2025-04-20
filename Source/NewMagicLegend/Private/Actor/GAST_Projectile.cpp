@@ -44,6 +44,7 @@ void AGAST_Projectile::Destroyed()
 		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
 		if (LoopSoundComponent) LoopSoundComponent->Stop();
+		bHit=true;
 	}
 	Super::Destroyed();
 }
@@ -68,6 +69,7 @@ void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AA
 		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
 		if (LoopSoundComponent) LoopSoundComponent->Stop();
+		bHit=true;
 	}
 
 	if (!UGAST_AbilitySystemLibrary::IsNotFriend(OtherActor,DamageSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser()))

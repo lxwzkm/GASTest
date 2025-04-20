@@ -7,6 +7,7 @@
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
+#include "Kismet/GameplayStatics.h"
 #include "NewMagicLegend/NewMagicLegend.h"
 
 AGAST_CharacterBase::AGAST_CharacterBase()
@@ -38,17 +39,21 @@ UAttributeSet* AGAST_CharacterBase::GetAttributeSet() const
 FVector AGAST_CharacterBase::GetWeaponSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
 	const FGameplayTags& GameplayTags=FGameplayTags::Get();
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon)&&IsValid(Weapon))
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Weapon)&&IsValid(Weapon))
 	{
 		return Weapon->GetSocketLocation(WeaponSocketName);
 	}
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand))
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_LeftHand))
 	{
 		return GetMesh()->GetSocketLocation(LeftHandSocketName);
 	}
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand))
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_RightHand))
 	{
 		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Tail))
+	{
+		return GetMesh()->GetSocketLocation(TailSocketName);
 	}
 	return FVector();
 }
@@ -79,13 +84,37 @@ TArray<FTagMontage> AGAST_CharacterBase::GetTagMontages_Implementation()
 	return AttackMontageToTag;
 }
 
+int32 AGAST_CharacterBase::GetMinionCount_Implementation()
+{
+	return MinionCount;
+}
+
+void AGAST_CharacterBase::UpdateMinionCount_Implementation(int32 Amount)
+{
+	MinionCount+=Amount;
+}
+
 UNiagaraSystem* AGAST_CharacterBase::GetImpactEffect_Implementation()
 {
 	return ImpactEffect;
 }
 
+FTagMontage AGAST_CharacterBase::GetTagMontageByTag_Implementation(const FGameplayTag& MontageTag)
+{
+	for (auto& TagMontage:AttackMontageToTag)
+	{
+		if (TagMontage.MontageTag.MatchesTagExact(MontageTag))
+		{
+			return TagMontage;
+		}
+	}
+	return FTagMontage();
+}
+
 void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
 {
+	UGameplayStatics::PlaySoundAtLocation(this,DeathSound,GetActorLocation(),GetActorRotation());
+	
 	Weapon->SetEnableGravity(true);
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);

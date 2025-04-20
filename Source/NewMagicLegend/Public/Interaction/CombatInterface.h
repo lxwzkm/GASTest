@@ -21,6 +21,9 @@ struct FTagMontage
 	FGameplayTag MontageTag;
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	FGameplayTag CombateTag;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	USoundBase* ImpactSound=nullptr;
 };
 
@@ -61,6 +64,15 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	UNiagaraSystem* GetImpactEffect();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	FTagMontage GetTagMontageByTag(const FGameplayTag& MontageTag);
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	int32 GetMinionCount();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void UpdateMinionCount(int32 Amount=1);
 
 	virtual void Die()=0;
 
