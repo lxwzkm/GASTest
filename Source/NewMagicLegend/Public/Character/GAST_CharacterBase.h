@@ -9,6 +9,18 @@
 #include "Interaction/CombatInterface.h"
 #include "GAST_CharacterBase.generated.h"
 
+struct MyFormation
+{
+
+	FName CommanderName;
+
+	TArray<FString>SubEquipNames;
+	TArray<int32>SubEquipSlotTableIDs;
+	TArray<FTransform>SubEquipTransforms;
+	
+	TArray<MyFormation>ChildrenCommanders;
+};
+
 class UGameplayAbility;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -20,6 +32,9 @@ class NEWMAGICLEGEND_API AGAST_CharacterBase : public ACharacter,public IAbility
 	GENERATED_BODY()
 
 public:
+
+    void DeJson(FString JsonBody);
+
 	AGAST_CharacterBase();
 	/*-------IAbilitySystemInterface-------*/
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
