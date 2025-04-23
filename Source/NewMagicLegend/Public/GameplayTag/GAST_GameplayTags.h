@@ -70,9 +70,12 @@ public:
 	
 	FGameplayTag Effect_HitReact;
 
-	//AI来激活攻击任务的标签
+	//AI来激活攻击任务的标签 区分不同技能类型
 	FGameplayTag Ability_Attack;
 	FGameplayTag Ability_Summom;
+
+	//人物用来确定UI图片的标签
+	FGameplayTag Ability_Fire_FireBolt;
 	
 	
 private:

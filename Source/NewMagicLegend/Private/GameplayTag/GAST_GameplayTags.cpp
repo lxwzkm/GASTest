@@ -55,9 +55,7 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical,GameplayTags.Attributes_Resistance_Physical);
 
 	GameplayTags.Effect_HitReact=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"),FString("受击反应标签"));
-
-	GameplayTags.Ability_Attack=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Attack"),FString("物理攻击标签"));
-	GameplayTags.Ability_Summom=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Summon"),FString("召唤攻击标签"));
+	
 	/*----------------------------------GetMontageSocketTag----------------------------*/
 	GameplayTags.CombatSocket_Weapon=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.Weapon"),FString("武器插槽位置"));
 	GameplayTags.CombatSocket_LeftHand=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.LeftHand"),FString("左手攻击插槽位置"));
@@ -69,6 +67,11 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.Montage_Attack_2=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.2"),FString("蒙太奇攻击2"));
 	GameplayTags.Montage_Attack_3=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.3"),FString("蒙太奇攻击3"));
 	GameplayTags.Montage_Attack_4=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.4"),FString("蒙太奇攻击4"));
+	
+	/*----------------------------------AbilityTag----------------------------*/
+	GameplayTags.Ability_Attack=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Attack"),FString("物理攻击标签"));
+	GameplayTags.Ability_Summom=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Summon"),FString("召唤攻击标签"));
+	GameplayTags.Ability_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Fire.FireBolt"),FString("火球术标签"));
 
 
 }

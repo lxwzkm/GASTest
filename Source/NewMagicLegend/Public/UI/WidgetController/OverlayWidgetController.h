@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/MyAbilityInfo.h"
 #include "UI/WidgetController/GAST_WidgetControllerBase.h"
 #include "OverlayWidgetController.generated.h"
+
 
 class UGAST_UserWidgetBase;
 
@@ -46,7 +48,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TObjectPtr<UDataTable>MessageData;
-
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GAS|Information")
+	TObjectPtr<UMyAbilityInfo> AbilityInformation;
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable,FGameplayTag Tag);
 	/*---------------------------  属性变化绑定  ----------------------------*/
@@ -64,6 +68,8 @@ protected:
 	/*---------------------------  发送消息给UI  ----------------------------*/
 	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
 	FOnSendUIMessageSignature SendUIMessageDelegate;
+
+
 
 };
 
