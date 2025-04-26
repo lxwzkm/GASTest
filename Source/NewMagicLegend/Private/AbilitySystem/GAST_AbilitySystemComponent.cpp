@@ -4,6 +4,7 @@
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 
 #include "AbilitySystem/Ability/GAST_GameplayAbilityBase.h"
+#include "NewMagicLegend/MyLog.h"
 
 void UGAST_AbilitySystemComponent::AbilitySystemComponentSet()
 {
@@ -22,6 +23,49 @@ void UGAST_AbilitySystemComponent::Client_AppliedGameplayEffect_Implementation(U
 	AllAssetTagsContainerDelegate.Broadcast(TagAssetsContainer);
 }
 
+void UGAST_AbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate)
+{
+	FScopedAbilityListLock AbilityListLock(*this);
+	for (FGameplayAbilitySpec AbilitySpec:GetActivatableAbilities())
+	{
+		if (!Delegate.ExecuteIfBound(AbilitySpec))
+		{
+			UE_LOG(MyLog,Error,TEXT("Delegate Is Not Bound in %hs"),__FUNCTION__);
+		}
+	}
+	
+}
+
+FGameplayTag UGAST_AbilitySystemComponent::GetGameplayTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Ability)
+	{
+		for (FGameplayTag Tag:AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("Ability")))
+			{
+				return Tag;
+			}
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UGAST_AbilitySystemComponent::GetInputTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (!AbilitySpec.DynamicAbilityTags.IsEmpty())
+	{
+		for (FGameplayTag Tag:AbilitySpec.DynamicAbilityTags)
+		{
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("Input")))
+			{
+				return Tag;
+			}
+		}
+	}
+	return FGameplayTag();
+}
+
 void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbility)
 {
 	for (auto Ability:StartupAbility)
@@ -33,6 +77,19 @@ void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclass
 			AbilitySpec.DynamicAbilityTags.AddTag(PlayerAbility->StartupInputTag);
 			GiveAbility(AbilitySpec);//需要使用Spec
 		}
+		bGivenAbility=true;
+		OnStartupAbilitiesGivenDelegate.Broadcast(this);
+	}
+}
+
+void UGAST_AbilitySystemComponent::OnRep_ActivateAbilities()
+{
+	Super::OnRep_ActivateAbilities();
+	if (!bGivenAbility)//因为这个变量不是可复制的，所以在客户端就是false
+	{
+		//广播一次之后，将其设置为true，防止多次进行广播
+		bGivenAbility=true;
+		OnStartupAbilitiesGivenDelegate.Broadcast(this);
 	}
 }
 

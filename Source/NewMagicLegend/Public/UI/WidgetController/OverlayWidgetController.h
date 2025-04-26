@@ -8,6 +8,7 @@
 #include "OverlayWidgetController.generated.h"
 
 
+class ULevelUpInfo;
 class UGAST_UserWidgetBase;
 
 //这个是作为DT的行结构，为了方便根据Tag来查找数据发送给widget
@@ -32,7 +33,8 @@ struct FMessageDataRow:public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendUIMessageSignature,FMessageDataRow,Row);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEachAbilityInfo,const FAAbilityInfo&,AbilityInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangeSignature,float,NewPlayerState);
 /**
  * 
  */
@@ -51,6 +53,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GAS|Information")
 	TObjectPtr<UMyAbilityInfo> AbilityInformation;
+	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable,FGameplayTag Tag);
 	/*---------------------------  属性变化绑定  ----------------------------*/
@@ -69,7 +72,14 @@ protected:
 	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
 	FOnSendUIMessageSignature SendUIMessageDelegate;
 
+	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
+	FOnEachAbilityInfo OnEachAbilityInfoDelegate;
 
+	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
+	FOnPlayerStateChangeSignature OnXPChangeDelegate;
+
+	/*---------------------------  回调函数  -----------------------------*/
+	void OninitializeStartupAbilities(UGAST_AbilitySystemComponent* AbilitySystemComponent);
 
 };
 

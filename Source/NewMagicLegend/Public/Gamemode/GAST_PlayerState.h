@@ -8,8 +8,12 @@
 #include "GAST_PlayerState.generated.h"
 
 
+class ULevelUpInfo;
 class UAttributeSet;
 class UAbilitySystemComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangedSignature,int32);
+
 /**
  * 
  */
@@ -28,16 +32,37 @@ public:
 	UAttributeSet* GetAttributeSet()const;
 
 	FORCEINLINE int32 GetPlayerLevel()const {return Level;}
+	FORCEINLINE int32 GetCurrentXP()const {return XP;}
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent>AbilitySystemComponent;
 	UPROPERTY()
 	TObjectPtr<UAttributeSet>AttributeSet;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="LevelInformation")
+	TObjectPtr<ULevelUpInfo>LevelUpInformation;
+
+	/*----------------- 处理经验值和升级 -----------------------------------*/
+	FOnPlayerStateChangedSignature OnXPChangeDelegate;
+	FOnPlayerStateChangedSignature OnLevelChangeDelegate;
+	
+	void SetXP(int32 InXP);
+	void AddToXP(int32 InXP);
+
+	void SetLevel(int32 InLevel);
+	void AddToLevel(int32 InLevel);
+	
 private:
-	UPROPERTY(VisibleAnywhere,ReplicatedUsing=Rep_Level,Category="PlayerClassDefaults")
+	UPROPERTY(VisibleAnywhere,ReplicatedUsing=OnRep_Level,Category="PlayerClassDefaults")
 	int32 Level=1;
 
+	UPROPERTY(VisibleAnywhere,ReplicatedUsing=OnRep_XP,Category="PlayerClassDefaults")
+	int32 XP=0;
+
 	UFUNCTION()
-	void Rep_Level(int32 OldLevel);
+	void OnRep_Level(int32 OldLevel);
+
+	UFUNCTION()
+	void OnRep_XP(int32 OldXP);
 	
 };
+

@@ -8,7 +8,8 @@
 #include "GAST_AbilitySystemComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FAllAssetTagsContainer,const FGameplayTagContainer&/*GE所属的全部Tag*/)
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStartupAbilitiesGiven,UGAST_AbilitySystemComponent*)
+DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&)
 /**
  * 
  */
@@ -25,7 +26,19 @@ public:
 
 	//用来向WidgetController广播所有应用的Effect的Tag
 	FAllAssetTagsContainer AllAssetTagsContainerDelegate;
+	FOnStartupAbilitiesGiven OnStartupAbilitiesGivenDelegate;
+	
+	bool bGivenAbility=false;
 
+	/**
+     * @brief 遍历所有已经激活的函数，将他们广播给OverlayController,由OverlayWidgetController创建Delegate并调用函数
+     * @param 
+	 */
+	void ForEachAbility(const FForEachAbility& Delegate);
+
+	static FGameplayTag GetGameplayTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
+	static FGameplayTag GetInputTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
+	
 	/**
 	 * @brief 这个函数的作用是初始化GA
 	 * @param StartupAbility 初始化能力数组，在蓝图中设置
@@ -52,5 +65,7 @@ protected:
 	UFUNCTION(Client,Reliable)
 	void Client_AppliedGameplayEffect(UAbilitySystemComponent*AbilitySystemComponent, const FGameplayEffectSpec&EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
 
-	
+	//因为激活技能只有服务器调用，重写激活的复制的回到函数，好让广播信息可以发送到客户端
+	virtual void OnRep_ActivateAbilities() override;
 };
+

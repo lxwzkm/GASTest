@@ -66,6 +66,8 @@ public:
 	FGameplayTag Montage_Attack_3;
 	FGameplayTag Montage_Attack_4;
 
+
+
 	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
 	
 	FGameplayTag Effect_HitReact;
@@ -73,6 +75,9 @@ public:
 	//AI来激活攻击任务的标签 区分不同技能类型
 	FGameplayTag Ability_Attack;
 	FGameplayTag Ability_Summom;
+
+	/*---------Cooldown Tag------------*/
+	FGameplayTag Cooldown_Fire_FireBolt;
 
 	//人物用来确定UI图片的标签
 	FGameplayTag Ability_Fire_FireBolt;
