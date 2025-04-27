@@ -234,6 +234,15 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 			const bool bIsCriticalHit=UGAST_AbilitySystemLibrary::IsCriticalHit(EffectProperties.GameplayEffectContextHandle);
 			ShowFloatingText(EffectProperties,LocalDamage,bIsBlockedHit,bIsCriticalHit);
 		}
+		if (Data.EvaluatedData.Attribute==GetInComingXPAttribute())
+		{
+			const int32 LocalXP=GetInComingXP();
+			SetInComingXP(0.f);
+			if (LocalXP>0)
+			{
+				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Cyan,FString::Printf(TEXT("XP: %d"),LocalXP));
+			}
+		}
 	}
 }
 

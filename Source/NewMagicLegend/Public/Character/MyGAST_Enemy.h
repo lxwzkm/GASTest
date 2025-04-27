@@ -66,8 +66,7 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="EnemyClassDefaults")
 	int32 Level=1;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="EnemyClassDefaults")
-	ECharacterClass CharacterClass=ECharacterClass::Warrior;
+
 
 	UPROPERTY(EditAnywhere,Category="AI")
 	TObjectPtr<UBehaviorTree>AIBehaviorTree;

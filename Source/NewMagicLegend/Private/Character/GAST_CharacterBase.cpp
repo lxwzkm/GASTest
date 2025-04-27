@@ -100,6 +100,11 @@ void AGAST_CharacterBase::UpdateMinionCount_Implementation(int32 Amount)
 	MinionCount+=Amount;
 }
 
+ECharacterClass AGAST_CharacterBase::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
+}
+
 UNiagaraSystem* AGAST_CharacterBase::GetImpactEffect_Implementation()
 {
 	return ImpactEffect;
@@ -169,6 +174,7 @@ void AGAST_CharacterBase::GiveCharacterAbilites()
 
 	UGAST_AbilitySystemComponent*ASC=CastChecked<UGAST_AbilitySystemComponent>(AbilitySystemComponent);
 	ASC->GiveCharacterAbilities(StartupAbilities);
+	ASC->GiveCharacterPassiveAbilities(StartupPassiveAbilities);
 }
 
 void AGAST_CharacterBase::Dissove()

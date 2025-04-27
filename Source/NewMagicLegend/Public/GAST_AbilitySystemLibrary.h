@@ -68,4 +68,6 @@ public:
 
 	UFUNCTION(BlueprintPure,Category="Combat")
 	static bool IsNotFriend(AActor* FirstActor,AActor* SecondActor);
+
+	static int32 GetXPByClassAndLevel(const UObject* WordContext,ECharacterClass CharacterClass,int32 Level);
 };

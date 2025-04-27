@@ -4,10 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayAbilitySpec.h"
 #include "NiagaraSystem.h"
+#include "Data/CharacterClassInfo.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "GAST_CharacterBase.generated.h"
+
+enum class ECharacterClass;
 
 struct MyFormation
 {
@@ -52,6 +56,7 @@ public:
 	virtual FTagMontage GetTagMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void UpdateMinionCount_Implementation(int32 Amount = 1) override;
+	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	/*-------CombatInterface-------*/
 
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
@@ -96,6 +101,10 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect>InitializeAttribute;//用来初始化属性
 
+	//角色类型
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="EnemyClassDefaults")
+	ECharacterClass CharacterClass=ECharacterClass::Warrior;
+
 	//将属性效果应用在自己身上
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect>GameplayEffect,int level);
 	//初始化属性
@@ -137,6 +146,9 @@ private:
 
 	UPROPERTY(EditAnywhere,Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;//用来保存初始技能
+
+	UPROPERTY(EditAnywhere,Category="Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;//用来保存初始被动技能
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage>HitReactMontage;

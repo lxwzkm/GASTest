@@ -82,6 +82,15 @@ void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclass
 	}
 }
 
+void UGAST_AbilitySystemComponent::GiveCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbility)
+{
+	for (auto AbilitySpec:StartupPassiveAbility)
+	{
+		FGameplayAbilitySpec Ability= FGameplayAbilitySpec(AbilitySpec,1);
+		GiveAbilityAndActivateOnce(Ability);
+	}
+}
+
 void UGAST_AbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();

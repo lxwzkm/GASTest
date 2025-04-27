@@ -44,6 +44,7 @@ public:
 	 * @param StartupAbility 初始化能力数组，在蓝图中设置
 	 */
 	void GiveCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbility);
+	void GiveCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbility);
 	
 	/**
 	 * @brief 这个函数是给Controller调用的用来根据InputTag激活GA的

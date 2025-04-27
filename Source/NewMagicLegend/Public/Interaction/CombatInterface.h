@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+enum class ECharacterClass;
 class UNiagaraSystem;
 /*---- 这个结构体是为了能够方便找到MontageTag对应的Montage是哪个 ----*/
 USTRUCT(BlueprintType)
@@ -73,6 +74,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	void UpdateMinionCount(int32 Amount=1);
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	ECharacterClass GetCharacterClass();
 
 	virtual void Die()=0;
 

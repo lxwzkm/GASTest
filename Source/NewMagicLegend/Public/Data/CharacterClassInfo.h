@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ScalableFloat.h"
 #include "Engine/DataAsset.h"
 #include "CharacterClassInfo.generated.h"
 
@@ -34,6 +35,9 @@ struct FCharacterAttribute
 	//每个职业不同的起始技能
 	UPROPERTY(EditDefaultsOnly,Category="ClassDefaultsInfo")
 	TArray<TSubclassOf<UGameplayAbility>>StartupAbility;
+
+	UPROPERTY(EditDefaultsOnly,Category="ClassDefaultsInfo")
+	FScalableFloat XPReward;
 };
 
 /**
@@ -47,7 +51,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
 	TMap<ECharacterClass,FCharacterAttribute>CharacterClassDefaultsInfo;
-
+	
 	//玩家共有的属性
 	UPROPERTY(EditDefaultsOnly,Category="Common CharacterAttribute")
 	TSubclassOf<UGameplayEffect>SecondaryAttribute;

@@ -173,3 +173,15 @@ bool UGAST_AbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondA
 	const bool bIsFriend=bIsEnemy || bIsPlayer;
 	return !bIsFriend;
 }
+
+int32 UGAST_AbilitySystemLibrary::GetXPByClassAndLevel(const UObject* WordContext, ECharacterClass CharacterClass,
+	int32 Level)
+{
+	UCharacterClassInfo* ClassInfo= GetCharacterClassInfo(WordContext);
+	if (ClassInfo)
+	{
+		const FCharacterAttribute Attribute= ClassInfo->GetCharacterAttribute(CharacterClass);
+		return Attribute.XPReward.GetValueAtLevel(Level);
+	}
+	return 0;
+}

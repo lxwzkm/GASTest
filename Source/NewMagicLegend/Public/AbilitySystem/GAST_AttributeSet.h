@@ -134,7 +134,9 @@ public:
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,IncomingDamage);
 
-	
+	UPROPERTY(BlueprintReadOnly,Category="Meta Attribute")
+	FGameplayAttributeData InComingXP;
+	ATTRIBUTE_ACCESSORS(UGAST_AttributeSet,InComingXP);
 	
 	//3、书写通知ASC的调用函数  当服务器更改数据时,通知客户端
 	UFUNCTION()
