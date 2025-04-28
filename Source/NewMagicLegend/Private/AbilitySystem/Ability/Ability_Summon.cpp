@@ -2,6 +2,11 @@
 
 
 #include "AbilitySystem/Ability/Ability_Summon.h"
+
+#include "Interaction/CombatInterface.h"
+#include "Interaction/EnemyInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 TArray<FVector> UAbility_Summon::GetSpawnLocations()
 {
 	const FVector Forward=GetAvatarActorFromActorInfo()->GetActorForwardVector();
@@ -17,7 +22,7 @@ TArray<FVector> UAbility_Summon::GetSpawnLocations()
 
 		//判断斜坡
 		FHitResult HitResult;
-		GetWorld()->LineTraceSingleByChannel(HitResult,RandSpawnLocation+FVector(0.f,0.f,400.f),RandSpawnLocation-FVector(0.f,0.f,400.f),ECC_Visibility);
+		GetWorld()->LineTraceSingleByChannel(HitResult,RandSpawnLocation+FVector(0.f,0.f,1400.f),RandSpawnLocation-FVector(0.f,0.f,1400.f),ECC_Visibility);
 		if (HitResult.bBlockingHit)
 		{
 			RandSpawnLocation=HitResult.ImpactPoint;

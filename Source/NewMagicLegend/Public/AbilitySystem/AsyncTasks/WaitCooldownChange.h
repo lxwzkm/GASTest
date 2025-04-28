@@ -6,6 +6,8 @@
 #include "GameplayTagContainer.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "WaitCooldownChange.generated.h"
+struct FActiveGameplayEffectHandle;
+struct FGameplayEffectSpec;
 struct FGameplayTag;
 class UAbilitySystemComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCooldownChangeSignature, float, TimeRemaning);

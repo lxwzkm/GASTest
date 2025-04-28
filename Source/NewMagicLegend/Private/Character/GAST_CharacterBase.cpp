@@ -10,12 +10,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "NewMagicLegend/NewMagicLegend.h"
 
-void AGAST_CharacterBase::DeJson(FString JsonBody)
-{
-	MyFormation Formation;
-	
-}
-
 AGAST_CharacterBase::AGAST_CharacterBase()
 {
  

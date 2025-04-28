@@ -10,6 +10,7 @@
 #include "GameFramework/Character.h"
 #include "Gamemode/GAST_PlayerCOntroller.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -219,6 +220,8 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FGameplayTags::Get().Effect_HitReact);
 				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+
+				
 			}
 			else
 			{
@@ -226,6 +229,7 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 				if (CombatInterface)
 				{
 					CombatInterface->Die();
+					SendXPReward(EffectProperties);
 				}
 			}
 
@@ -234,14 +238,14 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 			const bool bIsCriticalHit=UGAST_AbilitySystemLibrary::IsCriticalHit(EffectProperties.GameplayEffectContextHandle);
 			ShowFloatingText(EffectProperties,LocalDamage,bIsBlockedHit,bIsCriticalHit);
 		}
-		if (Data.EvaluatedData.Attribute==GetInComingXPAttribute())
+	}
+	if (Data.EvaluatedData.Attribute==GetInComingXPAttribute())
+	{
+		const int32 LocalXP=GetInComingXP();
+		SetInComingXP(0.f);
+		if (LocalXP>0&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>())
 		{
-			const int32 LocalXP=GetInComingXP();
-			SetInComingXP(0.f);
-			if (LocalXP>0)
-			{
-				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Cyan,FString::Printf(TEXT("XP: %d"),LocalXP));
-			}
+			IPlayerInterface::Execute_AddToXP(EffectProperties.SourceCharacter,LocalXP);
 		}
 	}
 }
@@ -264,6 +268,22 @@ void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float 
 	}
 
 	
+}
+
+void UGAST_AttributeSet::SendXPReward(const FEffectProperties& Props)
+{
+	if (ICombatInterface* CombatInterface= Cast<ICombatInterface>(Props.TargetCharacter))
+	{
+		int32 TargetLevel=CombatInterface->GetPlayerLevel();
+		ECharacterClass TargetClass=ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
+		int32 XPReward=UGAST_AbilitySystemLibrary::GetXPByClassAndLevel(Props.TargetCharacter,TargetClass,TargetLevel);
+
+		FGameplayTags GameplayTags= FGameplayTags::Get();
+		FGameplayEventData Payload;
+		Payload.EventTag=GameplayTags.Attributes_Meta_IncomingXP;
+		Payload.EventMagnitude=XPReward;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter,GameplayTags.Attributes_Meta_IncomingXP,Payload);
+	}
 }
 
 void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,

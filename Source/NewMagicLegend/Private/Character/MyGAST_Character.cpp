@@ -50,11 +50,18 @@ void AMyGAST_Character::OnRep_PlayerState()
 	InitActorInfo();
 }
 
+void AMyGAST_Character::AddToXP_Implementation(int32 InXP)
+{
+	AGAST_PlayerState* MyPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
+	check(MyPlayerState);
+	MyPlayerState->AddToXP(InXP);
+}
+
 int32 AMyGAST_Character::GetPlayerLevel()
 {
-	AGAST_PlayerState* AuraPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
-	check(AuraPlayerState);
-	return AuraPlayerState->GetPlayerLevel();
+	AGAST_PlayerState* MyPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
+	check(MyPlayerState);
+	return MyPlayerState->GetPlayerLevel();
 }
 
 void AMyGAST_Character::InitActorInfo()

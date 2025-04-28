@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/GAST_CharacterBase.h"
+#include "Interaction/PlayerInterface.h"
 #include "MyGAST_Character.generated.h"
 
 class UGameplayEffect;
@@ -13,7 +14,7 @@ class USpringArmComponent;
  * 
  */
 UCLASS()
-class NEWMAGICLEGEND_API AMyGAST_Character : public AGAST_CharacterBase
+class NEWMAGICLEGEND_API AMyGAST_Character : public AGAST_CharacterBase,public IPlayerInterface
 {
 	GENERATED_BODY()
 public:
@@ -29,6 +30,9 @@ protected:
 	//在客户端调用的函数，为了在客户端初始化ASC的Actor信息
 	virtual void OnRep_PlayerState() override;
 
+	/*---------------PlayerInterface-----------------*/
+	virtual void AddToXP_Implementation(int32 InXP) override;
+	
 	/*---------------CombatIntergace-----------------*/
 	virtual int32 GetPlayerLevel() override;
 

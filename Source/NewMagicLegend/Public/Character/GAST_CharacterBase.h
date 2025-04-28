@@ -37,7 +37,7 @@ class NEWMAGICLEGEND_API AGAST_CharacterBase : public ACharacter,public IAbility
 
 public:
 
-    void DeJson(FString JsonBody);
+  
 
 	AGAST_CharacterBase();
 	/*-------IAbilitySystemInterface-------*/

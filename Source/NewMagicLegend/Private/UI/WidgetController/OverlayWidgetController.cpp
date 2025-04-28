@@ -54,30 +54,8 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
     	OnMaxManaChanged.Broadcast(Data.NewValue); 
     }
 	);
-
 	
-	PlayerState->OnXPChangeDelegate.AddLambda(
-		[this,PlayerState](int32 XP)
-		{
-			ULevelUpInfo* LevelUpInfo=PlayerState->LevelUpInformation;
-			check(LevelUpInfo);
-			int32 Level=LevelUpInfo->FindLevelForXP(XP);
-			int32 MaxLevel=LevelUpInfo->LevelUpInfos.Num();
-			if (Level<=MaxLevel&&Level>0)
-			{
-				//经验是累计计算的，但是进度条只关心当前等级内的进度填充，前一级的经验可以用来计算当前等级的起始经验值，当前可以升到的等级升级的经验-前一级升级的经验，就是本级升级所需的经验
-				int32 LevelRequirement=LevelUpInfo->LevelUpInfos[Level].AttributePointsReward;
-				int32 PreviousLevelRequirement=LevelUpInfo->LevelUpInfos[Level-1].AttributePointsReward;
-
-				int32 DeltaRequirement=LevelRequirement-PreviousLevelRequirement;
-
-				int32 RealXP=XP-PreviousLevelRequirement;
-				float XPPercent=static_cast<float>(RealXP)/static_cast<float>(DeltaRequirement);
-				OnXPChangeDelegate.Broadcast(XPPercent);
-			}
-			
-		}
-	);
+	PlayerState->OnXPChangeDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChange);
 	
 	/*---------------------------  发消息给UI  ----------------------------*/
 	if (UGAST_AbilitySystemComponent*GAST_ASC=Cast<UGAST_AbilitySystemComponent>(ASC))
@@ -125,4 +103,25 @@ void UOverlayWidgetController::OninitializeStartupAbilities(UGAST_AbilitySystemC
 	});
 	
 	AbilitySystemComponent->ForEachAbility(AbilityDelegate);
+}
+
+void UOverlayWidgetController::OnXPChange(int32 XP)
+{
+	const AGAST_PlayerState* PlayerState=Cast<AGAST_PlayerState>(PS);
+	ULevelUpInfo* LevelUpInfo=PlayerState->LevelUpInformation;
+	check(LevelUpInfo);
+	int32 Level=LevelUpInfo->FindLevelForXP(XP);
+	int32 MaxLevel=LevelUpInfo->LevelUpInfos.Num();
+	if (Level<=MaxLevel&&Level>0)
+	{
+		//经验是累计计算的，但是进度条只关心当前等级内的进度填充，前一级的经验可以用来计算当前等级的起始经验值，当前可以升到的等级升级的经验-前一级升级的经验，就是本级升级所需的经验
+		int32 LevelRequirement=LevelUpInfo->LevelUpInfos[Level].AttributePointsReward;
+		int32 PreviousLevelRequirement=LevelUpInfo->LevelUpInfos[Level-1].AttributePointsReward;
+
+		int32 DeltaRequirement=LevelRequirement-PreviousLevelRequirement;
+
+		int32 RealXP=XP-PreviousLevelRequirement;
+		float XPPercent=static_cast<float>(RealXP)/static_cast<float>(DeltaRequirement);
+		OnXPChangeDelegate.Broadcast(XPPercent);
+	}
 }

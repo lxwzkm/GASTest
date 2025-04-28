@@ -80,7 +80,7 @@ protected:
 
 	/*---------------------------  回调函数  -----------------------------*/
 	void OninitializeStartupAbilities(UGAST_AbilitySystemComponent* AbilitySystemComponent);
-
+	void OnXPChange(int32 XP);
 };
 
 template <typename T>
