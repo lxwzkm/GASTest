@@ -86,11 +86,11 @@ void UGAST_AbilitySystemLibrary::InitializeDefaultsAbilities(const UObject* Word
 	}
 
 	const FCharacterAttribute StartUpAttribute=ClassInfo->GetCharacterAttribute(CharacterClass);
-	if (ICombatInterface* CombatInterface= Cast<ICombatInterface>(ASC->GetAvatarActor()))
+	if (ASC->GetAvatarActor()->Implements<UCombatInterface>())
 	{
 		for (auto Ability:StartUpAttribute.StartupAbility)
 		{
-			FGameplayAbilitySpec AbilitySpec= FGameplayAbilitySpec(Ability,CombatInterface->GetPlayerLevel());
+			FGameplayAbilitySpec AbilitySpec= FGameplayAbilitySpec(Ability,ICombatInterface::Execute_GetPlayerLevel(ASC->GetAvatarActor()));
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}

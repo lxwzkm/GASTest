@@ -95,8 +95,16 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 	AActor* SourAvatar=SourceASC?SourceASC->GetAvatarActor():nullptr;
 	AActor*TargetAvatar=TargetASC?TargetASC->GetAvatarActor():nullptr;
 
-	ICombatInterface*SourceCombat=Cast<ICombatInterface>(SourAvatar);
-	ICombatInterface*TargetCombat=Cast<ICombatInterface>(TargetAvatar);
+	int32 SourceLevel=1;
+	if (SourAvatar->Implements<UCombatInterface>())
+	{
+		SourceLevel=ICombatInterface::Execute_GetPlayerLevel(SourAvatar);
+	}
+	int32 TargetLevel=1;
+	if (TargetAvatar->Implements<UCombatInterface>())
+	{
+		TargetLevel=ICombatInterface::Execute_GetPlayerLevel(TargetAvatar);
+	}
 
 	const FGameplayEffectSpec OwningSpec= ExecutionParams.GetOwningSpec();
 	FAggregatorEvaluateParameters EvaluateParameters;
@@ -141,11 +149,11 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 	//计算护甲与护甲穿透的应用系数
 	UCharacterClassInfo* SourceClassInfo= UGAST_AbilitySystemLibrary::GetCharacterClassInfo(SourAvatar);
 	FRealCurve*ArmorPenetrationCurve= SourceClassInfo->DamageCoefficient->FindCurve(FName("ArmorPenetration"),FString());
-	const float ArmorPenetrationCoefficient= ArmorPenetrationCurve->Eval(SourceCombat->GetPlayerLevel());
+	const float ArmorPenetrationCoefficient= ArmorPenetrationCurve->Eval(SourceLevel);
 
 	UCharacterClassInfo*TargetClassInfo=UGAST_AbilitySystemLibrary::GetCharacterClassInfo(TargetAvatar);
 	FRealCurve*EffectArmorCurve=TargetClassInfo->DamageCoefficient->FindCurve(FName("EffectArmor"),FString());
-	const float EffectArmorCoeffiencient=EffectArmorCurve->Eval(TargetCombat->GetPlayerLevel());
+	const float EffectArmorCoeffiencient=EffectArmorCurve->Eval(TargetLevel);
 	
 	const float EffectArmor=TargetArmor*(100.f-SourceArmorPenetration*ArmorPenetrationCoefficient)/100.f;
 	Damage*=(100-EffectArmor*EffectArmorCoeffiencient)/100;
@@ -165,7 +173,7 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 
 	//获取暴击几率的系数
 	FRealCurve* SourceCriticalHitChanceCoefficient=SourceClassInfo->DamageCoefficient->FindCurve(FName("CriticalHitResistance"),FString());
-	const float SourceCriticalCoefficient= SourceCriticalHitChanceCoefficient->Eval(SourceCombat->GetPlayerLevel());
+	const float SourceCriticalCoefficient= SourceCriticalHitChanceCoefficient->Eval(TargetLevel);
 
 	//暴击伤害计算
 	const float EffectCriticalChance=SourceCriticalHitChance-TargetCriticalHitResistance*SourceCriticalCoefficient;

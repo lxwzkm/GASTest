@@ -84,6 +84,13 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
          }
 		);
 	}
+	/*---------------------------  PlayerStateChange  ----------------------------*/
+	PlayerState->OnLevelChangeDelegate.AddLambda(
+[this](int32 NewLevel)
+		{
+			OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
+		}
+	);
 }
 
 void UOverlayWidgetController::OninitializeStartupAbilities(UGAST_AbilitySystemComponent* AbilitySystemComponent)
@@ -114,9 +121,9 @@ void UOverlayWidgetController::OnXPChange(int32 XP)
 	int32 MaxLevel=LevelUpInfo->LevelUpInfos.Num();
 	if (Level<=MaxLevel&&Level>0)
 	{
-		//经验是累计计算的，但是进度条只关心当前等级内的进度填充，前一级的经验可以用来计算当前等级的起始经验值，当前可以升到的等级升级的经验-前一级升级的经验，就是本级升级所需的经验
-		int32 LevelRequirement=LevelUpInfo->LevelUpInfos[Level].AttributePointsReward;
-		int32 PreviousLevelRequirement=LevelUpInfo->LevelUpInfos[Level-1].AttributePointsReward;
+		//经验是累计计算的，但是进度条只关心当前等级内的进度填充，当前等级升到下一级的经验-前一级升到本级的经验，就是本级升级所需的经验
+		int32 LevelRequirement=LevelUpInfo->LevelUpInfos[Level].LevelUpRequirement;
+		int32 PreviousLevelRequirement=LevelUpInfo->LevelUpInfos[Level-1].LevelUpRequirement;
 
 		int32 DeltaRequirement=LevelRequirement-PreviousLevelRequirement;
 

@@ -33,7 +33,7 @@ public:
 	virtual AActor* GetCombatTarget_Implementation() override;
 
 	/*--------CombatInterface-------*/
-	virtual int32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 
 	virtual void Die() override;
 	virtual void Multicast_HandleDie() override;

@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Data/LevelUpInfo.h"
 #include "Gamemode/GAST_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -57,7 +58,57 @@ void AMyGAST_Character::AddToXP_Implementation(int32 InXP)
 	MyPlayerState->AddToXP(InXP);
 }
 
-int32 AMyGAST_Character::GetPlayerLevel()
+void AMyGAST_Character::LevelUp_Implementation()
+{
+	
+}
+
+int32 AMyGAST_Character::GetXP_Implementation()
+{
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	return MyPlayerState->GetCurrentXP();
+}
+
+int32 AMyGAST_Character::FindLevelForXP_Implementation(int32 InXP)
+{
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	return MyPlayerState->LevelUpInformation->FindLevelForXP(InXP);
+}
+
+int32 AMyGAST_Character::GetAttributePointsReward_Implementation(int32 Level)
+{
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	return MyPlayerState->LevelUpInformation->LevelUpInfos[Level].AttributePointsReward;
+}
+
+int32 AMyGAST_Character::GetSpellPointsReward_Implementation(int32 Level)
+{
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	return MyPlayerState->LevelUpInformation->LevelUpInfos[Level].SpellPointsReward;
+}
+
+void AMyGAST_Character::AddToLevel_Implementation(int32 InLevel)
+{
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	MyPlayerState->AddToLevel(InLevel);
+}
+
+void AMyGAST_Character::AddToAttributePoints_Implementation(int32 InAttributePoints)
+{
+	
+}
+
+void AMyGAST_Character::AddToSpellPoints_Implementation(int32 InSpellPoints)
+{
+	
+}
+
+int32 AMyGAST_Character::GetPlayerLevel_Implementation()
 {
 	AGAST_PlayerState* MyPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
 	check(MyPlayerState);

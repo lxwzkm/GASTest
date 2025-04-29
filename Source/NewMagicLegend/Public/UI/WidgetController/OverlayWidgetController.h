@@ -34,7 +34,7 @@ struct FMessageDataRow:public FTableRowBase
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendUIMessageSignature,FMessageDataRow,Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEachAbilityInfo,const FAAbilityInfo&,AbilityInfo);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangeSignature,float,NewPlayerState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangeSignature,int32,NewPlayerState);
 /**
  * 
  */
@@ -68,6 +68,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
 	FOnAttributeChangeSignature OnMaxManaChanged;
+
+	UPROPERTY(BlueprintAssignable,Category="GAS|Attributes")
+	FOnAttributeChangeSignature OnXPChangeDelegate;
 	/*---------------------------  发送消息给UI  ----------------------------*/
 	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
 	FOnSendUIMessageSignature SendUIMessageDelegate;
@@ -75,9 +78,10 @@ protected:
 	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
 	FOnEachAbilityInfo OnEachAbilityInfoDelegate;
 
-	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
-	FOnPlayerStateChangeSignature OnXPChangeDelegate;
-
+	/*---------------------------  PlayerStateChange  ----------------------------*/
+	UPROPERTY(BlueprintAssignable,Category="GAS|PlayerState")
+	FOnPlayerStateChangeSignature OnPlayerLevelChangeDelegate;
+	
 	/*---------------------------  回调函数  -----------------------------*/
 	void OninitializeStartupAbilities(UGAST_AbilitySystemComponent* AbilitySystemComponent);
 	void OnXPChange(int32 XP);

@@ -116,7 +116,7 @@ AActor* AMyGAST_Enemy::GetCombatTarget_Implementation()
 	return CombatTarget;
 }
 
-int32 AMyGAST_Enemy::GetPlayerLevel()
+int32 AMyGAST_Enemy::GetPlayerLevel_Implementation()
 {
 	return Level;
 }

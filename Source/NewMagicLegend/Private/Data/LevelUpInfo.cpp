@@ -13,7 +13,7 @@ int32 ULevelUpInfo::FindLevelForXP(int32 XP)
 		//当前等级如果已经大于等于倒数第二个等级，则无法升级
 		if (LevelUpInfos.Num()-1<=Level)return Level;
 		
-		if (XP>=LevelUpInfos[Level].AttributePointsReward)
+		if (XP>=LevelUpInfos[Level].LevelUpRequirement)
 		{
 			++Level;
 		}

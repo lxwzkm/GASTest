@@ -157,9 +157,9 @@ void AGAST_CharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Gamepla
 
 void AGAST_CharacterBase::InitializeAttributes()
 {
-	ApplyEffectToSelf(PrimaryAttributes,GetPlayerLevel());
-	ApplyEffectToSelf(SecondaryAttributes,GetPlayerLevel());
-	ApplyEffectToSelf(InitializeAttribute,GetPlayerLevel());
+	ApplyEffectToSelf(PrimaryAttributes,ICombatInterface::Execute_GetPlayerLevel(this));
+	ApplyEffectToSelf(SecondaryAttributes,ICombatInterface::Execute_GetPlayerLevel(this));
+	ApplyEffectToSelf(InitializeAttribute,ICombatInterface::Execute_GetPlayerLevel(this));
 }
 
 void AGAST_CharacterBase::GiveCharacterAbilites()

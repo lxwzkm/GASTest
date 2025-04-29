@@ -243,8 +243,29 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 	{
 		const int32 LocalXP=GetInComingXP();
 		SetInComingXP(0.f);
-		if (LocalXP>0&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>())
+		if (LocalXP>0&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>()&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>())
 		{
+			int32 CurrentLevel=ICombatInterface::Execute_GetPlayerLevel(EffectProperties.SourceCharacter);
+			int32 CurrentXP=IPlayerInterface::Execute_GetXP(EffectProperties.SourceCharacter);
+
+			int32 NewLevel=IPlayerInterface::Execute_FindLevelForXP(EffectProperties.SourceCharacter,CurrentXP + LocalXP);
+			int32 DeltaLevel=NewLevel - CurrentLevel;
+			if (DeltaLevel>0)
+			{
+				int32 AttributePointsReward=IPlayerInterface::Execute_GetAttributePointsReward(EffectProperties.SourceCharacter,CurrentLevel);
+				int32 SpellPointsReward=IPlayerInterface::Execute_GetSpellPointsReward(EffectProperties.SourceCharacter,CurrentLevel);
+				
+				IPlayerInterface::Execute_AddToAttributePoints(EffectProperties.SourceCharacter,AttributePointsReward);
+				IPlayerInterface::Execute_AddToSpellPoints(EffectProperties.SourceCharacter,SpellPointsReward);
+				IPlayerInterface::Execute_AddToLevel(EffectProperties.SourceCharacter,DeltaLevel);
+
+				SetHealth(GetMaxHealth());
+				SetMana(GetMaxMana());
+				
+				IPlayerInterface::Execute_LevelUp(EffectProperties.SourceCharacter);
+			}
+			
+			
 			IPlayerInterface::Execute_AddToXP(EffectProperties.SourceCharacter,LocalXP);
 		}
 	}
@@ -272,9 +293,9 @@ void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float 
 
 void UGAST_AttributeSet::SendXPReward(const FEffectProperties& Props)
 {
-	if (ICombatInterface* CombatInterface= Cast<ICombatInterface>(Props.TargetCharacter))
+	if (Props.TargetCharacter->Implements<UCombatInterface>())
 	{
-		int32 TargetLevel=CombatInterface->GetPlayerLevel();
+		int32 TargetLevel=ICombatInterface::Execute_GetPlayerLevel(Props.TargetCharacter);
 		ECharacterClass TargetClass=ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
 		int32 XPReward=UGAST_AbilitySystemLibrary::GetXPByClassAndLevel(Props.TargetCharacter,TargetClass,TargetLevel);
 
