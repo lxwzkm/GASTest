@@ -58,7 +58,6 @@ public:
 	virtual void UpdateMinionCount_Implementation(int32 Amount = 1) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	/*-------CombatInterface-------*/
-
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie();
 	

@@ -10,6 +10,8 @@
 class UAbilitySystemComponent;
 class UAttributeSet;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangeSignature,int32,NewPlayerState);
+
 USTRUCT(BlueprintType)//这个结构体是为了方便设置WidgetController内的四个参数所设立的
 struct FWidgetControllerParams
 {

@@ -10,6 +10,7 @@
 void UOverlayWidgetController::BroadcastInitValues()
 {
 	UGAST_AttributeSet*AttributeSet= Cast<UGAST_AttributeSet>(AS);
+	AGAST_PlayerState*PlayerState= Cast<AGAST_PlayerState>(AS);
 	
 	check(AttributeSet);
 	
@@ -91,6 +92,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
 		}
 	);
+
 }
 
 void UOverlayWidgetController::OninitializeStartupAbilities(UGAST_AbilitySystemComponent* AbilitySystemComponent)
@@ -106,7 +108,6 @@ void UOverlayWidgetController::OninitializeStartupAbilities(UGAST_AbilitySystemC
 		FAAbilityInfo AbilityInfo = AbilityInformation->GetMyAbilityInfoByAbilityTag(AbilityTag);
 		AbilityInfo.InputTag = AbilitySystemComponent->GetInputTagByAbilitySpec(AbilitySpec);
 		OnEachAbilityInfoDelegate.Broadcast(AbilityInfo);
-
 	});
 	
 	AbilitySystemComponent->ForEachAbility(AbilityDelegate);

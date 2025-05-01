@@ -34,7 +34,6 @@ struct FMessageDataRow:public FTableRowBase
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendUIMessageSignature,FMessageDataRow,Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEachAbilityInfo,const FAAbilityInfo&,AbilityInfo);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangeSignature,int32,NewPlayerState);
 /**
  * 
  */

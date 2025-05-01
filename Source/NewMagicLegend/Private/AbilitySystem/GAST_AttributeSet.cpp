@@ -265,7 +265,6 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 				IPlayerInterface::Execute_LevelUp(EffectProperties.SourceCharacter);
 			}
 			
-			
 			IPlayerInterface::Execute_AddToXP(EffectProperties.SourceCharacter,LocalXP);
 		}
 	}

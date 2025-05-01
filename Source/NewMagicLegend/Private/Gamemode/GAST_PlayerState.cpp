@@ -25,6 +25,8 @@ void AGAST_PlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 
 	DOREPLIFETIME(AGAST_PlayerState,Level);//将Level标记为可以被复制的
 	DOREPLIFETIME(AGAST_PlayerState,XP);
+	DOREPLIFETIME(AGAST_PlayerState,SpellPoints);
+	DOREPLIFETIME(AGAST_PlayerState,AttributePoints);
 }
 
 UAbilitySystemComponent* AGAST_PlayerState::GetAbilitySystemComponent() const
@@ -48,6 +50,18 @@ void AGAST_PlayerState::AddToLevel(int32 InLevel)
 	OnLevelChangeDelegate.Broadcast(Level);
 }
 
+void AGAST_PlayerState::AddToSpelPoints(int32 InSpellPoints)
+{
+	SpellPoints+=InSpellPoints;
+	OnSpellPointsChangeDelegate.Broadcast(SpellPoints);
+}
+
+void AGAST_PlayerState::AddToAttributePoints(int32 InAttributePoints)
+{
+	AttributePoints+=InAttributePoints;
+	OnAttributePointsChangeDelegate.Broadcast(AttributePoints);
+}
+
 void AGAST_PlayerState::SetXP(int32 InXP)
 {
 	XP=InXP;
@@ -68,4 +82,14 @@ void AGAST_PlayerState::OnRep_Level(int32 OldLevel)
 void AGAST_PlayerState::OnRep_XP(int32 OldXP)
 {
 	OnXPChangeDelegate.Broadcast(XP);
+}
+
+void AGAST_PlayerState::OnRep_SpellPoints(int32 OldXP)
+{
+	OnSpellPointsChangeDelegate.Broadcast(SpellPoints);
+}
+
+void AGAST_PlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
+{
+	OnAttributePointsChangeDelegate.Broadcast(AttributePoints);
 }

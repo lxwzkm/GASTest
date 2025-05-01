@@ -124,24 +124,11 @@ int32 AMyGAST_Enemy::GetPlayerLevel_Implementation()
 void AMyGAST_Enemy::Die()
 {
 	SetLifeSpan(LifeSpan);
-	if (HealthBar)
-	{
-		HealthBar->SetVisibility(false);
-	}
 	if (MyAIController&&MyAIController->GetBlackboardComponent())
 	{
 		MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("AmIDead"),true);
 	}
 	Super::Die();
-}
-
-void AMyGAST_Enemy::Multicast_HandleDie()
-{
-	if (HealthBar)
-	{
-		HealthBar->SetVisibility(false);
-	}
-	Super::Multicast_HandleDie();
 }
 
 void AMyGAST_Enemy::InitActorInfo()

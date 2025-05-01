@@ -4,6 +4,7 @@
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
 #include "AbilitySystem/GAST_AttributeSet.h"
+#include "Gamemode/GAST_PlayerState.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 
 void UAttributeMenuWidgetController::BroadcastInitValues()
@@ -20,6 +21,7 @@ void UAttributeMenuWidgetController::BroadcastInitValues()
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	UGAST_AttributeSet* AttributeSet=CastChecked<UGAST_AttributeSet>(AS);
+	AGAST_PlayerState* PlayerState=CastChecked<AGAST_PlayerState>(PS);
 
 	for (auto& Pair:AttributeSet->TagsToAttribute)
 	{
@@ -30,6 +32,19 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 			}
 		);
 	}
+
+	PlayerState->OnSpellPointsChangeDelegate.AddLambda(
+[this](int32 NewSpellPoints)
+	{
+		OnSpellPointsChangeDelegate.Broadcast(NewSpellPoints);
+	}
+);
+	PlayerState->OnAttributePointsChangeDelegate.AddLambda(
+[this](int32 NewAttributePoints)
+	{
+		OnAttributePointsChangeDelegate.Broadcast(NewAttributePoints);
+	}
+);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayAttribute& Attribute,
@@ -38,4 +53,9 @@ void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayAttri
 	FGAST_AttributeInfo AttributeInfo= AttributeInformation->GetAttributeInfoByTag(GameplayTag);
 	AttributeInfo.AttributeValue=Attribute.GetNumericValue(AS);
 	AttributeInfoDelegate.Broadcast(AttributeInfo);
+
+	AGAST_PlayerState* PlayerState = Cast<AGAST_PlayerState>(PS);
+
+	OnAttributePointsChangeDelegate.Broadcast(PlayerState->GetAttributePoints());
+	OnSpellPointsChangeDelegate.Broadcast(PlayerState->GetSpellPoints());
 }

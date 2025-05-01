@@ -36,7 +36,7 @@ public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 
 	virtual void Die() override;
-	virtual void Multicast_HandleDie() override;
+	
 
 	UPROPERTY(BlueprintReadOnly,Category="Combat")
 	bool bHitReact=false;

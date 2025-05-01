@@ -10,6 +10,7 @@
 class UGameplayEffect;
 class UCameraComponent;
 class USpringArmComponent;
+class UNiagaraComponent;
 /**
  * 
  */
@@ -24,7 +25,9 @@ public:
 	TObjectPtr<USpringArmComponent>SpringArm;
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UCameraComponent>PlayerCamera;
-protected:
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	TObjectPtr<UNiagaraComponent> LevelUpComponent;
+	
 	//在服务器上运行的函数，主要是为了服务器上初始化ASC的Actor信息
 	virtual void PossessedBy(AController* NewController) override;
 	//在客户端调用的函数，为了在客户端初始化ASC的Actor信息
@@ -43,7 +46,11 @@ protected:
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
 	/*---------------CombatIntergace-----------------*/
 	virtual int32 GetPlayerLevel_Implementation() override;
-
+	
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastLevelUp()const;
 private:
 	virtual void InitActorInfo() override;
+
+
 };

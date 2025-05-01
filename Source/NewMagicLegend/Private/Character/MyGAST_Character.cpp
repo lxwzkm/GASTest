@@ -4,6 +4,7 @@
 #include "Character/MyGAST_Character.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Data/LevelUpInfo.h"
@@ -26,13 +27,16 @@ AMyGAST_Character::AMyGAST_Character()
 	SpringArm->SetUsingAbsoluteRotation(true);//设置使用绝对旋转
 	
 	PlayerCamera=CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
-	PlayerCamera->SetupAttachment(SpringArm);
+	PlayerCamera->SetupAttachment(SpringArm,USpringArmComponent::SocketName);
 	PlayerCamera->bUsePawnControlRotation=false;
+
+	LevelUpComponent=CreateDefaultSubobject<UNiagaraComponent>("LevelUpComponent");
+	LevelUpComponent->SetupAttachment(GetRootComponent());
+	LevelUpComponent->bAutoActivate=false;
 
 	bUseControllerRotationPitch=false;
 	bUseControllerRotationRoll=false;
 	bUseControllerRotationYaw=false;
-	
 	
 }
 
@@ -60,9 +64,22 @@ void AMyGAST_Character::AddToXP_Implementation(int32 InXP)
 
 void AMyGAST_Character::LevelUp_Implementation()
 {
-	
+	//调用带Implementation的版本不会触发Replicate
+	MulticastLevelUp();
 }
 
+void AMyGAST_Character::MulticastLevelUp_Implementation()const
+{
+	if (IsValid(LevelUpComponent))
+	{   
+		FVector CamerLocation=PlayerCamera->GetComponentLocation();
+		FVector NiagaraLocation=LevelUpComponent->GetComponentLocation();
+		FRotator ToCamera=(CamerLocation-NiagaraLocation).Rotation();
+		LevelUpComponent->SetWorldRotation(ToCamera);
+		LevelUpComponent->Activate(true);
+		LevelUpComponent->ResetSystem();
+	}
+}
 int32 AMyGAST_Character::GetXP_Implementation()
 {
 	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
@@ -100,12 +117,16 @@ void AMyGAST_Character::AddToLevel_Implementation(int32 InLevel)
 
 void AMyGAST_Character::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
-	
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	MyPlayerState->AddToAttributePoints(InAttributePoints);
 }
 
 void AMyGAST_Character::AddToSpellPoints_Implementation(int32 InSpellPoints)
 {
-	
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	MyPlayerState->AddToSpelPoints(InSpellPoints);
 }
 
 int32 AMyGAST_Character::GetPlayerLevel_Implementation()
@@ -137,3 +158,4 @@ void AMyGAST_Character::InitActorInfo()
 	//初始化主要信息，调用父类函数
 	InitializeAttributes();
 }
+
