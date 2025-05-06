@@ -47,8 +47,16 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 );
 }
 
+void UAttributeMenuWidgetController::UpgradeAttributePoints(const FGameplayTag& AttributeTag)
+{
+	if (UGAST_AbilitySystemComponent* MyASC=Cast<UGAST_AbilitySystemComponent>(ASC))
+	{
+		MyASC->UpgradeAttributePoints(AttributeTag);
+	}
+}
+
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayAttribute& Attribute,
-	const FGameplayTag& GameplayTag) const
+                                                            const FGameplayTag& GameplayTag) const
 {
 	FGAST_AttributeInfo AttributeInfo= AttributeInformation->GetAttributeInfoByTag(GameplayTag);
 	AttributeInfo.AttributeValue=Attribute.GetNumericValue(AS);

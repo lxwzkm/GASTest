@@ -56,6 +56,14 @@ public:
 	 * @param InputTag 输入标签
 	 */
 	void AbilityInputReleased(const FGameplayTag& InputTag);
+
+	/**
+	 * @brief 这个是升级的时候增加属性点的函数
+	 * @param AttributeTag 属性标签
+	 */
+	void UpgradeAttributePoints(const FGameplayTag& AttributeTag);
+	UFUNCTION(Server, Reliable)
+	void Server_UpgradeAttributePoints(const FGameplayTag& AttributeTag);
 protected:
 	/**
 	 * @brief 回调函数，当GE被应用的时候触发，声明在AbilitySystemComponent.h中

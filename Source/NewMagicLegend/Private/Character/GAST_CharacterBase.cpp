@@ -123,13 +123,13 @@ void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
 	Weapon->SetEnableGravity(true);
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
-
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetEnableGravity(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
-	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	 GetMesh()->SetSimulatePhysics(true);
+	 GetMesh()->SetEnableGravity(true);
+	 GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	 GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+	
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Dissove();
 	IsDead=true;
 }

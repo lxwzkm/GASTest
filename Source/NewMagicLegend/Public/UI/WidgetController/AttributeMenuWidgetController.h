@@ -28,6 +28,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable,Category="GAS|PlayerState")
 	FOnPlayerStateChangeSignature OnAttributePointsChangeDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttributePoints(const FGameplayTag& AttributeTag);
 protected:
 
 	UPROPERTY(EditDefaultsOnly)

@@ -118,7 +118,7 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 		FGameplayTag DamageTypeTag=pair.Key;
 		FGameplayTag ResistanceTag=pair.Value;
 
-		float TempDamage= OwningSpec.GetSetByCallerMagnitude(DamageTypeTag);
+		float TempDamage= OwningSpec.GetSetByCallerMagnitude(DamageTypeTag,false);//暂时缺少其他类型的伤害
 		
 		FGameplayEffectAttributeCaptureDefinition CaptureDefinition=MyDamageStatics().TagsToCaptureDefin[ResistanceTag];
 		float Resistance=0.f;

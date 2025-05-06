@@ -113,6 +113,7 @@ void AMyGAST_Character::AddToLevel_Implementation(int32 InLevel)
 	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
 	check(MyPlayerState);
 	MyPlayerState->AddToLevel(InLevel);
+	
 }
 
 void AMyGAST_Character::AddToAttributePoints_Implementation(int32 InAttributePoints)
@@ -127,6 +128,20 @@ void AMyGAST_Character::AddToSpellPoints_Implementation(int32 InSpellPoints)
 	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
 	check(MyPlayerState);
 	MyPlayerState->AddToSpelPoints(InSpellPoints);
+}
+
+int32 AMyGAST_Character::GetAttributePoints_Implementation()
+{
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	return MyPlayerState->GetAttributePoints();
+}
+
+int32 AMyGAST_Character::GetSpellPoints_Implementation()
+{
+	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
+	check(MyPlayerState);
+	return MyPlayerState->GetSpellPoints();
 }
 
 int32 AMyGAST_Character::GetPlayerLevel_Implementation()

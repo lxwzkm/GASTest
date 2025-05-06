@@ -220,8 +220,6 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FGameplayTags::Get().Effect_HitReact);
 				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-
-				
 			}
 			else
 			{
@@ -232,7 +230,6 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 					SendXPReward(EffectProperties);
 				}
 			}
-
 			
 			const bool bIsBlockedHit=UGAST_AbilitySystemLibrary::IsBlockedHit(EffectProperties.GameplayEffectContextHandle);
 			const bool bIsCriticalHit=UGAST_AbilitySystemLibrary::IsCriticalHit(EffectProperties.GameplayEffectContextHandle);
@@ -252,15 +249,21 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 			int32 DeltaLevel=NewLevel - CurrentLevel;
 			if (DeltaLevel>0)
 			{
-				int32 AttributePointsReward=IPlayerInterface::Execute_GetAttributePointsReward(EffectProperties.SourceCharacter,CurrentLevel);
-				int32 SpellPointsReward=IPlayerInterface::Execute_GetSpellPointsReward(EffectProperties.SourceCharacter,CurrentLevel);
+				IPlayerInterface::Execute_AddToLevel(EffectProperties.SourceCharacter,DeltaLevel);
+
+				int32 AttributePointsReward=0;
+				int32 SpellPointsReward=0;
+				for (int32 i=0;i<DeltaLevel;i++)
+				{
+					AttributePointsReward += IPlayerInterface::Execute_GetAttributePointsReward(EffectProperties.SourceCharacter,CurrentLevel+i);
+					SpellPointsReward += IPlayerInterface::Execute_GetSpellPointsReward(EffectProperties.SourceCharacter,CurrentLevel+i);
+				}
 				
 				IPlayerInterface::Execute_AddToAttributePoints(EffectProperties.SourceCharacter,AttributePointsReward);
 				IPlayerInterface::Execute_AddToSpellPoints(EffectProperties.SourceCharacter,SpellPointsReward);
-				IPlayerInterface::Execute_AddToLevel(EffectProperties.SourceCharacter,DeltaLevel);
-
-				SetHealth(GetMaxHealth());
-				SetMana(GetMaxMana());
+				
+				bTopOffHealth=true;
+				bTopOffMana=true;
 				
 				IPlayerInterface::Execute_LevelUp(EffectProperties.SourceCharacter);
 			}
@@ -270,8 +273,24 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 	}
 }
 
+void UGAST_AttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute==GetMaxHealthAttribute() && bTopOffHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bTopOffHealth=false;
+	}
+	if (Attribute==GetMaxManaAttribute() && bTopOffMana)
+	{
+		SetMana(GetMaxMana());
+		bTopOffMana=false;
+	}
+}
+
 void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bIsBlockedHit,
-	bool bIsCriticalHit)
+                                          bool bIsCriticalHit)
 {
 	if (!IsValid(Props.SourceCharacter) || !IsValid(Props.TargetCharacter)) return;
 	if (Props.SourceCharacter!=Props.TargetCharacter)
@@ -286,8 +305,6 @@ void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float 
 			PC->ShowFloatingText(Damage,Props.TargetCharacter,bIsBlockedHit,bIsCriticalHit);
 		}
 	}
-
-	
 }
 
 void UGAST_AttributeSet::SendXPReward(const FEffectProperties& Props)
@@ -309,8 +326,6 @@ void UGAST_AttributeSet::SendXPReward(const FEffectProperties& Props)
 void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,
                                                    FEffectProperties& Props)
 {
-	
-	
 	Props.GameplayEffectContextHandle=Data.EffectSpec.GetContext();
 	Props.SourceASC=Props.GameplayEffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 	if (IsValid(Props.SourceASC)&&Props.SourceASC->AbilityActorInfo.IsValid()&&IsValid(Props.SourceASC->AbilityActorInfo->AvatarActor.Get()))
@@ -337,6 +352,4 @@ void UGAST_AttributeSet::SetEffectPropertiesByData(const FGameplayEffectModCallb
 		Props.TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 		Props.TargetCharacter=Cast<ACharacter>(Props.TargetAvatarActor);
 	}
-
-	
 }

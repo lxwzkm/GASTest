@@ -9,16 +9,16 @@
 UMMC_MaxHealth::UMMC_MaxHealth()
 {
 	VigorDef.AttributeToCapture=UGAST_AttributeSet::GetVigorAttribute();
-	VigorDef.bSnapshot=false;
 	VigorDef.AttributeSource=EGameplayEffectAttributeCaptureSource::Target;
+	VigorDef.bSnapshot=false;
 
 	RelevantAttributesToCapture.Add(VigorDef);
 }
 
 float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
 {
-	const FGameplayTagContainer* SourceTags=Spec.CapturedSourceTags.GetAggregatedTags();
-	const FGameplayTagContainer* TargetTags=Spec.CapturedTargetTags.GetAggregatedTags();
+	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.SourceTags=SourceTags;

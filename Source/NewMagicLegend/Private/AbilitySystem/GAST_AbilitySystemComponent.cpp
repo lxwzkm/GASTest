@@ -3,7 +3,9 @@
 
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Ability/GAST_GameplayAbilityBase.h"
+#include "Interaction/PlayerInterface.h"
 #include "NewMagicLegend/MyLog.h"
 
 void UGAST_AbilitySystemComponent::AbilitySystemComponentSet()
@@ -130,4 +132,26 @@ void UGAST_AbilitySystemComponent::AbilityInputReleased(const FGameplayTag& Inpu
 			AbilitySpecInputReleased(AbilitySpec);
 		}
 	}
+}
+
+void UGAST_AbilitySystemComponent::UpgradeAttributePoints(const FGameplayTag& AttributeTag)
+{
+	if (GetAvatarActor()->Implements<UPlayerInterface>())
+	{
+		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor())>0)
+		{
+			Server_UpgradeAttributePoints(AttributeTag);
+		}
+	}
+}
+
+void UGAST_AbilitySystemComponent::Server_UpgradeAttributePoints_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData EventData;
+	EventData.EventTag = AttributeTag;
+	EventData.EventMagnitude=1.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(),AttributeTag,EventData);
+
+	IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(),-1);
 }

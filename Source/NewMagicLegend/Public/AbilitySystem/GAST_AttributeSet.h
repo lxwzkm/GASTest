@@ -191,8 +191,12 @@ public:
 	//父类虚函数，在属性应用前调用，主要用来限制属性
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 private:
 	void SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props);
 	void ShowFloatingText(const FEffectProperties& Props,float Damage,bool bIsBlockedHit,bool bIsCriticalHit);
 	void SendXPReward(const FEffectProperties& Props);
+
+	bool bTopOffHealth=false;
+	bool bTopOffMana=false;
 };
