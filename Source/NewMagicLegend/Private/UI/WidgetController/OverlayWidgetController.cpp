@@ -9,68 +9,59 @@
 
 void UOverlayWidgetController::BroadcastInitValues()
 {
-	UGAST_AttributeSet*AttributeSet= Cast<UGAST_AttributeSet>(AS);
-	AGAST_PlayerState*PlayerState= Cast<AGAST_PlayerState>(AS);
-	
-	check(AttributeSet);
-	
-	OnHealthChanged.Broadcast(AttributeSet->GetHealth());
-	OnMaxHealthChanged.Broadcast(AttributeSet->GetMaxHealth());
-	OnManaChanged.Broadcast(AttributeSet->GetMana());
-	OnMaxManaChanged.Broadcast(AttributeSet->GetMaxMana());
+	OnHealthChanged.Broadcast(GetAttributeSet()->GetHealth());
+	OnMaxHealthChanged.Broadcast(GetAttributeSet()->GetMaxHealth());
+	OnManaChanged.Broadcast(GetAttributeSet()->GetMana());
+	OnMaxManaChanged.Broadcast(GetAttributeSet()->GetMaxMana());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
-	UGAST_AttributeSet*AttributeSet= Cast<UGAST_AttributeSet>(AS);
-	AGAST_PlayerState* PlayerState=Cast<AGAST_PlayerState>(PS);
-	check(PlayerState);
-	check(AttributeSet);
 	
 	/*---------------------------  属性变化绑定  ----------------------------*/
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddLambda(
+	ASC->GetGameplayAttributeValueChangeDelegate(GetAttributeSet()->GetHealthAttribute()).AddLambda(
    [this](const FOnAttributeChangeData& Data)
    {
    	    OnHealthChanged.Broadcast(Data.NewValue);
    }
 	);
 	
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddLambda(
+	ASC->GetGameplayAttributeValueChangeDelegate(GetAttributeSet()->GetMaxHealthAttribute()).AddLambda(
     [this](const FOnAttributeChangeData& Data)
     {
     	OnMaxHealthChanged.Broadcast(Data.NewValue);
     }
 	);
 	
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetManaAttribute()).AddLambda(
+	ASC->GetGameplayAttributeValueChangeDelegate(GetAttributeSet()->GetManaAttribute()).AddLambda(
     [this](const FOnAttributeChangeData& Data)
     {
     	OnManaChanged.Broadcast(Data.NewValue);
     }
 	);
 	
-	ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxManaAttribute()).AddLambda(
+	ASC->GetGameplayAttributeValueChangeDelegate(GetAttributeSet()->GetMaxManaAttribute()).AddLambda(
     [this](const FOnAttributeChangeData& Data)
     {
     	OnMaxManaChanged.Broadcast(Data.NewValue); 
     }
 	);
 	
-	PlayerState->OnXPChangeDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChange);
+	GetPlayerState()->OnXPChangeDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChange);
 	
 	/*---------------------------  发消息给UI  ----------------------------*/
-	if (UGAST_AbilitySystemComponent*GAST_ASC=Cast<UGAST_AbilitySystemComponent>(ASC))
+	if (GetAbilitySystemComponent())
 	{
-		if (GAST_ASC->bGivenAbility)
+		if (GetAbilitySystemComponent()->bGivenAbility)
 		{
-			OninitializeStartupAbilities(GAST_ASC);
+			BroadcastInitValues();
 		}
 		else
 		{
-			GAST_ASC->OnStartupAbilitiesGivenDelegate.AddUObject(this,& UOverlayWidgetController::OninitializeStartupAbilities);
+			GetAbilitySystemComponent()->OnStartupAbilitiesGivenDelegate.AddUObject(this,& UOverlayWidgetController::BroadcastInitValues);
 		}
 		
-		GAST_ASC->AllAssetTagsContainerDelegate.AddLambda(
+		GetAbilitySystemComponent()->AllAssetTagsContainerDelegate.AddLambda(
          [this](const FGameplayTagContainer& TagContainer)
          {
          	for (const auto& tag:TagContainer)
@@ -86,7 +77,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		);
 	}
 	/*---------------------------  PlayerStateChange  ----------------------------*/
-	PlayerState->OnLevelChangeDelegate.AddLambda(
+	GetPlayerState()->OnLevelChangeDelegate.AddLambda(
 [this](int32 NewLevel)
 		{
 			OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
@@ -95,28 +86,10 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 }
 
-void UOverlayWidgetController::OninitializeStartupAbilities(UGAST_AbilitySystemComponent* AbilitySystemComponent)
-{
-	//TODO 获取所有起始技能，查找他们所有的信息，广播给Widget
-	if (!AbilitySystemComponent->bGivenAbility)return;
-
-	FForEachAbility AbilityDelegate;
-	AbilityDelegate.BindLambda([this,AbilitySystemComponent](const FGameplayAbilitySpec& AbilitySpec)
-	{
-		//TODO 拿到AbilitySpec以后，要获取他们的AbilityInfo
-		FGameplayTag AbilityTag = AbilitySystemComponent->GetGameplayTagByAbilitySpec(AbilitySpec);
-		FAAbilityInfo AbilityInfo = AbilityInformation->GetMyAbilityInfoByAbilityTag(AbilityTag);
-		AbilityInfo.InputTag = AbilitySystemComponent->GetInputTagByAbilitySpec(AbilitySpec);
-		OnEachAbilityInfoDelegate.Broadcast(AbilityInfo);
-	});
-	
-	AbilitySystemComponent->ForEachAbility(AbilityDelegate);
-}
-
 void UOverlayWidgetController::OnXPChange(int32 XP)
 {
-	const AGAST_PlayerState* PlayerState=Cast<AGAST_PlayerState>(PS);
-	ULevelUpInfo* LevelUpInfo=PlayerState->LevelUpInformation;
+	
+	ULevelUpInfo* LevelUpInfo=GetPlayerState()->LevelUpInformation;
 	check(LevelUpInfo);
 	int32 Level=LevelUpInfo->FindLevelForXP(XP);
 	int32 MaxLevel=LevelUpInfo->LevelUpInfos.Num();

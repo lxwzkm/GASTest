@@ -80,7 +80,7 @@ void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclass
 			GiveAbility(AbilitySpec);//需要使用Spec
 		}
 		bGivenAbility=true;
-		OnStartupAbilitiesGivenDelegate.Broadcast(this);
+		OnStartupAbilitiesGivenDelegate.Broadcast();
 	}
 }
 
@@ -100,7 +100,7 @@ void UGAST_AbilitySystemComponent::OnRep_ActivateAbilities()
 	{
 		//广播一次之后，将其设置为true，防止多次进行广播
 		bGivenAbility=true;
-		OnStartupAbilitiesGivenDelegate.Broadcast(this);
+		OnStartupAbilitiesGivenDelegate.Broadcast();
 	}
 }
 

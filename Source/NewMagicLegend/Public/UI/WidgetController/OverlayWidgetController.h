@@ -33,7 +33,7 @@ struct FMessageDataRow:public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendUIMessageSignature,FMessageDataRow,Row);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEachAbilityInfo,const FAAbilityInfo&,AbilityInfo);
+
 /**
  * 
  */
@@ -49,9 +49,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TObjectPtr<UDataTable>MessageData;
-	
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GAS|Information")
-	TObjectPtr<UMyAbilityInfo> AbilityInformation;
 	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable,FGameplayTag Tag);
@@ -74,15 +71,11 @@ protected:
 	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
 	FOnSendUIMessageSignature SendUIMessageDelegate;
 
-	UPROPERTY(BlueprintAssignable,Category="GAS|Message")
-	FOnEachAbilityInfo OnEachAbilityInfoDelegate;
-
 	/*---------------------------  PlayerStateChange  ----------------------------*/
 	UPROPERTY(BlueprintAssignable,Category="GAS|PlayerState")
 	FOnPlayerStateChangeSignature OnPlayerLevelChangeDelegate;
 	
 	/*---------------------------  回调函数  -----------------------------*/
-	void OninitializeStartupAbilities(UGAST_AbilitySystemComponent* AbilitySystemComponent);
 	void OnXPChange(int32 XP);
 };
 

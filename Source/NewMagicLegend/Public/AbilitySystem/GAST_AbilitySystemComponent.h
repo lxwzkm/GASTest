@@ -8,7 +8,7 @@
 #include "GAST_AbilitySystemComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FAllAssetTagsContainer,const FGameplayTagContainer&/*GE所属的全部Tag*/)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnStartupAbilitiesGiven,UGAST_AbilitySystemComponent*)
+DECLARE_MULTICAST_DELEGATE(FOnStartupAbilitiesGiven)
 DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&)
 /**
  * 
