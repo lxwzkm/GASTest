@@ -12,45 +12,65 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/HUD/GAST_HUD.h"
 
-UOverlayWidgetController* UGAST_AbilitySystemLibrary::GetOverlayWidgetController(UObject* WordContext)
+bool UGAST_AbilitySystemLibrary::MakeWidgetControllerParams(UObject* WordContext, FWidgetControllerParams& OutWCParams,
+	AGAST_HUD*& OutHUD)
 {
 	if (APlayerController* PC= UGameplayStatics::GetPlayerController(WordContext,0))
 	{
-		if (AGAST_HUD* PlayerHUD=Cast<AGAST_HUD>(PC->GetHUD()))
+		OutHUD=Cast<AGAST_HUD>(PC->GetHUD());
+		if (OutHUD)
 		{
 			if (AGAST_PlayerState* PS= PC->GetPlayerState<AGAST_PlayerState>())
 			{
 				UAttributeSet* AS=PS->GetAttributeSet();
 				UAbilitySystemComponent* ASC=PS->GetAbilitySystemComponent();
-				const FWidgetControllerParams Params(PC,PS,AS,ASC);
-				return PlayerHUD->GetOverlayWidgetController(Params);
+				
+				OutWCParams.AttributeSet=AS;
+				OutWCParams.PlayerController=PC;
+				OutWCParams.PlayerState=PS;
+				OutWCParams.AbilitySystemComponent=ASC;
+				return true;
 			}
-			
 		}
+	}
+	return false;
+}
+
+UOverlayWidgetController* UGAST_AbilitySystemLibrary::GetOverlayWidgetController(UObject* WordContext)
+{
+	AGAST_HUD* PlayerHUD=nullptr;
+	FWidgetControllerParams WCParams;
+	if (MakeWidgetControllerParams(WordContext, WCParams, PlayerHUD))
+	{
+		return PlayerHUD->GetOverlayWidgetController(WCParams);
 	}
 	return nullptr;
 }
 
 UAttributeMenuWidgetController* UGAST_AbilitySystemLibrary::GetAttributeMenuWidgetController(UObject* WordContext)
 {
-	if (APlayerController* PC=UGameplayStatics::GetPlayerController(WordContext,0))
+	AGAST_HUD* PlayerHUD=nullptr;
+	FWidgetControllerParams WCParams;
+	if (MakeWidgetControllerParams(WordContext, WCParams, PlayerHUD))
 	{
-		if (AGAST_HUD*PlayerHUD=Cast<AGAST_HUD>(PC->GetHUD()))
-		{
-			if (AGAST_PlayerState* PS=PC->GetPlayerState<AGAST_PlayerState>())
-			{
-				UAttributeSet*AS=PS->GetAttributeSet();
-				UAbilitySystemComponent*ASC=PS->GetAbilitySystemComponent();
-				FWidgetControllerParams Params(PC,PS,AS,ASC);
-				return PlayerHUD->GetAttributeMenuWidgetController(Params);
-			}
-		}
+		return PlayerHUD->GetAttributeMenuWidgetController(WCParams);
+	}
+	return nullptr;
+}
+
+USpellMenuWidgetController* UGAST_AbilitySystemLibrary::GetSpellMenuWidgetController(UObject* WordContext)
+{
+	AGAST_HUD* PlayerHUD=nullptr;
+	FWidgetControllerParams WCParams;
+	if (MakeWidgetControllerParams(WordContext, WCParams, PlayerHUD))
+	{
+		return PlayerHUD->GetSpellMenuWidgetController(WCParams);
 	}
 	return nullptr;
 }
 
 void UGAST_AbilitySystemLibrary::InitializeDefaultsAttributes(const UObject* WordContext, ECharacterClass
-	CharacterClass, float Level, UAbilitySystemComponent* ASC)
+                                                              CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
 
 	AActor* AvatarActor= ASC->GetAvatarActor();

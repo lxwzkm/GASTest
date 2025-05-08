@@ -43,6 +43,8 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.Input_4=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.4"),FString("按键4"));
 	GameplayTags.Input_LMB=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.LMB"),FString("鼠标左键"));
 	GameplayTags.Input_RMB=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.RMB"),FString("鼠标右键"));
+	GameplayTags.Input_Passive_1=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Passive.1"),FString("被动效果1"));
+	GameplayTags.Input_Passive_2=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Passive.2"),FString("被动效果2"));
 
 	/*---------------------------------Damage Type------------------------------*/
 	GameplayTags.Damage=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"),FString("伤害"));

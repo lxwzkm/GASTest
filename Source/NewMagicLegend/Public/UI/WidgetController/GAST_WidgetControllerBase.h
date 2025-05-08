@@ -68,6 +68,9 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="GAS|Information")
 	TObjectPtr<UMyAbilityInfo> AbilityInformation;
 
+	/**
+	 * 初始化技能，子类调用
+	 */
 	void BroadcastAbilityInfo();
 protected:	
 	//获取数据的四个model部分

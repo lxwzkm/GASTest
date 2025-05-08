@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+class USpellMenuWidgetController;
 struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
 enum class ECharacterClass;
@@ -20,12 +21,22 @@ class NEWMAGICLEGEND_API UGAST_AbilitySystemLibrary : public UBlueprintFunctionL
 {
 	GENERATED_BODY()
 public:
-
-	UFUNCTION(BlueprintPure,Category="UI")
+	/**
+	 * @brief 初始化WidgetController以及获取他们
+	 * @param WordContext 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable)
+	static bool MakeWidgetControllerParams(UObject* WordContext,FWidgetControllerParams& OutWCParams,AGAST_HUD*& OutHUD);
+	
+	UFUNCTION(BlueprintPure,Category="UI",meta=(DefaultToSelf="WordContext"))
 	static UOverlayWidgetController* GetOverlayWidgetController(UObject* WordContext);
 
-	UFUNCTION(BlueprintPure,Category="UI")
+	UFUNCTION(BlueprintPure,Category="UI",meta=(DefaultToSelf="WordContext"))
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(UObject* WordContext);
+
+	UFUNCTION(BlueprintPure,Category="UI",meta=(DefaultToSelf="WordContext"))
+	static  USpellMenuWidgetController* GetSpellMenuWidgetController(UObject* WordContext);
 
 	/**
 	 * 初始化属性（敌人）

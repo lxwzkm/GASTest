@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
+#include "UI/WidgetController/SpellMenuWidgetController.h"
 
 UOverlayWidgetController* AGAST_HUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
@@ -27,6 +28,17 @@ UAttributeMenuWidgetController* AGAST_HUD::GetAttributeMenuWidgetController(cons
 		AttributeMenuWidgetController->BindCallbacksToDependencies();
 	}
 	return AttributeMenuWidgetController;
+}
+
+USpellMenuWidgetController* AGAST_HUD::GetSpellMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (SpellMenuWidgetController==nullptr)
+	{
+		SpellMenuWidgetController=NewObject<USpellMenuWidgetController>(this,SpellMenuWidgetControllerClass);
+		SpellMenuWidgetController->SetWidgetControllerParams(WCParams);
+		SpellMenuWidgetController->BindCallbacksToDependencies();
+	}
+	return SpellMenuWidgetController;
 }
 
 void AGAST_HUD::InitOverlayControllerParams(APlayerController* InPC, APlayerState* InPS, UAttributeSet* InAS,

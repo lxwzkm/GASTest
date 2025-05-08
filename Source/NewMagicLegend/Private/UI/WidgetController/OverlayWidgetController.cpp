@@ -54,11 +54,11 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	{
 		if (GetAbilitySystemComponent()->bGivenAbility)
 		{
-			BroadcastInitValues();
+			BroadcastAbilityInfo();
 		}
 		else
 		{
-			GetAbilitySystemComponent()->OnStartupAbilitiesGivenDelegate.AddUObject(this,& UOverlayWidgetController::BroadcastInitValues);
+			GetAbilitySystemComponent()->OnStartupAbilitiesGivenDelegate.AddUObject(this,& UOverlayWidgetController::BroadcastAbilityInfo);
 		}
 		
 		GetAbilitySystemComponent()->AllAssetTagsContainerDelegate.AddLambda(

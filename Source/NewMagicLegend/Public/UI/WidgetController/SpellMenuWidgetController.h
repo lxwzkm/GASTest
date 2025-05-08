@@ -9,11 +9,11 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class NEWMAGICLEGEND_API USpellMenuWidgetController : public UGAST_WidgetControllerBase
 {
 	GENERATED_BODY()
 public:
-	virtual void BroadcastInitValues();
-	virtual void BindCallbacksToDependencies();
+	virtual void BroadcastInitValues() override;
+	virtual void BindCallbacksToDependencies() override;
 };
