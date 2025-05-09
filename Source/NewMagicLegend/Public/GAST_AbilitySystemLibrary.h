@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+class UMyAbilityInfo;
 class USpellMenuWidgetController;
 struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
@@ -52,6 +53,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable,Category="Character")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WordContext);
+
+	UFUNCTION(BlueprintCallable,Category="Character")
+	static UMyAbilityInfo* GetAbilityInfo(const UObject* WordContext);
 
 	/**
 	 * 处理自定义的GameplayEffectContext事件

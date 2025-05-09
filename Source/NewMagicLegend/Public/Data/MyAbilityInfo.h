@@ -7,6 +7,8 @@
 #include "Engine/DataAsset.h"
 #include "MyAbilityInfo.generated.h"
 
+class UGameplayAbility;
+
 USTRUCT(BlueprintType)
 struct FAAbilityInfo
 {
@@ -18,6 +20,9 @@ struct FAAbilityInfo
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag=FGameplayTag();
 
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag StatusTag=FGameplayTag();
+
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	FGameplayTag CooldownTag=FGameplayTag();
 
@@ -26,6 +31,12 @@ struct FAAbilityInfo
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> BackgroundImage=nullptr;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	int32 LevelUpRequirement=1;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	TSubclassOf<UGameplayAbility>AbilityClass;
 };
 
 /**

@@ -4,7 +4,10 @@
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GAST_AbilitySystemLibrary.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 #include "AbilitySystem/Ability/GAST_GameplayAbilityBase.h"
+#include "Data/MyAbilityInfo.h"
 #include "Interaction/PlayerInterface.h"
 #include "NewMagicLegend/MyLog.h"
 
@@ -68,6 +71,34 @@ FGameplayTag UGAST_AbilitySystemComponent::GetInputTagByAbilitySpec(const FGamep
 	return FGameplayTag();
 }
 
+FGameplayTag UGAST_AbilitySystemComponent::GetAbilityStatusFromAbilitySpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (!AbilitySpec.DynamicAbilityTags.IsEmpty())
+	{
+		for (FGameplayTag StatusTag:AbilitySpec.DynamicAbilityTags)
+		{
+			if (StatusTag.MatchesTag(FGameplayTag::RequestGameplayTag("Ability.Status")))
+			{
+				return StatusTag;
+			}
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayAbilitySpec* UGAST_AbilitySystemComponent::GetAbilitySpecFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	for (auto& AbilitySpec:GetActivatableAbilities())
+	{
+		for (FGameplayTag Tag:AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(AbilityTag))
+				return &AbilitySpec;
+		}
+	}
+	return nullptr;
+}
+
 void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbility)
 {
 	for (auto Ability:StartupAbility)
@@ -77,6 +108,8 @@ void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclass
 		if (const UGAST_GameplayAbilityBase* PlayerAbility=Cast<UGAST_GameplayAbilityBase>(AbilitySpec.Ability))
 		{//将初始能力中的输入Tag与AbilitySpec绑定，并提交，后续激活时需要对比输入Tag
 			AbilitySpec.DynamicAbilityTags.AddTag(PlayerAbility->StartupInputTag);
+			//将技能状态添加上去
+			AbilitySpec.DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Locked);
 			GiveAbility(AbilitySpec);//需要使用Spec
 		}
 		bGivenAbility=true;
@@ -86,6 +119,7 @@ void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclass
 
 void UGAST_AbilitySystemComponent::GiveCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbility)
 {
+	FScopedAbilityListLock AbilityListLock(*this);
 	for (auto AbilitySpec:StartupPassiveAbility)
 	{
 		FGameplayAbilitySpec Ability= FGameplayAbilitySpec(AbilitySpec,1);
@@ -130,6 +164,26 @@ void UGAST_AbilitySystemComponent::AbilityInputReleased(const FGameplayTag& Inpu
 		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
 			AbilitySpecInputReleased(AbilitySpec);
+		}
+	}
+}
+
+void UGAST_AbilitySystemComponent::UpdateAbilityStatus(int32 Level)
+{
+	UMyAbilityInfo* AbilityInfo=UGAST_AbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	for (auto Info:AbilityInfo->AbilityInformation)
+	{
+		if (Level<Info.LevelUpRequirement)continue;
+		if (!Info.AbilityTag.IsValid())continue;
+
+		if (GetAbilitySpecFromAbilityTag(Info.AbilityTag)==nullptr)
+		{
+			FGameplayAbilitySpec AbilitySpec=FGameplayAbilitySpec(Info.AbilityClass,1);
+			AbilitySpec.DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Eligible);
+			GiveAbility(AbilitySpec);
+			
+			//使其立刻Replicate
+			MarkAbilitySpecDirty(AbilitySpec);
 		}
 	}
 }

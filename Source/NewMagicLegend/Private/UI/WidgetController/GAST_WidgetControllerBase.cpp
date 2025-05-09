@@ -71,8 +71,11 @@ void UGAST_WidgetControllerBase::BroadcastAbilityInfo()
 	{
 		//TODO 拿到AbilitySpec以后，要获取他们的AbilityInfo
 		FGameplayTag AbilityTag = MyAbilitySystemComponent->GetGameplayTagByAbilitySpec(AbilitySpec);
+		
 		FAAbilityInfo AbilityInfo = AbilityInformation->GetMyAbilityInfoByAbilityTag(AbilityTag);
 		AbilityInfo.InputTag = MyAbilitySystemComponent->GetInputTagByAbilitySpec(AbilitySpec);
+		AbilityInfo.StatusTag=MyAbilitySystemComponent->GetAbilityStatusFromAbilitySpec(AbilitySpec);
+		
 		OnEachAbilityInfoDelegate.Broadcast(AbilityInfo);
 	});
 	

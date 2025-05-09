@@ -126,6 +126,14 @@ UCharacterClassInfo* UGAST_AbilitySystemLibrary::GetCharacterClassInfo(const UOb
 	return Gamemodebase->CharacterClassInfo;
 }
 
+UMyAbilityInfo* UGAST_AbilitySystemLibrary::GetAbilityInfo(const UObject* WordContext)
+{
+	AGAST_Gamemodebase*Gamemodebase=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(WordContext));
+	if (Gamemodebase==nullptr)return nullptr;
+
+	return Gamemodebase->AbilityInformation;
+}
+
 bool UGAST_AbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& GameplayEffectContextHandle)
 {
 	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();

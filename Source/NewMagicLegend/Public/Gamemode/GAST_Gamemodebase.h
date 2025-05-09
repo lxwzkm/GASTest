@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GAST_Gamemodebase.generated.h"
+class UMyAbilityInfo;
 class UCharacterClassInfo;
 /**
  * 
@@ -17,4 +18,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
+
+	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
+	TObjectPtr<UMyAbilityInfo>AbilityInformation;
 };

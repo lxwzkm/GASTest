@@ -76,9 +76,21 @@ void FGameplayTags::InitializeGameplayTags()
 	/*----------------------------------AbilityTag----------------------------*/
 	GameplayTags.Ability_Attack=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Attack"),FString("物理攻击标签"));
 	GameplayTags.Ability_Summom=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Summon"),FString("召唤攻击标签"));
+
+	GameplayTags.Ability_HitReact=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.HitReact"),FString("受击反应标签"));
+	GameplayTags.Ability_Status_Locked=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.Locked"),FString("技能锁定状态"));
+	GameplayTags.Ability_Status_Eligible=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.Eligible"),FString("技能可解锁状态"));
+	GameplayTags.Ability_Status_Unlocked=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.UnLocked"),FString("技能未锁定状态"));
+	GameplayTags.Ability_Status_Equipped=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.Equipped"),FString("技能装备状态"));
+
+	GameplayTags.Ability_Type_Offsive=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Type.Offsive"),FString("主动类型的技能"));
+	GameplayTags.Ability_Type_Passive=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Type.Passive"),FString("被动类型的技能"));
+	
 	GameplayTags.Ability_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Fire.FireBolt"),FString("火球术标签"));
+	GameplayTags.Ability_Lightning_Electrocute=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Lightning.Electrocute"),FString("闪电术标签"));
 
 	/*----------------------------------CooldownTag----------------------------*/
 	GameplayTags.Cooldown_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBolt"),FString("火球术CD"));
+	GameplayTags.Cooldown_Lightning_Electrocute=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Lightning.Electrocute"),FString("闪电术CD"));
 
 }

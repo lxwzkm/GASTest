@@ -81,11 +81,24 @@ public:
 	FGameplayTag Ability_Attack;
 	FGameplayTag Ability_Summom;
 
+	/* ------------ AbilityTag --------------*/
+	FGameplayTag Ability_HitReact;
+
+	FGameplayTag Ability_Status_Locked;
+	FGameplayTag Ability_Status_Eligible;
+	FGameplayTag Ability_Status_Unlocked;
+	FGameplayTag Ability_Status_Equipped;
+
+	FGameplayTag Ability_Type_Offsive;
+	FGameplayTag Ability_Type_Passive;
+
 	/*---------Cooldown Tag------------*/
 	FGameplayTag Cooldown_Fire_FireBolt;
+	FGameplayTag Cooldown_Lightning_Electrocute;
 
 	//人物用来确定UI图片的标签
 	FGameplayTag Ability_Fire_FireBolt;
+	FGameplayTag Ability_Lightning_Electrocute;
 	
 	
 private:

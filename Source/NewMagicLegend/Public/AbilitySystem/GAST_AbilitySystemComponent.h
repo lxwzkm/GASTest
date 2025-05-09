@@ -38,7 +38,9 @@ public:
 
 	static FGameplayTag GetGameplayTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetInputTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
-	
+	static FGameplayTag GetAbilityStatusFromAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
+
+	FGameplayAbilitySpec* GetAbilitySpecFromAbilityTag(const FGameplayTag& AbilityTag);
 	/**
 	 * @brief 这个函数的作用是初始化GA
 	 * @param StartupAbility 初始化能力数组，在蓝图中设置
@@ -56,6 +58,8 @@ public:
 	 * @param InputTag 输入标签
 	 */
 	void AbilityInputReleased(const FGameplayTag& InputTag);
+
+	void UpdateAbilityStatus(int32 Level);
 
 	/**
 	 * @brief 这个是升级的时候增加属性点的函数
