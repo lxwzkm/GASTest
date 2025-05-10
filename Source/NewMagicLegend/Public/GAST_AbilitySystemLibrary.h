@@ -56,6 +56,8 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="Character")
 	static UMyAbilityInfo* GetAbilityInfo(const UObject* WordContext);
+	UFUNCTION(BlueprintCallable,Category="Character")
+	static UMyAbilityInfo* GetAbilityInfoFromPlayerState(const UObject* WordContext);
 
 	/**
 	 * 处理自定义的GameplayEffectContext事件

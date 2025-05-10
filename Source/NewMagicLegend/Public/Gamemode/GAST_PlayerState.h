@@ -43,6 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="LevelInformation")
 	TObjectPtr<ULevelUpInfo>LevelUpInformation;
 
+	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
+	TObjectPtr<UMyAbilityInfo>AbilityInformation;
+
 	/*----------------- 处理经验值和升级 -----------------------------------*/
 	FOnPlayerStateChangedSignature OnXPChangeDelegate;
 	FOnPlayerStateChangedSignature OnLevelChangeDelegate;

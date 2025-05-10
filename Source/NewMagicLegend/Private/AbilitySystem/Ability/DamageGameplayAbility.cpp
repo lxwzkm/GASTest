@@ -26,3 +26,16 @@ FTagMontage UDamageGameplayAbility::GetRandomTagMontage(const TArray<FTagMontage
 	}
 	return FTagMontage();
 }
+
+float UDamageGameplayAbility::GetDamageByDamageTypes(float InLevel, const FGameplayTag& DamageType)
+{
+	check(DamageTypes.Contains(DamageType));
+	for (auto& Pair:DamageTypes)
+	{
+		if (Pair.Key.MatchesTagExact(DamageType))
+		{
+			return Pair.Value.GetValueAtLevel(InLevel);
+		}
+	}
+	return 0.0f;
+}

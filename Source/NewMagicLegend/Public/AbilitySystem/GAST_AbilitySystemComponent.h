@@ -10,6 +10,7 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FAllAssetTagsContainer,const FGameplayTagContainer&/*GE所属的全部Tag*/)
 DECLARE_MULTICAST_DELEGATE(FOnStartupAbilitiesGiven)
 DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&)
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAbilityStatusChanged,const FGameplayTag& /* AbilityTag */,const FGameplayTag& /* StatusTag*/,int32/*AbilityLevel*/);
 /**
  * 
  */
@@ -27,6 +28,7 @@ public:
 	//用来向WidgetController广播所有应用的Effect的Tag
 	FAllAssetTagsContainer AllAssetTagsContainerDelegate;
 	FOnStartupAbilitiesGiven OnStartupAbilitiesGivenDelegate;
+	FOnAbilityStatusChanged OnAbilityStatusChangedDelegate;
 	
 	bool bGivenAbility=false;
 
@@ -68,6 +70,15 @@ public:
 	void UpgradeAttributePoints(const FGameplayTag& AttributeTag);
 	UFUNCTION(Server, Reliable)
 	void Server_UpgradeAttributePoints(const FGameplayTag& AttributeTag);
+	/**
+     * @brief 这个是花费技能点的函数
+	 * @param AttributeTag 属性标签
+	*/
+	UFUNCTION(Server, Reliable)
+	void Server_SpelldSpellPoints(const FGameplayTag& AbilityTag);
+
+	
+	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag,FString& OutDescription,FString& OutNextDescription);
 protected:
 	/**
 	 * @brief 回调函数，当GE被应用的时候触发，声明在AbilitySystemComponent.h中
@@ -77,6 +88,9 @@ protected:
 	 */
 	UFUNCTION(Client,Reliable)
 	void Client_AppliedGameplayEffect(UAbilitySystemComponent*AbilitySystemComponent, const FGameplayEffectSpec&EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
+
+	UFUNCTION(Client,Reliable)
+	void Client_ChangeAbilityStatus(const FGameplayTag& AbilityTag,const FGameplayTag& StatusTag,int32 AbilityLevel);
 
 	//因为激活技能只有服务器调用，重写激活的复制的回到函数，好让广播信息可以发送到客户端
 	virtual void OnRep_ActivateAbilities() override;

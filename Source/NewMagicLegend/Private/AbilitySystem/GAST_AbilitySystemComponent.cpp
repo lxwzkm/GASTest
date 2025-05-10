@@ -92,7 +92,7 @@ FGameplayAbilitySpec* UGAST_AbilitySystemComponent::GetAbilitySpecFromAbilityTag
 	{
 		for (FGameplayTag Tag:AbilitySpec.Ability.Get()->AbilityTags)
 		{
-			if (Tag.MatchesTag(AbilityTag))
+			if (Tag.MatchesTagExact(AbilityTag))
 				return &AbilitySpec;
 		}
 	}
@@ -109,7 +109,7 @@ void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclass
 		{//将初始能力中的输入Tag与AbilitySpec绑定，并提交，后续激活时需要对比输入Tag
 			AbilitySpec.DynamicAbilityTags.AddTag(PlayerAbility->StartupInputTag);
 			//将技能状态添加上去
-			AbilitySpec.DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Locked);
+			AbilitySpec.DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Equipped);
 			GiveAbility(AbilitySpec);//需要使用Spec
 		}
 		bGivenAbility=true;
@@ -184,8 +184,14 @@ void UGAST_AbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 			
 			//使其立刻Replicate
 			MarkAbilitySpecDirty(AbilitySpec);
+			Client_ChangeAbilityStatus(Info.AbilityTag,FGameplayTags::Get().Ability_Status_Eligible,1);
 		}
 	}
+}
+
+void UGAST_AbilitySystemComponent::Client_ChangeAbilityStatus_Implementation(const FGameplayTag& AbilityTag,const FGameplayTag& StatusTag,int32 AbilityLevel)
+{
+	OnAbilityStatusChangedDelegate.Broadcast(AbilityTag,StatusTag,AbilityLevel);
 }
 
 void UGAST_AbilitySystemComponent::UpgradeAttributePoints(const FGameplayTag& AttributeTag)
@@ -208,4 +214,56 @@ void UGAST_AbilitySystemComponent::Server_UpgradeAttributePoints_Implementation(
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(),AttributeTag,EventData);
 
 	IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(),-1);
+}
+
+void UGAST_AbilitySystemComponent::Server_SpelldSpellPoints_Implementation(const FGameplayTag& AbilityTag)
+{
+	if (FGameplayAbilitySpec* AbilitySpec=GetAbilitySpecFromAbilityTag(AbilityTag))
+	{
+		FGameplayTags GameplayTags=FGameplayTags::Get();
+		if (GetAvatarActor()->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(),-1);
+		}
+	
+		FGameplayTag Status= GetAbilityStatusFromAbilitySpec(*AbilitySpec);
+		if (Status.MatchesTagExact(GameplayTags.Ability_Status_Eligible))
+		{
+			//技能解锁
+			AbilitySpec->DynamicAbilityTags.RemoveTag(GameplayTags.Ability_Status_Eligible);
+			AbilitySpec->DynamicAbilityTags.AddTag(GameplayTags.Ability_Status_Unlocked);
+			Status=GameplayTags.Ability_Status_Unlocked;
+		}
+		else if (Status.MatchesTagExact(GameplayTags.Ability_Status_Equipped)||Status.MatchesTagExact(GameplayTags.Ability_Status_Unlocked))
+		{
+			//技能升级
+			AbilitySpec->Level++;
+			
+		}
+		Client_ChangeAbilityStatus(AbilityTag,Status,AbilitySpec->Level);
+		MarkAbilitySpecDirty(*AbilitySpec);
+	}
+}
+
+bool UGAST_AbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag,FString& OutDescription, FString& OutNextDescription)
+{
+	if (FGameplayAbilitySpec* AbilitySpec=GetAbilitySpecFromAbilityTag(AbilityTag))
+	{
+		UGAST_GameplayAbilityBase* AbilityBase=Cast<UGAST_GameplayAbilityBase>(AbilitySpec->Ability);
+		OutDescription=AbilityBase->GetCurrentLevelDescription(AbilitySpec->Level);
+		OutNextDescription=AbilityBase->GetNextLevelDescription(AbilitySpec->Level+1);
+		return true;
+	}
+	
+	UMyAbilityInfo* AbilityInfo = UGAST_AbilitySystemLibrary::GetAbilityInfoFromPlayerState(GetAvatarActor());
+	if (!AbilityTag.IsValid() || AbilityTag.MatchesTagExact(FGameplayTags::Get().Ability_None))
+	{
+		OutDescription = FString();
+	}
+	else
+	{
+		OutDescription = UGAST_GameplayAbilityBase::GetLockedDescription(AbilityInfo->GetMyAbilityInfoByAbilityTag(AbilityTag).LevelUpRequirement);
+	}
+	OutNextDescription = FString();
+	return false;
 }

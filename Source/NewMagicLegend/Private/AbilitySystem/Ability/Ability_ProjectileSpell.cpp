@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Actor/GAST_Projectile.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 void UAbility_ProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -62,4 +63,38 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation,con
 	
 	ProjectileSpawn->DamageSpecHandle=SpecHandle;
 	ProjectileSpawn->FinishSpawning(SpawnTranform);
+}
+
+FString UAbility_ProjectileSpell::GetCurrentLevelDescription(int32 Level)
+{
+	const float Damage= GetDamageByDamageTypes(Level,FGameplayTags::Get().Damage_Fire);
+	const float Cost=GetManaCost(Level);
+	const float CD=GetCooldown(Level);
+	FString Description=FString::Printf(TEXT(
+		"<Title>火球术</>\n\n"
+		"<Default>当前等级：</><Level>%d</>\n"
+		"<Default>当前法力消耗:</><ManaCost>%.2f</>\n"
+		"<Default>当前CD:</><Cooldown>%.1f</>\n\n"
+		"<Default>发射%d个火球，"
+		"造成火系伤害</><Damage>%.2f</>"
+		"<Default>火系伤害有一定几率造成燃烧效果</>"
+		),Level,FMath::Abs(Cost),CD,Level,Damage);
+	return Description;
+}
+
+FString UAbility_ProjectileSpell::GetNextLevelDescription(int32 Level)
+{
+	const float Damage= GetDamageByDamageTypes(Level,FGameplayTags::Get().Damage_Fire);
+	const float Cost=GetManaCost(Level);
+	const float CD=GetCooldown(Level);
+	FString Description=FString::Printf(TEXT(
+		"<Title>火球术</>\n\n"
+		"<Default>下一等级：</><Level>%d</>\n"
+		"<Default>法力消耗:</><ManaCost>%.2f</>\n"
+		"<Default>CD:</><Cooldown>%.1f</>\n\n"
+		"<Default>发射%d个火球，"
+		"造成火系伤害</><Damage>%.2f</>"
+		"<Default>火系伤害有一定几率造成燃烧效果</>"
+		),Level,FMath::Abs(Cost),CD,FMath::Clamp(Level,1,3),Damage);
+	return Description;
 }

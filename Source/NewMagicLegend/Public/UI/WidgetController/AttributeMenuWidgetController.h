@@ -24,9 +24,6 @@ public:
 	FAttributeInfoSignature AttributeInfoDelegate;
 
 	UPROPERTY(BlueprintAssignable,Category="GAS|PlayerState")
-	FOnPlayerStateChangeSignature OnSpellPointsChangeDelegate;
-
-	UPROPERTY(BlueprintAssignable,Category="GAS|PlayerState")
 	FOnPlayerStateChangeSignature OnAttributePointsChangeDelegate;
 
 	UFUNCTION(BlueprintCallable)

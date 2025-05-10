@@ -113,6 +113,11 @@ void AMyGAST_Character::AddToLevel_Implementation(int32 InLevel)
 	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
 	check(MyPlayerState);
 	MyPlayerState->AddToLevel(InLevel);
+
+	if (UGAST_AbilitySystemComponent* MyASC=Cast<UGAST_AbilitySystemComponent>(GetAbilitySystemComponent()))
+	{
+		MyASC->UpdateAbilityStatus(MyPlayerState->GetPlayerLevel());
+	}
 	
 }
 

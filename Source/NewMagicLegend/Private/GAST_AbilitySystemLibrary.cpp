@@ -134,6 +134,13 @@ UMyAbilityInfo* UGAST_AbilitySystemLibrary::GetAbilityInfo(const UObject* WordCo
 	return Gamemodebase->AbilityInformation;
 }
 
+UMyAbilityInfo* UGAST_AbilitySystemLibrary::GetAbilityInfoFromPlayerState(const UObject* WordContext)
+{
+	AGAST_PlayerState* PS=Cast<AGAST_PlayerState>(UGameplayStatics::GetPlayerState(WordContext,0));
+	if (PS==nullptr)return nullptr;
+	return PS->AbilityInformation;
+}
+
 bool UGAST_AbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& GameplayEffectContextHandle)
 {
 	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();

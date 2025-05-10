@@ -30,12 +30,6 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 		);
 	}
 
-	GetPlayerState()->OnSpellPointsChangeDelegate.AddLambda(
-[this](int32 NewSpellPoints)
-	{
-		OnSpellPointsChangeDelegate.Broadcast(NewSpellPoints);
-	}
-);
 	GetPlayerState()->OnAttributePointsChangeDelegate.AddLambda(
 [this](int32 NewAttributePoints)
 	{
@@ -60,5 +54,4 @@ void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayAttri
 	AttributeInfoDelegate.Broadcast(AttributeInfo);
 
 	OnAttributePointsChangeDelegate.Broadcast(GetPlayerState()->GetAttributePoints());
-	OnSpellPointsChangeDelegate.Broadcast(GetPlayerState()->GetSpellPoints());
 }

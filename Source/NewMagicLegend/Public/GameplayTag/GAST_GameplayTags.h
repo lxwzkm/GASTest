@@ -80,6 +80,7 @@ public:
 	//AI来激活攻击任务的标签 区分不同技能类型
 	FGameplayTag Ability_Attack;
 	FGameplayTag Ability_Summom;
+	FGameplayTag Ability_None;
 
 	/* ------------ AbilityTag --------------*/
 	FGameplayTag Ability_HitReact;
