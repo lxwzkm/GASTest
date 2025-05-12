@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GAST_AbilityType.h"
 #include "AbilitySystem/Ability/GAST_GameplayAbilityBase.h"
 #include "Interaction/CombatInterface.h"
 #include "DamageGameplayAbility.generated.h"
@@ -18,16 +19,31 @@ class NEWMAGICLEGEND_API UDamageGameplayAbility : public UGAST_GameplayAbilityBa
 public:
 	UFUNCTION(BlueprintCallable)
 	void CauseDamageToTarget(AActor* TargetActor);
+
+	FDamageEffectParams MakeDamageParams(AActor* TargetActor);
 protected:
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect>DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly,Category="Damage")
-	TMap<FGameplayTag,FScalableFloat>DamageTypes;
+	FGameplayTag DamageType;
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
+	FScalableFloat DamageValue;
+
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
+	float Debuff_Chance=20;
+
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
+	float Debuff_Damage=5;
+
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
+	float Debuff_Duration=5;
+
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
+	float Debuff_Frequency=1;
 
 	UFUNCTION(BlueprintPure)
 	FTagMontage GetRandomTagMontage(const TArray<FTagMontage>& TagMontages);
 	
-	float GetDamageByDamageTypes(float InLevel,const FGameplayTag& DamageType);
 };

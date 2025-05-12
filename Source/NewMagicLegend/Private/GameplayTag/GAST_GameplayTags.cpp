@@ -53,11 +53,27 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.Damage_Arcane=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Arcane"),FString("奥术伤害"));
 	GameplayTags.Damage_Physical=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Physical"),FString("物理伤害"));
 
-	/*----------------------------------DamageTypesToResistance----------------------------*/
+	/*---------------------------------Debuff Type------------------------------*/
+	GameplayTags.Debuff_Burn=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn"),FString("火系伤害Debuff"));
+	GameplayTags.Debuff_Shock=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Shock"),FString("雷系伤害Debuff"));
+	GameplayTags.Debuff_Arcane=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Arcane"),FString("奥术伤害Debuff"));
+	GameplayTags.Debuff_Physical=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Physical"),FString("物理伤害Debuff"));
+	GameplayTags.Debuff_Chance=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Chance"),FString("Debuff几率"));
+	GameplayTags.Debuff_Damage=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Damage"),FString("Debuff伤害"));
+	GameplayTags.Debuff_Duration=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Duration"),FString("Debuff持续时间"));
+	GameplayTags.Debuff_Frequency=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Frequency"),FString("Debuff触发频率"));
+	
+	/*----------------------------------TMap  DamageTypesToResistance----------------------------*/
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire,GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lightning,GameplayTags.Attributes_Resistance_Lightning);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane,GameplayTags.Attributes_Resistance_Arcane);
 	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical,GameplayTags.Attributes_Resistance_Physical);
+
+	/*----------------------------------TMap  DamageTypesToDebuff----------------------------*/
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Fire,GameplayTags.Debuff_Burn);
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Lightning,GameplayTags.Debuff_Shock);
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Arcane,GameplayTags.Debuff_Arcane);
+	GameplayTags.DamageTypesToDebuff.Add(GameplayTags.Damage_Physical,GameplayTags.Debuff_Physical);
 
 	GameplayTags.Effect_HitReact=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"),FString("受击反应标签"));
 	

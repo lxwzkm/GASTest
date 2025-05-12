@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
+#include "GAST_AbilityType.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "NiagaraComponent.h"
 #include "GAST_Projectile.generated.h"
 
+struct FDamageEffectParams;
 class UProjectileMovementComponent;
 class USphereComponent;
 
@@ -24,7 +26,7 @@ public:
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
 	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
-	FGameplayEffectSpecHandle DamageSpecHandle;
+	FDamageEffectParams DamageEffectParams;
 
 	/**
 	 * @brief 与下面的bHit一起，防止特效和声音因为Destroy先到而Overlap尚未触发而导致的特效声音无法播放而重写destroy函数
@@ -33,8 +35,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	void OnHit();
 
-	
+
 	/**
 	 * @brief 碰撞的回调函数
 	 */

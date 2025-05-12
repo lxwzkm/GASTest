@@ -77,6 +77,8 @@ protected:
 	
 	/*---------------------------  回调函数  -----------------------------*/
 	void OnXPChange(int32 XP);
+	UFUNCTION()
+	void OnAbilityEquiped(const FGameplayTag& AbilityTag,const FGameplayTag& Status,const FGameplayTag& SlotTag,const FGameplayTag& PreviousSlot);
 };
 
 template <typename T>

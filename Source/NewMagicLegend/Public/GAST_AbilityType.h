@@ -14,6 +14,49 @@
  * if(RepBits & 1<<2) 想当于在检查倒数第三个位是否为1;
  */
 
+class UGameplayEffect;
+
+USTRUCT(BlueprintType)
+struct FDamageEffectParams
+{
+	GENERATED_BODY()
+	FDamageEffectParams(){}
+
+	UPROPERTY()
+	TObjectPtr<UObject>WorldContext=nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent>SourceASC=nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent>TargetASC=nullptr;
+
+	UPROPERTY()
+	TSubclassOf<UGameplayEffect> DamageEffectClass=nullptr;
+
+	UPROPERTY()
+	float BaseDamage=0;
+
+	UPROPERTY()
+	int32 AbilityLevel=1;
+
+	UPROPERTY()
+	FGameplayTag DamageType=FGameplayTag();
+
+	UPROPERTY()
+	float Debuff_Chance=0.f;
+
+	UPROPERTY()
+	float Debuff_Damage=0.f;
+
+	UPROPERTY()
+	float Debuff_Duration=0.f;
+
+	UPROPERTY()
+	float Debuff_Frequency=0.f;
+};
+
+
 USTRUCT(BlueprintType)
 struct FMyGameplayEffectContext:public FGameplayEffectContext
 {

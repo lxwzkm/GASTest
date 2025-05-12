@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+struct FDamageEffectParams;
 class UMyAbilityInfo;
 class USpellMenuWidgetController;
 struct FGameplayEffectContextHandle;
@@ -71,6 +72,9 @@ public:
 	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsBlocked);
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsCritical);
+
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static FGameplayEffectContextHandle ApplyDamageEffectToTarget(const FDamageEffectParams& DamageEffectParams);
 
 	/**
 	 * 获取半径内存活的所有玩家

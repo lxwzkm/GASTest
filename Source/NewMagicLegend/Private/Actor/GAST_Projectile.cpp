@@ -60,19 +60,22 @@ void AGAST_Projectile::BeginPlay()
 	
 }
 
+void AGAST_Projectile::OnHit()
+{
+	UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
+	if (LoopSoundComponent) LoopSoundComponent->Stop();
+	bHit=true;
+}
+
 void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AActor* OtherActor,UPrimitiveComponent* OtherComp,int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!DamageSpecHandle.Data.Get() || DamageSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser()==OtherActor)return;
+	AActor* SourceActor=DamageEffectParams.SourceASC->GetAvatarActor();
+	if (SourceActor == OtherActor)return;
 
-	if (!bHit)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-		if (LoopSoundComponent) LoopSoundComponent->Stop();
-		bHit=true;
-	}
+	if (!bHit)OnHit();
 
-	if (!UGAST_AbilitySystemLibrary::IsNotFriend(OtherActor,DamageSpecHandle.Data.Get()->GetEffectContext().GetEffectCauser()))
+	if (!UGAST_AbilitySystemLibrary::IsNotFriend(OtherActor,SourceActor))
 		return;
 	
 	if (HasAuthority())
@@ -80,7 +83,8 @@ void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AA
 
 		if (UAbilitySystemComponent* TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			TargetASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),TargetASC);
+			DamageEffectParams.TargetASC=TargetASC;
+			UGAST_AbilitySystemLibrary::ApplyDamageEffectToTarget(DamageEffectParams);
 		}
 		
 		Destroy();

@@ -6,6 +6,7 @@
 #include "AbilitySystem/GAST_AttributeSet.h"
 #include "Data/LevelUpInfo.h"
 #include "Gamemode/GAST_PlayerState.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 
 void UOverlayWidgetController::BroadcastInitValues()
 {
@@ -48,6 +49,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	);
 	
 	GetPlayerState()->OnXPChangeDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChange);
+	GetAbilitySystemComponent()->OnEquipAbilityDelegate.AddDynamic(this,& UOverlayWidgetController::OnAbilityEquiped);
 	
 	/*---------------------------  发消息给UI  ----------------------------*/
 	if (GetAbilitySystemComponent())
@@ -105,4 +107,23 @@ void UOverlayWidgetController::OnXPChange(int32 XP)
 		float XPPercent=static_cast<float>(RealXP)/static_cast<float>(DeltaRequirement);
 		OnXPChangeDelegate.Broadcast(XPPercent);
 	}
+}
+
+void UOverlayWidgetController::OnAbilityEquiped(const FGameplayTag& AbilityTag, const FGameplayTag& Status,
+	const FGameplayTag& SlotTag, const FGameplayTag& PreviousSlot)
+{
+	const FGameplayTags GameplayTags=FGameplayTags::Get();
+
+	//如果previousslot是有效的，就会广播一个空的给前面的slot
+	FAAbilityInfo LastInfo;
+	LastInfo.AbilityTag=GameplayTags.Ability_None;
+	LastInfo.StatusTag=GameplayTags.Ability_Status_Unlocked;
+	LastInfo.InputTag=PreviousSlot;
+	OnEachAbilityInfoDelegate.Broadcast(LastInfo);
+
+	//再将现在的广播出去，来设置icon和background
+	FAAbilityInfo CurrentInfo=AbilityInformation->GetMyAbilityInfoByAbilityTag(AbilityTag);
+	CurrentInfo.StatusTag=Status;
+	CurrentInfo.InputTag=SlotTag;
+	OnEachAbilityInfoDelegate.Broadcast(CurrentInfo);
 }

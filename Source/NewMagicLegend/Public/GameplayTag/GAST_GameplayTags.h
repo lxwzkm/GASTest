@@ -32,12 +32,6 @@ public:
 	FGameplayTag Attributes_Secondary_ManaRegeneration;
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
-
-	/*---------Resistance Attributes----------*/
-	FGameplayTag Attributes_Resistance_Fire;
-	FGameplayTag Attributes_Resistance_Lightning;
-	FGameplayTag Attributes_Resistance_Arcane;
-	FGameplayTag Attributes_Resistance_Physical;
 	
 	/*---------Meta Attributes----------*/
 	FGameplayTag Attributes_Meta_IncomingXP;
@@ -64,16 +58,31 @@ public:
 	FGameplayTag CombatSocket_LeftHand;
 	FGameplayTag CombatSocket_RightHand;
 	FGameplayTag CombatSocket_Tail;
+	
+	/*---------Resistance Attributes----------*/
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Physical;
 
+	/*---------Debuff Type----------*/
+	FGameplayTag Debuff_Burn;
+	FGameplayTag Debuff_Shock;
+	FGameplayTag Debuff_Arcane;
+	FGameplayTag Debuff_Physical;
+	FGameplayTag Debuff_Chance;
+	FGameplayTag Debuff_Damage;
+	FGameplayTag Debuff_Frequency;
+	FGameplayTag Debuff_Duration;
+	
 	/*---------MontageAttack Tag------------*/
 	FGameplayTag Montage_Attack_1;
 	FGameplayTag Montage_Attack_2;
 	FGameplayTag Montage_Attack_3;
 	FGameplayTag Montage_Attack_4;
-
-
-
+	
 	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
+	TMap<FGameplayTag,FGameplayTag> DamageTypesToDebuff;
 	
 	FGameplayTag Effect_HitReact;
 

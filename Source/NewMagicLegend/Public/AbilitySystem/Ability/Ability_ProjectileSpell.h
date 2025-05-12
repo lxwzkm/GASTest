@@ -27,8 +27,5 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AGAST_Projectile> ProjectileClass;
-
-	virtual FString GetCurrentLevelDescription(int32 Level) override;
-	virtual FString GetNextLevelDescription(int32 Level) override;
 	
 };

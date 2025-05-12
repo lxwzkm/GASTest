@@ -15,6 +15,8 @@ class NEWMAGICLEGEND_API UExecuCalcu_Damage : public UGameplayEffectExecutionCal
 	GENERATED_BODY()
 public:
 	UExecuCalcu_Damage();
+	void DetemineDebuff(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectSpec OwningSpec,
+	                    FAggregatorEvaluateParameters EvaluateParameters,TMap<FGameplayTag,FGameplayEffectAttributeCaptureDefinition>TagToDefs) const;
 
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

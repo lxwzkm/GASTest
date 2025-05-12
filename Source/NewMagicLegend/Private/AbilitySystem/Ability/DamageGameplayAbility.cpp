@@ -5,16 +5,32 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "GAST_AbilitySystemLibrary.h"
 
 void UDamageGameplayAbility::CauseDamageToTarget(AActor* TargetActor)
 {
 	FGameplayEffectSpecHandle DamageSpecHandle= MakeOutgoingGameplayEffectSpec(DamageEffectClass,1.f);
-	for (auto& pair:DamageTypes)
-	{
-		float DamageMagnitude=pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle,pair.Key,DamageMagnitude);
-	}
+
+	float DamageMagnitude=DamageValue.GetValueAtLevel(GetAbilityLevel());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle,DamageType,DamageMagnitude);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
+}
+
+FDamageEffectParams UDamageGameplayAbility::MakeDamageParams(AActor* TargetActor)
+{
+	FDamageEffectParams DamageParams;
+	DamageParams.WorldContext=GetAvatarActorFromActorInfo();
+	DamageParams.SourceASC=GetAbilitySystemComponentFromActorInfo();
+	DamageParams.AbilityLevel=GetAbilityLevel();
+	DamageParams.BaseDamage=DamageValue.GetValueAtLevel(20);//GetAbilityLevel()
+	DamageParams.DamageType=DamageType;
+	DamageParams.TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	DamageParams.Debuff_Chance=Debuff_Chance;
+	DamageParams.Debuff_Damage=Debuff_Damage;
+	DamageParams.Debuff_Duration=Debuff_Duration;
+	DamageParams.Debuff_Frequency=Debuff_Frequency;
+	DamageParams.DamageEffectClass=DamageEffectClass;
+	return DamageParams;
 }
 
 FTagMontage UDamageGameplayAbility::GetRandomTagMontage(const TArray<FTagMontage>& TagMontages)
@@ -25,17 +41,4 @@ FTagMontage UDamageGameplayAbility::GetRandomTagMontage(const TArray<FTagMontage
 		return TagMontages[Selection];
 	}
 	return FTagMontage();
-}
-
-float UDamageGameplayAbility::GetDamageByDamageTypes(float InLevel, const FGameplayTag& DamageType)
-{
-	check(DamageTypes.Contains(DamageType));
-	for (auto& Pair:DamageTypes)
-	{
-		if (Pair.Key.MatchesTagExact(DamageType))
-		{
-			return Pair.Value.GetValueAtLevel(InLevel);
-		}
-	}
-	return 0.0f;
 }

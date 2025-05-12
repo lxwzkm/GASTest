@@ -11,6 +11,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FAllAssetTagsContainer,const FGameplayTagCon
 DECLARE_MULTICAST_DELEGATE(FOnStartupAbilitiesGiven)
 DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAbilityStatusChanged,const FGameplayTag& /* AbilityTag */,const FGameplayTag& /* StatusTag*/,int32/*AbilityLevel*/);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnEquipAbility,const FGameplayTag&,AbilityTag,const FGameplayTag&,StatusTag,const FGameplayTag&,Slot,const FGameplayTag&,PreviousSlot);
 /**
  * 
  */
@@ -29,6 +30,9 @@ public:
 	FAllAssetTagsContainer AllAssetTagsContainerDelegate;
 	FOnStartupAbilitiesGiven OnStartupAbilitiesGivenDelegate;
 	FOnAbilityStatusChanged OnAbilityStatusChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnEquipAbility OnEquipAbilityDelegate;
 	
 	bool bGivenAbility=false;
 
@@ -41,8 +45,11 @@ public:
 	static FGameplayTag GetGameplayTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetInputTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetAbilityStatusFromAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
-
+	FGameplayTag GetInputTagByAbilityTag(const FGameplayTag& AbilityTag);
+	FGameplayTag GetStatusByAbiltyTag(const FGameplayTag& AbilityTag);
 	FGameplayAbilitySpec* GetAbilitySpecFromAbilityTag(const FGameplayTag& AbilityTag);
+
+	
 	/**
 	 * @brief 这个函数的作用是初始化GA
 	 * @param StartupAbility 初始化能力数组，在蓝图中设置
@@ -77,6 +84,14 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SpelldSpellPoints(const FGameplayTag& AbilityTag);
 
+	UFUNCTION(Server, Reliable)
+	void Server_EquipAbility(const FGameplayTag& AbilityTag,const FGameplayTag& SlotTag);
+	void ClearAbilityOfSlot(const FGameplayTag& SlotTag);
+	void ClearSlot(FGameplayAbilitySpec* AbilitySpec);
+	static bool AbilityHasSlot(const FGameplayAbilitySpec& AbilitySpec,const FGameplayTag& SlotTag);
+
+	UFUNCTION(Client, Reliable)
+	void Client_EquipAbility(const FGameplayTag& AbilityTag,const FGameplayTag& SlotTag,const FGameplayTag& StautsTag,const FGameplayTag& PreviousSlotTag);
 	
 	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag,FString& OutDescription,FString& OutNextDescription);
 protected:

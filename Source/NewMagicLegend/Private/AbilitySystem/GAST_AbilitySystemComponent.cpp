@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 
+#include <filesystem>
+
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GAST_AbilitySystemLibrary.h"
 #include "GameplayTag/GAST_GameplayTags.h"
@@ -84,6 +86,26 @@ FGameplayTag UGAST_AbilitySystemComponent::GetAbilityStatusFromAbilitySpec(const
 		}
 	}
 	return FGameplayTag();
+}
+
+FGameplayTag UGAST_AbilitySystemComponent::GetInputTagByAbilityTag(const FGameplayTag& AbilityTag)
+{
+	FGameplayTag InputTag=FGameplayTag();
+	if (FGameplayAbilitySpec* AbilitySpec=GetAbilitySpecFromAbilityTag(AbilityTag))
+	{
+		InputTag = GetInputTagByAbilitySpec(*AbilitySpec);
+	}
+	return InputTag;
+}
+
+FGameplayTag UGAST_AbilitySystemComponent::GetStatusByAbiltyTag(const FGameplayTag& AbilityTag)
+{
+	FGameplayTag Status=FGameplayTag();
+	if (FGameplayAbilitySpec* AbilitySpec=GetAbilitySpecFromAbilityTag(AbilityTag))
+	{
+		Status = GetAbilityStatusFromAbilitySpec(*AbilitySpec);
+	}
+	return Status;
 }
 
 FGameplayAbilitySpec* UGAST_AbilitySystemComponent::GetAbilitySpecFromAbilityTag(const FGameplayTag& AbilityTag)
@@ -243,6 +265,72 @@ void UGAST_AbilitySystemComponent::Server_SpelldSpellPoints_Implementation(const
 		Client_ChangeAbilityStatus(AbilityTag,Status,AbilitySpec->Level);
 		MarkAbilitySpecDirty(*AbilitySpec);
 	}
+}
+
+void UGAST_AbilitySystemComponent::Server_EquipAbility_Implementation(const FGameplayTag& AbilityTag,
+	const FGameplayTag& SlotTag)
+{
+	if (FGameplayAbilitySpec* AbilitySpec=GetAbilitySpecFromAbilityTag(AbilityTag))
+	{
+		const FGameplayTag PreviouSlot=GetInputTagByAbilitySpec(*AbilitySpec);
+		FGameplayTag Status= GetAbilityStatusFromAbilitySpec(*AbilitySpec);
+		
+		const bool bStatusVaild= Status==FGameplayTags::Get().Ability_Status_Equipped||Status==FGameplayTags::Get().Ability_Status_Unlocked;
+		if (bStatusVaild)
+		{
+			//清除当前要装备的插槽内的所有技能
+			ClearAbilityOfSlot(SlotTag);
+			//清除当前技能的插槽
+			ClearSlot(AbilitySpec);
+			//将技能装备到新插槽内
+			AbilitySpec->DynamicAbilityTags.AddTag(SlotTag);
+			if (Status.MatchesTagExact(FGameplayTags::Get().Ability_Status_Unlocked))
+			{
+				AbilitySpec->DynamicAbilityTags.RemoveTag(FGameplayTags::Get().Ability_Status_Unlocked);
+				AbilitySpec->DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Equipped);
+			}
+			MarkAbilitySpecDirty(*AbilitySpec);
+		}
+		Client_EquipAbility(AbilityTag,SlotTag,FGameplayTags::Get().Ability_Status_Equipped,PreviouSlot);
+	}
+}
+
+void UGAST_AbilitySystemComponent::ClearAbilityOfSlot(const FGameplayTag& SlotTag)
+{
+	FScopedAbilityListLock ScopedLocked(*this);
+	for (FGameplayAbilitySpec AbilitySpec:GetActivatableAbilities())
+	{
+		if (AbilityHasSlot(AbilitySpec, SlotTag))
+		{
+			ClearSlot(&AbilitySpec);
+		}
+	}
+}
+
+void UGAST_AbilitySystemComponent::ClearSlot( FGameplayAbilitySpec* AbilitySpec)
+{
+	FGameplayTag SlotTag=GetInputTagByAbilitySpec(*AbilitySpec);
+	AbilitySpec->DynamicAbilityTags.RemoveTag(SlotTag);
+	MarkAbilitySpecDirty(*AbilitySpec);
+}
+
+bool UGAST_AbilitySystemComponent::AbilityHasSlot(const FGameplayAbilitySpec& AbilitySpec,
+   const FGameplayTag& SlotTag)
+{
+	for (FGameplayTag Tag:AbilitySpec.DynamicAbilityTags)
+	{
+		if (Tag.MatchesTagExact(SlotTag))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void UGAST_AbilitySystemComponent::Client_EquipAbility_Implementation(const FGameplayTag& AbilityTag,
+	const FGameplayTag& SlotTag, const FGameplayTag& StautsTag, const FGameplayTag& PreviousSlotTag)
+{
+	OnEquipAbilityDelegate.Broadcast(AbilityTag,StautsTag,SlotTag,PreviousSlotTag);
 }
 
 bool UGAST_AbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag,FString& OutDescription, FString& OutNextDescription)

@@ -3,10 +3,12 @@
 
 #include "GAST_AbilitySystemLibrary.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GAST_AbilityType.h"
 #include "Data/CharacterClassInfo.h"
 #include "Gamemode/GAST_Gamemodebase.h"
 #include "Gamemode/GAST_PlayerState.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 #include "Interaction/CombatInterface.h"
 #include "UI/WidgetController/GAST_WidgetControllerBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -179,8 +181,27 @@ void UGAST_AbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& 
 	MyEffectContext->SetIsCriticalHit(bInIsCritical);
 }
 
+FGameplayEffectContextHandle UGAST_AbilitySystemLibrary::ApplyDamageEffectToTarget(const FDamageEffectParams& DamageEffectParams)
+{
+	const FGameplayTags& GameplayTags=FGameplayTags::Get();
+	AActor* SourceActor=DamageEffectParams.SourceASC->GetAvatarActor();
+	
+	FGameplayEffectContextHandle Context= DamageEffectParams.SourceASC->MakeEffectContext();
+	Context.AddSourceObject(SourceActor);
+	FGameplayEffectSpecHandle SpecHandle= DamageEffectParams.SourceASC->MakeOutgoingSpec(DamageEffectParams.DamageEffectClass,DamageEffectParams.AbilityLevel,Context);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,DamageEffectParams.DamageType,DamageEffectParams.BaseDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Debuff_Chance,DamageEffectParams.Debuff_Chance);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Debuff_Damage,DamageEffectParams.Debuff_Damage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Debuff_Duration,DamageEffectParams.Debuff_Duration);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Debuff_Frequency,DamageEffectParams.Debuff_Frequency);
+	
+	DamageEffectParams.TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return Context;
+}
+
 void UGAST_AbilitySystemLibrary::GetLivePlayersWithInRadius(const UObject* WordContext,
-	TArray<AActor*>& OutOverlapActors, const TArray<AActor*>& ActorsToIgnore, float Radius,const FVector& SphereOrigin)
+                                                            TArray<AActor*>& OutOverlapActors, const TArray<AActor*>& ActorsToIgnore, float Radius,const FVector& SphereOrigin)
 {
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActors(ActorsToIgnore);

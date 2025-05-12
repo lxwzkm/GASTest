@@ -24,6 +24,9 @@ struct FAAbilityInfo
 	FGameplayTag StatusTag=FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	FGameplayTag AbilityType=FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	FGameplayTag CooldownTag=FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
