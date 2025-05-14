@@ -7,6 +7,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"//FGameplayEffectModCallbackData类型必须包含该头文件
 #include "GAST_AbilitySystemLibrary.h"
+#include "GAST_AbilityType.h"
 #include "GameFramework/Character.h"
 #include "Gamemode/GAST_PlayerCOntroller.h"
 #include "Interaction/CombatInterface.h"
@@ -193,9 +194,12 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	
 	FEffectProperties EffectProperties;
 	SetEffectPropertiesByData(Data,EffectProperties);//将Source和Target数据封装成一个结构体，并依据Data内的数据设置好它
 
+	if (EffectProperties.TargetCharacter->Implements<UCombatInterface>() && ICombatInterface::Execute_IsDead(EffectProperties.TargetCharacter))return;
+		
 	if (Data.EvaluatedData.Attribute==GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
@@ -207,69 +211,126 @@ void UGAST_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 
 	if (Data.EvaluatedData.Attribute==GetIncomingDamageAttribute())
 	{
-		const float LocalDamage=GetIncomingDamage();
-		SetIncomingDamage(0.f);
-		if (LocalDamage>0.f)
-		{
-			const float NewHealth=GetHealth()-LocalDamage;
-			SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
-
-			const bool bFatal=NewHealth<=0.f;//是否是致命伤害
-			if (!bFatal)
-			{
-				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FGameplayTags::Get().Effect_HitReact);
-				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-			}
-			else
-			{
-				ICombatInterface* CombatInterface= Cast<ICombatInterface>(EffectProperties.TargetAvatarActor);
-				if (CombatInterface)
-				{
-					CombatInterface->Die();
-					SendXPReward(EffectProperties);
-				}
-			}
-			
-			const bool bIsBlockedHit=UGAST_AbilitySystemLibrary::IsBlockedHit(EffectProperties.GameplayEffectContextHandle);
-			const bool bIsCriticalHit=UGAST_AbilitySystemLibrary::IsCriticalHit(EffectProperties.GameplayEffectContextHandle);
-			ShowFloatingText(EffectProperties,LocalDamage,bIsBlockedHit,bIsCriticalHit);
-		}
+		HandleIncomingDamage(EffectProperties);
 	}
 	if (Data.EvaluatedData.Attribute==GetInComingXPAttribute())
 	{
-		const int32 LocalXP=GetInComingXP();
-		SetInComingXP(0.f);
-		if (LocalXP>0&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>()&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>())
+		HandleIncomingXP(EffectProperties);
+	}
+}
+
+void UGAST_AttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProperties)
+{
+	const float LocalDamage=GetIncomingDamage();
+	SetIncomingDamage(0.f);
+	if (LocalDamage>0.f)
+	{
+		const float NewHealth=GetHealth()-LocalDamage;
+		SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
+
+		const bool bFatal=NewHealth<=0.f;//是否是致命伤害
+		if (!bFatal)
 		{
-			int32 CurrentLevel=ICombatInterface::Execute_GetPlayerLevel(EffectProperties.SourceCharacter);
-			int32 CurrentXP=IPlayerInterface::Execute_GetXP(EffectProperties.SourceCharacter);
-
-			int32 NewLevel=IPlayerInterface::Execute_FindLevelForXP(EffectProperties.SourceCharacter,CurrentXP + LocalXP);
-			int32 DeltaLevel=NewLevel - CurrentLevel;
-			if (DeltaLevel>0)
-			{
-				IPlayerInterface::Execute_AddToLevel(EffectProperties.SourceCharacter,DeltaLevel);
-
-				int32 AttributePointsReward=0;
-				int32 SpellPointsReward=0;
-				for (int32 i=0;i<DeltaLevel;i++)
-				{
-					AttributePointsReward += IPlayerInterface::Execute_GetAttributePointsReward(EffectProperties.SourceCharacter,CurrentLevel+i);
-					SpellPointsReward += IPlayerInterface::Execute_GetSpellPointsReward(EffectProperties.SourceCharacter,CurrentLevel+i);
-				}
-				
-				IPlayerInterface::Execute_AddToAttributePoints(EffectProperties.SourceCharacter,AttributePointsReward);
-				IPlayerInterface::Execute_AddToSpellPoints(EffectProperties.SourceCharacter,SpellPointsReward);
-				
-				bTopOffHealth=true;
-				bTopOffMana=true;
-				
-				IPlayerInterface::Execute_LevelUp(EffectProperties.SourceCharacter);
-			}
-			
-			IPlayerInterface::Execute_AddToXP(EffectProperties.SourceCharacter,LocalXP);
+			FGameplayTagContainer TagContainer;
+			TagContainer.AddTag(FGameplayTags::Get().Effect_HitReact);
+			EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 		}
+		else
+		{
+			ICombatInterface* CombatInterface= Cast<ICombatInterface>(EffectProperties.TargetAvatarActor);
+			if (CombatInterface)
+			{
+				CombatInterface->Die();
+				SendXPReward(EffectProperties);
+			}
+		}
+			
+		const bool bIsBlockedHit=UGAST_AbilitySystemLibrary::IsBlockedHit(EffectProperties.GameplayEffectContextHandle);
+		const bool bIsCriticalHit=UGAST_AbilitySystemLibrary::IsCriticalHit(EffectProperties.GameplayEffectContextHandle);
+		ShowFloatingText(EffectProperties,LocalDamage,bIsBlockedHit,bIsCriticalHit);
+
+		if (UGAST_AbilitySystemLibrary::IsSuccessfulDebuff(EffectProperties.GameplayEffectContextHandle))
+		{
+			Debuff(EffectProperties);
+		}
+	}
+}
+
+void UGAST_AttributeSet::Debuff(const FEffectProperties& EffectProperties)
+{
+	FGameplayTags GameplayTags=FGameplayTags::Get();
+	FGameplayEffectContextHandle EffectContext=EffectProperties.SourceASC->MakeEffectContext();
+	EffectContext.AddSourceObject(EffectProperties.SourceCharacter);
+
+	FGameplayTag DamageType=UGAST_AbilitySystemLibrary::GetDamageType(EffectProperties.GameplayEffectContextHandle);
+	float DebuffDamage=UGAST_AbilitySystemLibrary::GetDebuffDamage(EffectProperties.GameplayEffectContextHandle);
+	float DebuffDuration=UGAST_AbilitySystemLibrary::GetDebuffDuration(EffectProperties.GameplayEffectContextHandle);
+	float DebuffFrequency=UGAST_AbilitySystemLibrary::GetDebuffFrequency(EffectProperties.GameplayEffectContextHandle);
+
+	FString DebuffName=FString::Printf(TEXT("DynamicDebuff_%s"),*DamageType.ToString());
+	UGameplayEffect* Effect=NewObject<UGameplayEffect>(GetTransientPackage(),FName(DebuffName));
+
+	Effect->DurationPolicy=EGameplayEffectDurationType::HasDuration;
+	Effect->Period=DebuffFrequency;
+	Effect->DurationMagnitude=FScalableFloat(DebuffDuration);
+
+	const FGameplayTag& DebuffTag=GameplayTags.DamageTypesToDebuff[DamageType];
+	Effect->InheritableGameplayEffectTags.AddTag(DebuffTag);
+
+	Effect->StackingType=EGameplayEffectStackingType::AggregateBySource;
+	Effect->StackLimitCount=1;
+
+	const int32 index=Effect->Modifiers.Num();
+	Effect->Modifiers.Add(FGameplayModifierInfo());
+	FGameplayModifierInfo& Modifier=Effect->Modifiers[index];
+
+	Modifier.ModifierMagnitude=FScalableFloat(DebuffDamage);
+	Modifier.ModifierOp=EGameplayModOp::Additive;
+	Modifier.Attribute=UGAST_AttributeSet::GetIncomingDamageAttribute();
+
+	if (FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext,1.f))
+	{
+		FMyGameplayEffectContext* MyGameplayEffectContext= static_cast<FMyGameplayEffectContext*>(MutableSpec->GetContext().Get());
+		TSharedPtr<FGameplayTag>DebuffGameplayTag=MakeShareable(new FGameplayTag(DamageType));
+		MyGameplayEffectContext->SetDamageType(DebuffGameplayTag);
+
+		EffectProperties.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
+	}
+}
+
+void UGAST_AttributeSet::HandleIncomingXP(const FEffectProperties& EffectProperties)
+{
+	const int32 LocalXP=GetInComingXP();
+	SetInComingXP(0.f);
+	if (LocalXP>0&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>()&&EffectProperties.SourceCharacter->Implements<UPlayerInterface>())
+	{
+		int32 CurrentLevel=ICombatInterface::Execute_GetPlayerLevel(EffectProperties.SourceCharacter);
+		int32 CurrentXP=IPlayerInterface::Execute_GetXP(EffectProperties.SourceCharacter);
+
+		int32 NewLevel=IPlayerInterface::Execute_FindLevelForXP(EffectProperties.SourceCharacter,CurrentXP + LocalXP);
+		int32 DeltaLevel=NewLevel - CurrentLevel;
+		if (DeltaLevel>0)
+		{
+			IPlayerInterface::Execute_AddToLevel(EffectProperties.SourceCharacter,DeltaLevel);
+
+			int32 AttributePointsReward=0;
+			int32 SpellPointsReward=0;
+			for (int32 i=0;i<DeltaLevel;i++)
+			{
+				AttributePointsReward += IPlayerInterface::Execute_GetAttributePointsReward(EffectProperties.SourceCharacter,CurrentLevel+i);
+				SpellPointsReward += IPlayerInterface::Execute_GetSpellPointsReward(EffectProperties.SourceCharacter,CurrentLevel+i);
+			}
+				
+			IPlayerInterface::Execute_AddToAttributePoints(EffectProperties.SourceCharacter,AttributePointsReward);
+			IPlayerInterface::Execute_AddToSpellPoints(EffectProperties.SourceCharacter,SpellPointsReward);
+				
+			bTopOffHealth=true;
+			bTopOffMana=true;
+				
+			IPlayerInterface::Execute_LevelUp(EffectProperties.SourceCharacter);
+		}
+			
+		IPlayerInterface::Execute_AddToXP(EffectProperties.SourceCharacter,LocalXP);
 	}
 }
 
@@ -288,6 +349,8 @@ void UGAST_AttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute
 		bTopOffMana=false;
 	}
 }
+
+
 
 void UGAST_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bIsBlockedHit,
                                           bool bIsCriticalHit)

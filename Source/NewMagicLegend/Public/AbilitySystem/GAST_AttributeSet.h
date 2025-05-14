@@ -193,6 +193,9 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 private:
+	void HandleIncomingDamage(const FEffectProperties& EffectProperties);
+	void HandleIncomingXP(const FEffectProperties& EffectProperties);
+	void Debuff(const FEffectProperties& EffectProperties);
 	void SetEffectPropertiesByData(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props);
 	void ShowFloatingText(const FEffectProperties& Props,float Damage,bool bIsBlockedHit,bool bIsCriticalHit);
 	void SendXPReward(const FEffectProperties& Props);

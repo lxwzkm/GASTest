@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+struct FGameplayTag;
 struct FDamageEffectParams;
 class UMyAbilityInfo;
 class USpellMenuWidgetController;
@@ -67,11 +68,31 @@ public:
 	static bool IsBlockedHit(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
 	UFUNCTION(BlueprintPure,Category="Context")
 	static bool IsCriticalHit(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static bool IsSuccessfulDebuff(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static float GetDebuffDamage(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static float GetDebuffDuration(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static float GetDebuffFrequency(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
 
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsBlocked);
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsCritical);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetIsSuccessfulDebuff(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsSuccessfulDebuff);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetDebuffDamage(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,float DebuffDamge);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetDebuffDuration(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,float DebuffDuration);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetDebuffFrequency(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,float DebuffFrequency);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetDamageType(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,const FGameplayTag& DamageType);
 
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static FGameplayEffectContextHandle ApplyDamageEffectToTarget(const FDamageEffectParams& DamageEffectParams);
@@ -92,3 +113,5 @@ public:
 
 	static int32 GetXPByClassAndLevel(const UObject* WordContext,ECharacterClass CharacterClass,int32 Level);
 };
+
+

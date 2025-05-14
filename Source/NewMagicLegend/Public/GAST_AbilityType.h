@@ -54,6 +54,7 @@ struct FDamageEffectParams
 
 	UPROPERTY()
 	float Debuff_Frequency=0.f;
+	
 };
 
 
@@ -65,8 +66,19 @@ public:
 
 	bool IsCriticalHit()const{return bCriticalHit;}
 	bool IsBlockHit()const{return bBlockHit;}
+	bool IsSuccessDebuff()const{return bIsSuccessfulDebuff;}
+	float GetDebuffDamage()const{return Debuff_Damage;}
+	float GetDebuffDuration()const{return Debuff_Duration;}
+	float GetDebuffFrequency()const{return Debuff_Frequency;}
+	TSharedPtr<FGameplayTag> GetDamageType()const{return DamageType;}
+	
 	void SetIsCriticalHit(const bool& InIsCriticalHit){bCriticalHit=InIsCriticalHit;}
 	void SetIsBlockHit(const bool& InIsBlockHit){bBlockHit=InIsBlockHit;}
+	void SetIsSuccessDebuff(const bool& InIsSuccess){bIsSuccessfulDebuff=InIsSuccess;}
+	void SetDebuff_Damage(const float& InDebuffDamage){Debuff_Damage=InDebuffDamage;}
+	void SetDebuff_Duration(const float& InDebuffDuration){Debuff_Duration=InDebuffDuration;}
+	void SetDebuff_Frequency(const float& InFrequency){Debuff_Frequency=InFrequency;}
+	void SetDamageType(const TSharedPtr<FGameplayTag>& InDamageType){DamageType=InDamageType;}
 	
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const override
@@ -103,6 +115,20 @@ protected:
 
 	UPROPERTY()
 	bool bBlockHit=false;
+
+	UPROPERTY()
+	bool bIsSuccessfulDebuff=false;
+
+	UPROPERTY()
+	float Debuff_Damage=0.f;
+
+	UPROPERTY()
+	float Debuff_Duration=0.f;
+
+	UPROPERTY()
+	float Debuff_Frequency=0.f;
+	
+	TSharedPtr<FGameplayTag> DamageType;
 };
 
 //此模板特化是 FGameplayEffectContext 能正确参与 UE 网络同步和内存管理的基石，缺少这些配置会导致运行时错误或数据不一致。
