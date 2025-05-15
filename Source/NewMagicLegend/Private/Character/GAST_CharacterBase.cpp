@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Debuff/DebuffNiagaraComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "NewMagicLegend/NewMagicLegend.h"
@@ -24,6 +25,10 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//实例化组件
 	Weapon->SetupAttachment(GetMesh(),FName("WeaponHandSocket"));//根据插槽名称设置武器的吸附插槽
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置组件的碰撞是否开启
+
+	BurnDebuffComponent=CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuff");
+	BurnDebuffComponent->SetupAttachment(GetRootComponent());
+	BurnDebuffComponent->DebuffTag=FGameplayTags::Get().Debuff_Burn;
 }
 
 UAbilitySystemComponent* AGAST_CharacterBase::GetAbilitySystemComponent() const
@@ -132,6 +137,17 @@ void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Dissove();
 	IsDead=true;
+	OnDeath.Broadcast(this);
+}
+
+FOnASCRegistered AGAST_CharacterBase::GetOnASCRegistered()
+{
+	return OnASCRegistered;
+}
+
+FOnDeath AGAST_CharacterBase::GetDeathDelegate()
+{
+	return OnDeath;
 }
 
 void AGAST_CharacterBase::BeginPlay()

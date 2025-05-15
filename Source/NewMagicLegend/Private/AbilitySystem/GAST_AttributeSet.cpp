@@ -12,7 +12,7 @@
 #include "Gamemode/GAST_PlayerCOntroller.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
-#include "Kismet/GameplayStatics.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UGAST_AttributeSet::UGAST_AttributeSet()
@@ -274,8 +274,12 @@ void UGAST_AttributeSet::Debuff(const FEffectProperties& EffectProperties)
 	Effect->Period=DebuffFrequency;
 	Effect->DurationMagnitude=FScalableFloat(DebuffDuration);
 
+	//UE5.3将标签管理的方式更改了
 	const FGameplayTag& DebuffTag=GameplayTags.DamageTypesToDebuff[DamageType];
-	Effect->InheritableGameplayEffectTags.AddTag(DebuffTag);
+	UTargetTagsGameplayEffectComponent& TargetTagsGameplayEffectComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
+	FInheritedTagContainer InheritableOwnedTagsContainer = TargetTagsGameplayEffectComponent.GetConfiguredTargetTagChanges(); //获取到标签容器
+	InheritableOwnedTagsContainer.AddTag(DebuffTag); //添加标签
+	TargetTagsGameplayEffectComponent.SetAndApplyTargetTagChanges(InheritableOwnedTagsContainer);
 
 	Effect->StackingType=EGameplayEffectStackingType::AggregateBySource;
 	Effect->StackLimitCount=1;
@@ -293,7 +297,7 @@ void UGAST_AttributeSet::Debuff(const FEffectProperties& EffectProperties)
 		FMyGameplayEffectContext* MyGameplayEffectContext= static_cast<FMyGameplayEffectContext*>(MutableSpec->GetContext().Get());
 		TSharedPtr<FGameplayTag>DebuffGameplayTag=MakeShareable(new FGameplayTag(DamageType));
 		MyGameplayEffectContext->SetDamageType(DebuffGameplayTag);
-
+		
 		EffectProperties.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
 	}
 }

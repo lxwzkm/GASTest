@@ -141,7 +141,7 @@ void AMyGAST_Enemy::InitActorInfo()
 	{
 		InitializeAttributes();
 	}
-	
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
 }
 
 void AMyGAST_Enemy::InitializeAttributes()

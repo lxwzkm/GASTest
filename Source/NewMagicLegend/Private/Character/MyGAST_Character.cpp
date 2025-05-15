@@ -175,6 +175,7 @@ void AMyGAST_Character::InitActorInfo()
 		}
 	}
 
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
 	//初始化主要信息，调用父类函数
 	InitializeAttributes();
 }

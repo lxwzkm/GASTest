@@ -11,6 +11,7 @@
 #include "Interaction/CombatInterface.h"
 #include "GAST_CharacterBase.generated.h"
 
+class UDebuffNiagaraComponent;
 enum class ECharacterClass;
 
 struct MyFormation
@@ -60,12 +61,19 @@ public:
 	/*-------CombatInterface-------*/
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie();
-	
+	virtual FOnASCRegistered GetOnASCRegistered() override;
+	virtual FOnDeath GetDeathDelegate() override;
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;//给玩家和敌人装备的武器的骨骼体组件
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	FOnASCRegistered OnASCRegistered;
+	FOnDeath OnDeath;
 
 	UPROPERTY(EditAnywhere,Category="Combat")
 	FName WeaponSocketName;

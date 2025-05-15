@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered,UAbilitySystemComponent*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath,AActor*,DeadActor);
 
 enum class ECharacterClass;
 class UNiagaraSystem;
@@ -80,6 +84,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	ECharacterClass GetCharacterClass();
+
+	virtual FOnASCRegistered GetOnASCRegistered()=0;
+	virtual FOnDeath GetDeathDelegate()=0;
 
 	virtual void Die()=0;
 
