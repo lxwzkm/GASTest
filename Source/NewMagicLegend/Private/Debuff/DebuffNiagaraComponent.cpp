@@ -26,9 +26,9 @@ void UDebuffNiagaraComponent::BeginPlay()
 	else if (CombatInterface)
 	{
 		//接收广播，当ASC有效时会广播
-		CombatInterface->GetOnASCRegistered().AddWeakLambda(GetOwner(),[this](UAbilitySystemComponent* ASC)
+		CombatInterface->GetOnASCRegistered().AddWeakLambda(GetOwner(),[this](UAbilitySystemComponent* InASC)
 		{
-			ASC->RegisterGameplayTagEvent(DebuffTag,EGameplayTagEventType::NewOrRemoved).AddUObject(this,&UDebuffNiagaraComponent::OnDebuffChanged);
+			InASC->RegisterGameplayTagEvent(DebuffTag,EGameplayTagEventType::NewOrRemoved).AddUObject(this,&UDebuffNiagaraComponent::OnDebuffChanged);
 		});
 	}
 	if (CombatInterface)

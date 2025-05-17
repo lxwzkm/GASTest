@@ -276,10 +276,12 @@ void UGAST_AttributeSet::Debuff(const FEffectProperties& EffectProperties)
 
 	//UE5.3将标签管理的方式更改了
 	const FGameplayTag& DebuffTag=GameplayTags.DamageTypesToDebuff[DamageType];
-	UTargetTagsGameplayEffectComponent& TargetTagsGameplayEffectComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
-	FInheritedTagContainer InheritableOwnedTagsContainer = TargetTagsGameplayEffectComponent.GetConfiguredTargetTagChanges(); //获取到标签容器
-	InheritableOwnedTagsContainer.AddTag(DebuffTag); //添加标签
-	TargetTagsGameplayEffectComponent.SetAndApplyTargetTagChanges(InheritableOwnedTagsContainer);
+	
+	UTargetTagsGameplayEffectComponent& TargetTagsComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
+	FInheritedTagContainer TagChanges = TargetTagsComponent.GetConfiguredTargetTagChanges();
+	TagChanges.Added.AddTag(DebuffTag);//TagChanges包含两个容器，Added 和Remove必须显示调用，才能正确添加Tag
+	TargetTagsComponent.SetAndApplyTargetTagChanges(TagChanges); //添加标签
+	
 
 	Effect->StackingType=EGameplayEffectStackingType::AggregateBySource;
 	Effect->StackLimitCount=1;
@@ -299,6 +301,7 @@ void UGAST_AttributeSet::Debuff(const FEffectProperties& EffectProperties)
 		MyGameplayEffectContext->SetDamageType(DebuffGameplayTag);
 		
 		EffectProperties.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
+		
 	}
 }
 

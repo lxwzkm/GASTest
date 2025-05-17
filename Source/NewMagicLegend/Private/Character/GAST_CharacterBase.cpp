@@ -15,7 +15,11 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 {
  
 	PrimaryActorTick.bCanEverTick = false;
-
+	
+	BurnDebuffComponent=CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuff");
+	BurnDebuffComponent->SetupAttachment(GetRootComponent());
+	BurnDebuffComponent->DebuffTag=FGameplayTags::Get().Debuff_Burn;
+	
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile,ECR_Overlap);
@@ -25,10 +29,7 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//实例化组件
 	Weapon->SetupAttachment(GetMesh(),FName("WeaponHandSocket"));//根据插槽名称设置武器的吸附插槽
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置组件的碰撞是否开启
-
-	BurnDebuffComponent=CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuff");
-	BurnDebuffComponent->SetupAttachment(GetRootComponent());
-	BurnDebuffComponent->DebuffTag=FGameplayTags::Get().Debuff_Burn;
+	
 }
 
 UAbilitySystemComponent* AGAST_CharacterBase::GetAbilitySystemComponent() const

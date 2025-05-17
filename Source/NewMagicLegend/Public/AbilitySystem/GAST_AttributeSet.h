@@ -183,6 +183,7 @@ public:
 	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance);
 	UFUNCTION()
 	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance);
+
 	
 
 	//2、重写控制LifeTime的函数,控制那些变量可以在服务器和客户端之间同步，任何有需要从服务器赋值到客户端的变量都要重写此函数
