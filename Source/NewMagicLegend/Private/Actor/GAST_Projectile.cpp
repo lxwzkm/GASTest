@@ -83,7 +83,21 @@ void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AA
 
 		if (UAbilitySystemComponent* TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
+			FVector DeathImpulse=GetActorForwardVector()*DamageEffectParams.DeathImpulseMagnitude;
+			DamageEffectParams.DeathImpulse=DeathImpulse;
 			DamageEffectParams.TargetASC=TargetASC;
+			const bool& bKnockback=FMath::RandRange(1.f,100.f)<DamageEffectParams.KnockBackChance;
+			if (bKnockback)
+			{
+				FRotator Rotation = GetActorRotation();
+				Rotation.Pitch = 30.f;
+				const FVector& KnockbackDirection = Rotation.Vector();
+				
+				const float& bKnockBackMagnitude=DamageEffectParams.KnockBackMagnitude;
+				const FVector& KnockBackForce=KnockbackDirection*bKnockBackMagnitude;
+				DamageEffectParams.KnockBackForce=KnockBackForce;
+				//DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + KnockBackForce, FColor::Red, false, 2.0f, 0, 2.0f);
+			}
 			UGAST_AbilitySystemLibrary::ApplyDamageEffectToTarget(DamageEffectParams);
 		}
 		

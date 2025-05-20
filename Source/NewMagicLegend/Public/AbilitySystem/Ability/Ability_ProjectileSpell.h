@@ -27,5 +27,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<AGAST_Projectile> ProjectileClass;
-	
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	int32 ProjectileNum;
 };

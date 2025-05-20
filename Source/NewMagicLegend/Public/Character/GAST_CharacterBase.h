@@ -49,7 +49,7 @@ public:
 	
 	/*-------CombatInterface-------*/
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-	virtual void Die() override;//处理角色死亡事件，只在服务器调用
+	virtual void Die(const FVector& DeathImpulse) override;//处理角色死亡事件，只在服务器调用
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTagMontage> GetTagMontages_Implementation() override;
@@ -59,10 +59,13 @@ public:
 	virtual void UpdateMinionCount_Implementation(int32 Amount = 1) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	/*-------CombatInterface-------*/
+	
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
-	virtual void Multicast_HandleDie();
+	virtual void Multicast_HandleDie(const FVector& DeathImpulse);
 	virtual FOnASCRegistered GetOnASCRegistered() override;
 	virtual FOnDeath GetDeathDelegate() override;
+	
+	
 protected:
 	virtual void BeginPlay() override;
 

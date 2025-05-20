@@ -16,4 +16,14 @@ class NEWMAGICLEGEND_API UProjectile_FireBolt : public UAbility_ProjectileSpell
 public:
 	virtual FString GetCurrentLevelDescription(int32 Level) override;
 	virtual FString GetNextLevelDescription(int32 Level) override;
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnPrijectiles(const FVector& TargetLocation,const FGameplayTag& CombatSocketTag,bool bOverridePitch,float PitchOverride,AActor* HomingTarget);
+protected:
+
+	UPROPERTY(EditAnywhere)
+	float ProjectileSpread=90.f;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxSpawnNum=5;
 };

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GAST_AbilityType.h"
+#include "ImageUtils.h"
 #include "Data/CharacterClassInfo.h"
 #include "Gamemode/GAST_Gamemodebase.h"
 #include "Gamemode/GAST_PlayerState.h"
@@ -224,6 +225,28 @@ FGameplayTag UGAST_AbilitySystemLibrary::GetDamageType(const FGameplayEffectCont
 	return FGameplayTag();
 }
 
+FVector UGAST_AbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& GameplayEffectContextHandle)
+{
+	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	const FMyGameplayEffectContext* MyEffectContext=static_cast<const FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		return MyEffectContext->GetDeathImpulse();
+	}
+	return FVector::ZeroVector;
+}
+
+FVector UGAST_AbilitySystemLibrary::GetKnockBackForce(const FGameplayEffectContextHandle& GameplayEffectContextHandle)
+{
+	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	const FMyGameplayEffectContext* MyEffectContext=static_cast<const FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		return MyEffectContext->GetKnockBackForce();
+	}
+	return FVector::ZeroVector;
+}
+
 void UGAST_AbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& GameplayEffectContextHandle,
                                                bool bInIsBlocked)
 {
@@ -285,6 +308,28 @@ void UGAST_AbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& Gam
 	
 }
 
+void UGAST_AbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& GameplayEffectContextHandle,
+	const FVector& InDeathImpulse)
+{
+	FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	FMyGameplayEffectContext* MyEffectContext=static_cast<FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		MyEffectContext->SetDeathImpulse(InDeathImpulse);
+	}
+}
+
+void UGAST_AbilitySystemLibrary::SetKnockBackForce(FGameplayEffectContextHandle& GameplayEffectContextHandle,
+	const FVector& InKnockBackForce)
+{
+	FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	FMyGameplayEffectContext* MyEffectContext=static_cast<FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		MyEffectContext->SetKnockBackForce(InKnockBackForce);
+	}
+}
+
 FGameplayEffectContextHandle UGAST_AbilitySystemLibrary::ApplyDamageEffectToTarget(const FDamageEffectParams& DamageEffectParams)
 {
 	const FGameplayTags& GameplayTags=FGameplayTags::Get();
@@ -292,6 +337,10 @@ FGameplayEffectContextHandle UGAST_AbilitySystemLibrary::ApplyDamageEffectToTarg
 	
 	FGameplayEffectContextHandle Context= DamageEffectParams.SourceASC->MakeEffectContext();
 	Context.AddSourceObject(SourceActor);
+	
+	SetDeathImpulse(Context,DamageEffectParams.DeathImpulse);
+	SetKnockBackForce(Context,DamageEffectParams.KnockBackForce);
+	
 	FGameplayEffectSpecHandle SpecHandle= DamageEffectParams.SourceASC->MakeOutgoingSpec(DamageEffectParams.DamageEffectClass,DamageEffectParams.AbilityLevel,Context);
 
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,DamageEffectParams.DamageType,DamageEffectParams.BaseDamage);
@@ -345,3 +394,21 @@ int32 UGAST_AbilitySystemLibrary::GetXPByClassAndLevel(const UObject* WordContex
 	}
 	return 0;
 }
+
+void UGAST_AbilitySystemLibrary::AsyncLoadImage(const FString& Path)
+{
+	AsyncTask(ENamedThreads::Type::AnyBackgroundThreadNormalTask,[Path]()
+	{
+		TArray<uint8> Data;
+		if (FFileHelper::LoadFileToArray(Data, *Path))
+		{
+			UTexture2D* Tex=FImageUtils::ImportBufferAsTexture2D(Data);
+
+			AsyncTask(ENamedThreads::Type::GameThread,[Tex,Path]()
+			{
+				
+			});
+		}
+	});
+}
+

@@ -17,6 +17,7 @@
 
 AMyGAST_Enemy::AMyGAST_Enemy()
 {
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	//实例化ASC组件和属性集
 	AbilitySystemComponent=CreateDefaultSubobject<UGAST_AbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -121,14 +122,14 @@ int32 AMyGAST_Enemy::GetPlayerLevel_Implementation()
 	return Level;
 }
 
-void AMyGAST_Enemy::Die()
+void AMyGAST_Enemy::Die(const FVector& DeathImpulse)
 {
 	SetLifeSpan(LifeSpan);
 	if (MyAIController&&MyAIController->GetBlackboardComponent())
 	{
 		MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("AmIDead"),true);
 	}
-	Super::Die();
+	Super::Die(DeathImpulse);
 }
 
 void AMyGAST_Enemy::InitActorInfo()

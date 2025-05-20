@@ -5,8 +5,8 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "GAST_AbilitySystemLibrary.h"
 #include "Actor/GAST_Projectile.h"
-#include "GameplayTag/GAST_GameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 void UAbility_ProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -30,6 +30,7 @@ void UAbility_ProjectileSpell::SpawnPrijectile(const FVector& TargetLocation,con
 	{
 		Rotation.Pitch=PitchOverride;
 	}
+	
 	FTransform SpawnTranform;
 	SpawnTranform.SetLocation(SocketLocation);
 	SpawnTranform.SetRotation(Rotation.Quaternion());

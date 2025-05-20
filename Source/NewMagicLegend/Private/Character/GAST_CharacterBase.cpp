@@ -24,6 +24,7 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile,ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
+	
 
 	/* 武器基类设置 */
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//实例化组件
@@ -69,10 +70,10 @@ UAnimMontage* AGAST_CharacterBase::GetHitReactMontage_Implementation()
 	return HitReactMontage;
 }
 
-void AGAST_CharacterBase::Die()
+void AGAST_CharacterBase::Die(const FVector& DeathImpulse)
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld,true));
-	Multicast_HandleDie();
+	Multicast_HandleDie(DeathImpulse);
 }
 
 bool AGAST_CharacterBase::IsDead_Implementation() const
@@ -122,21 +123,24 @@ FTagMontage AGAST_CharacterBase::GetTagMontageByTag_Implementation(const FGamepl
 	return FTagMontage();
 }
 
-void AGAST_CharacterBase::Multicast_HandleDie_Implementation()
+void AGAST_CharacterBase::Multicast_HandleDie_Implementation(const FVector& DeathImpulse)
 {
 	UGameplayStatics::PlaySoundAtLocation(this,DeathSound,GetActorLocation(),GetActorRotation());
-	
-	Weapon->SetEnableGravity(true);
+
 	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	Weapon->AddImpulse(DeathImpulse*0.1,NAME_None,true);
 	
-	 GetMesh()->SetSimulatePhysics(true);
-	 GetMesh()->SetEnableGravity(true);
-	 GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
-	 GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse,NAME_None,true);
 	
-	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissove();
+	BurnDebuffComponent->Deactivate();
 	IsDead=true;
 	OnDeath.Broadcast(this);
 }

@@ -88,7 +88,7 @@ public:
 	virtual FOnASCRegistered GetOnASCRegistered()=0;
 	virtual FOnDeath GetDeathDelegate()=0;
 
-	virtual void Die()=0;
+	virtual void Die(const FVector& DeathImpulse)=0;
 
 	
 };
