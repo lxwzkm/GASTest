@@ -26,4 +26,11 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	int32 MaxSpawnNum=5;
+
+	UPROPERTY(EditAnywhere)
+	float HomingAccelerateMin=1600;
+	UPROPERTY(EditAnywhere)
+	float HomingAccelerateMax=3200;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USceneComponent>SceneComponent;
 };

@@ -85,6 +85,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	ECharacterClass GetCharacterClass();
 
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	void SetInShockLoop(bool bInLoop);
+
 	virtual FOnASCRegistered GetOnASCRegistered()=0;
 	virtual FOnDeath GetDeathDelegate()=0;
 

@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "GameplayTag/GAST_GameplayTags.h"
@@ -98,6 +99,7 @@ void AGAST_PlayerCOntroller::AbilityInputPressed(FGameplayTag InputTag)
 		bTargeting=ThisActor?true:false;//通过ThisActor是否为空来判断bTargeting是否为真
 		bAutoRuning=false;//此时还不知道是否是短按，所以设置为false
 	}
+	if (GetASC())GetASC()->AbilityInputPressed(InputTag);
 
 }
 
@@ -167,6 +169,7 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 					bAutoRuning=true;
 				}
 			}
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ClickNiagaraSystem,CachedDestination);
 		}
 		FollowTime=0.f;
 		bTargeting=false;

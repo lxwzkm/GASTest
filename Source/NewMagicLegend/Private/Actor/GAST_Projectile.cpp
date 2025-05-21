@@ -39,13 +39,13 @@ AGAST_Projectile::AGAST_Projectile()
 
 void AGAST_Projectile::Destroyed()
 {
-	if (!bHit&&!HasAuthority())
+	if (LoopSoundComponent)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-		if (LoopSoundComponent) LoopSoundComponent->Stop();
-		bHit=true;
+		LoopSoundComponent->Stop();
+		LoopSoundComponent->DestroyComponent();
 	}
+	if (!bHit&&!HasAuthority()) OnHit();
+	
 	Super::Destroyed();
 }
 
@@ -64,7 +64,11 @@ void AGAST_Projectile::OnHit()
 {
 	UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-	if (LoopSoundComponent) LoopSoundComponent->Stop();
+	if (LoopSoundComponent)
+	{
+		LoopSoundComponent->Stop();
+		LoopSoundComponent->DestroyComponent();
+	}
 	bHit=true;
 }
 

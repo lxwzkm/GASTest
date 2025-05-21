@@ -121,6 +121,17 @@ public:
 
 	static int32 GetXPByClassAndLevel(const UObject* WordContext,ECharacterClass CharacterClass,int32 Level);
 
+	/**
+	 * @brief 计算平均分配的旋转角度
+	 * @param Forward 向前的向量
+	 * @param Axis围绕哪个轴旋转的向量
+	 * @param Spread 分散的总角度
+	 * @param NumRatators 分散的数量
+	 */
+	UFUNCTION(BlueprintPure,Category="Combat")
+	static TArray<FRotator> EvenlySpaceRotators(const FVector& Forward,const FVector& Axis,float Spread,int32 NumRatators);
+	UFUNCTION(BlueprintPure,Category="Combat")
+	static TArray<FVector> EvenlyRatatorVectors(const FVector& Forward,const FVector& Axis,float Spread,int32 NumVectors);
 
 	/**
 	 * 异步加载图片

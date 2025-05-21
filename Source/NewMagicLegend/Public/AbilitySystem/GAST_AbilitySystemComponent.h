@@ -56,6 +56,8 @@ public:
 	 */
 	void GiveCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbility);
 	void GiveCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbility);
+
+	void AbilityInputPressed(const FGameplayTag& InputTag);
 	
 	/**
 	 * @brief 这个函数是给Controller调用的用来根据InputTag激活GA的

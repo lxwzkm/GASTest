@@ -9,6 +9,7 @@
 #include "UI/Widget/GAST_FloatTextWidgetComponent.h"
 #include "GAST_PlayerCOntroller.generated.h"
 
+class UNiagaraSystem;
 class USplineComponent;
 class IEnemyInterface;
 struct FInputActionValue;
@@ -114,6 +115,9 @@ private:
 	float AutoRunAcceptionRadius=50.f;//允许停止的范围
 
 	TObjectPtr<USplineComponent> SplineComponent;//样条曲线
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 
 	void AutoRun();
 };

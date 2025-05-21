@@ -2,6 +2,10 @@
 
 
 #include "AbilitySystem/Ability/Projectile_FireBolt.h"
+
+#include "GAST_AbilitySystemLibrary.h"
+#include "Actor/GAST_Projectile.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -18,7 +22,7 @@ FString UProjectile_FireBolt::GetCurrentLevelDescription(int32 Level)
 		"<Default>发射 %d 个火球，"
 		"造成火系伤害</><Damage> %.1f </>\n"
 		"<Default>火系伤害有一定几率造成燃烧效果</>"
-		),Level,FMath::Abs(Cost),CD,Level,Damage);
+		),Level,FMath::Abs(Cost),CD,FMath::Min(Level,MaxSpawnNum),Damage);
 	return Description;
 }
 
@@ -35,7 +39,7 @@ FString UProjectile_FireBolt::GetNextLevelDescription(int32 Level)
 		"<Default>发射 %d 个火球，"
 		"造成火系伤害</><Damage> %.1f </>\n"
 		"<Default>火系伤害有一定几率造成燃烧效果</>"
-		),Level,FMath::Abs(Cost),CD,FMath::Clamp(Level,1,3),Damage);
+		),Level,FMath::Abs(Cost),CD,FMath::Min(Level,MaxSpawnNum),Damage);
 	return Description;
 }
 
@@ -51,29 +55,37 @@ void UProjectile_FireBolt::SpawnPrijectiles(const FVector& TargetLocation, const
 	{
 		Rotation.Pitch=PitchOverride;
 	}
-
+	int32 EffectProjectileNum=FMath::Min(MaxSpawnNum,GetAbilityLevel());
 	const FVector ForWard=Rotation.Vector();
-	const FVector LeftSpread=ForWard.RotateAngleAxis(-ProjectileSpread/2.f,FVector::UpVector);
-	const FVector RightSpread=ForWard.RotateAngleAxis(ProjectileSpread/2.f,FVector::UpVector);
+	TArray<FRotator> Rotators=UGAST_AbilitySystemLibrary::EvenlySpaceRotators(ForWard,FVector::UpVector,ProjectileSpread,EffectProjectileNum);
+	for (FRotator Rot:Rotators)
+	{
+		FTransform SpawnTranform;
+		SpawnTranform.SetLocation(SocketLocation);
+		SpawnTranform.SetRotation(Rot.Quaternion());
 	
-	//int32 ProjectileNum=FMath::Min(MaxSpawnNum,GetAbilityLevel());
-	if (ProjectileNum>1)
-	{
-		const float DeltaSpread=ProjectileSpread/(ProjectileNum-1);//将数量减一是为了发射物的散布，一个的时候不需要散布，两个的时候九十度一边一个，三个的时候，一个45度的间隔，刚好与数量相差一个
-		for (int32 i=0;i<ProjectileNum;i++)
-		{
-			const FVector Direction=LeftSpread.RotateAngleAxis(DeltaSpread*i,FVector::UpVector);
-			UKismetSystemLibrary::DrawDebugArrow(GetAvatarActorFromActorInfo(),SocketLocation+FVector(0,0,20),SocketLocation+Direction*100.f,1.f,FColor::Green,120.f,1.f);
-		}
-	}
-	else
-	{
-		const FVector Direction=ForWard;
-		UKismetSystemLibrary::DrawDebugArrow(GetAvatarActorFromActorInfo(),SocketLocation+FVector(0,0,20),SocketLocation+Direction*100.f,1.f,FColor::Green,120.f,1.f);
+		AGAST_Projectile*ProjectileSpawn= GetWorld()->SpawnActorDeferred<AGAST_Projectile>(
+			ProjectileClass,SpawnTranform,
+			GetOwningActorFromActorInfo(),
+			Cast<APawn>(GetOwningActorFromActorInfo()),
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
+		ProjectileSpawn->DamageEffectParams=MakeDamageParams(nullptr);
 
+		if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
+		{
+			ProjectileSpawn->ProjectileMovementComponent->HomingTargetComponent=HomingTarget->GetRootComponent();
+		
+		}
+		else
+		{
+			SceneComponent=NewObject<USceneComponent>(USceneComponent::StaticClass());
+			SceneComponent->SetWorldLocation(TargetLocation);
+			ProjectileSpawn->ProjectileMovementComponent->HomingTargetComponent=SceneComponent;
+		}
+		ProjectileSpawn->ProjectileMovementComponent->HomingAccelerationMagnitude=FMath::FRandRange(HomingAccelerateMin,HomingAccelerateMax);
+		ProjectileSpawn->ProjectileMovementComponent->bIsHomingProjectile=true;
+		
+		ProjectileSpawn->FinishSpawning(SpawnTranform);
 	}
-	
-	UKismetSystemLibrary::DrawDebugArrow(GetAvatarActorFromActorInfo(),SocketLocation,SocketLocation+ForWard*100.f,1.f,FColor::Red,120.f,1.f);
-	UKismetSystemLibrary::DrawDebugArrow(GetAvatarActorFromActorInfo(),SocketLocation,SocketLocation+LeftSpread*100.f,1.f,FColor::Red,120.f,1.f);
-	UKismetSystemLibrary::DrawDebugArrow(GetAvatarActorFromActorInfo(),SocketLocation,SocketLocation+RightSpread*100.f,1.f,FColor::Red,120.f,1.f);	
 }

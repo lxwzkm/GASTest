@@ -395,6 +395,47 @@ int32 UGAST_AbilitySystemLibrary::GetXPByClassAndLevel(const UObject* WordContex
 	return 0;
 }
 
+TArray<FRotator> UGAST_AbilitySystemLibrary::EvenlySpaceRotators(const FVector& Forward, const FVector& Axis,
+	float Spread, int32 NumRatators)
+{
+	TArray<FRotator> Rotators;
+	if (NumRatators > 0)
+	{
+		const FVector LeftSpread=Forward.RotateAngleAxis(-Spread/2.f,Axis);
+		const float DeltaSpread=Spread/(NumRatators-1);
+		for (int32 i=0;i<NumRatators;i++)
+		{
+			const FVector Direction=LeftSpread.RotateAngleAxis(DeltaSpread*i,FVector::UpVector);
+			Rotators.Add(Direction.Rotation());
+		}
+	}
+	else
+	{
+		Rotators.Add(Forward.Rotation());
+	}
+	return Rotators;
+}
+TArray<FVector> UGAST_AbilitySystemLibrary::EvenlyRatatorVectors(const FVector& Forward, const FVector& Axis,
+	float Spread, int32 NumVectors)
+{
+	TArray<FVector> Vectors;
+	if (NumVectors > 0)
+	{
+		const FVector LeftSpread=Forward.RotateAngleAxis(-Spread/2.f,Axis);
+		const float DeltaSpread=Spread/(NumVectors-1);
+		for (int32 i=0;i<NumVectors;i++)
+		{
+			const FVector Direction=LeftSpread.RotateAngleAxis(DeltaSpread*i,FVector::UpVector);
+			Vectors.Add(Direction);
+		}
+	}
+	else
+	{
+		Vectors.Add(Forward);
+	}
+	return Vectors;
+}
+
 void UGAST_AbilitySystemLibrary::AsyncLoadImage(const FString& Path)
 {
 	AsyncTask(ENamedThreads::Type::AnyBackgroundThreadNormalTask,[Path]()

@@ -149,6 +149,8 @@ void UGAST_AbilitySystemComponent::GiveCharacterPassiveAbilities(const TArray<TS
 	}
 }
 
+
+
 void UGAST_AbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();
@@ -157,6 +159,23 @@ void UGAST_AbilitySystemComponent::OnRep_ActivateAbilities()
 		//广播一次之后，将其设置为true，防止多次进行广播
 		bGivenAbility=true;
 		OnStartupAbilitiesGivenDelegate.Broadcast();
+	}
+}
+
+void UGAST_AbilitySystemComponent::AbilityInputPressed(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid())return;
+
+	for (auto& AbilitySpec:GetActivatableAbilities())
+	{
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			AbilitySpecInputPressed(AbilitySpec);
+			if (AbilitySpec.IsActive())
+			{
+				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed,AbilitySpec.Handle,AbilitySpec.ActivationInfo.GetActivationPredictionKey());
+			}
+		}
 	}
 }
 
@@ -183,9 +202,10 @@ void UGAST_AbilitySystemComponent::AbilityInputReleased(const FGameplayTag& Inpu
 
 	for (auto& AbilitySpec:GetActivatableAbilities())
 	{
-		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag) && AbilitySpec.IsActive())
 		{
 			AbilitySpecInputReleased(AbilitySpec);
+			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased,AbilitySpec.Handle,AbilitySpec.ActivationInfo.GetActivationPredictionKey());
 		}
 	}
 }
