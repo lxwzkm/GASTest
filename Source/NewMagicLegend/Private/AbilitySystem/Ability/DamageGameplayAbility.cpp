@@ -44,6 +44,11 @@ FDamageEffectParams UDamageGameplayAbility::MakeDamageParams(AActor* TargetActor
 	return DamageParams;
 }
 
+float UDamageGameplayAbility::GetDamageAtLevel()
+{
+	return DamageValue.GetValueAtLevel(GetAbilityLevel());
+}
+
 FTagMontage UDamageGameplayAbility::GetRandomTagMontage(const TArray<FTagMontage>& TagMontages)
 {
 	if (TagMontages.Num()>0)

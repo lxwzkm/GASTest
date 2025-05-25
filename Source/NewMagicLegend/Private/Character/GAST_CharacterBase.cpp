@@ -106,6 +106,11 @@ ECharacterClass AGAST_CharacterBase::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
+USkeletalMeshComponent* AGAST_CharacterBase::GetWeaponComponent_Implementation()
+{
+	return Weapon;
+}
+
 UNiagaraSystem* AGAST_CharacterBase::GetImpactEffect_Implementation()
 {
 	return ImpactEffect;

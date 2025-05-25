@@ -1,2 +1,7 @@
----,1,5,10,15,20,40
-Abilities.FireBolt,5,10,16,27,41,120
+---,1.000000,2.000000,40.000000
+Abilities.FireBolt,9.999995,200.000000
+Abilities.Melee,5.000000,7.500000,50.000000
+Abilities.Ranged,7.500000,35.000000
+Abilities.Electrocute,1.000000,20.000000
+Abilities.ArcaneShards,10.000000,200.000000
+Abilities.FireBlast,15.000000,150.000000

@@ -4,6 +4,7 @@
 #include "AbilityTasks/TargetDataUnderMouse.h"
 
 #include "Gamemode/GAST_PlayerCOntroller.h"
+#include "NewMagicLegend/NewMagicLegend.h"
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
@@ -44,7 +45,7 @@ void UTargetDataUnderMouse::SendMouseCursor()
 	FHitResult Hit;
 	if (APlayerController* PlayerController= Ability->GetCurrentActorInfo()->PlayerController.Get())
 	{
-		PlayerController->GetHitResultUnderCursor(ECC_Visibility,false,Hit);
+		PlayerController->GetHitResultUnderCursor(ECC_Target,false,Hit);
 	}
 
 	FGameplayAbilityTargetData_SingleTargetHit* Data=new FGameplayAbilityTargetData_SingleTargetHit();

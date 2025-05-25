@@ -88,6 +88,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void SetInShockLoop(bool bInLoop);
 
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	USkeletalMeshComponent* GetWeaponComponent();
+
 	virtual FOnASCRegistered GetOnASCRegistered()=0;
 	virtual FOnDeath GetDeathDelegate()=0;
 

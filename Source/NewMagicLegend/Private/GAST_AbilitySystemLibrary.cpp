@@ -375,6 +375,37 @@ void UGAST_AbilitySystemLibrary::GetLivePlayersWithInRadius(const UObject* WordC
 	}
 }
 
+void UGAST_AbilitySystemLibrary::GetCloestTargets(int32 MaxTargets, const TArray<AActor*>& Actors,
+	TArray<AActor*>& OutActors, const FVector& Origin)
+{
+	if (MaxTargets>=Actors.Num())
+	{
+		OutActors=Actors;
+		return;
+	}
+	
+	TMultiMap<float,AActor*> TargetsDistances;
+	for (AActor* Actor:Actors)
+	{
+		FVector ActorLocation=Actor->GetActorLocation();
+		float Distance=FVector::Distance(ActorLocation,Origin);
+		TargetsDistances.Add({Distance,Actor});
+	}
+	if (TargetsDistances.IsEmpty())return;
+	TargetsDistances.KeySort([](float A,float B){return A<B;});
+	for (auto Pair:TargetsDistances)
+	{
+		if (OutActors.Num()<MaxTargets)
+		{
+			OutActors.Add(Pair.Value);
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
 bool UGAST_AbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
 {
 	const bool bIsPlayer=FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));

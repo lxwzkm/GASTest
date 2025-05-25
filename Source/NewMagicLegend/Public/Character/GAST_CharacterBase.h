@@ -58,6 +58,7 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void UpdateMinionCount_Implementation(int32 Amount = 1) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
+	virtual USkeletalMeshComponent* GetWeaponComponent_Implementation() override;
 	/*-------CombatInterface-------*/
 	
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件

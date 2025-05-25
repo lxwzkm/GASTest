@@ -61,6 +61,16 @@ void AGAST_PlayerCOntroller::AutoRun()
 
 void AGAST_PlayerCOntroller::CursorTrace()
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		//如果在选中敌人的状态，取消高光
+		if (LastActor)LastActor->UnHighlightActor();
+		if (ThisActor)ThisActor->UnHighlightActor();
+		LastActor=nullptr;
+		ThisActor=nullptr;
+		return;
+	}
+	
 	GetHitResultUnderCursor(ECC_Visibility,false,UnderCursor);
 
 	if (!UnderCursor.bBlockingHit)return;//如果没有遇到阻挡，就返回
@@ -85,8 +95,8 @@ void AGAST_PlayerCOntroller::CursorTrace()
 		{
 			if (LastActor!=ThisActor)
 			{
-				LastActor->UnHighlightActor();
-				ThisActor->HightlightActor();
+				if (LastActor)LastActor->UnHighlightActor();
+				if (ThisActor)ThisActor->HightlightActor();
 			}
 		}
 	}
@@ -94,6 +104,10 @@ void AGAST_PlayerCOntroller::CursorTrace()
 
 void AGAST_PlayerCOntroller::AbilityInputPressed(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_Pressed))
+	{
+		return;
+	}
 	if (InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
 	{
 		bTargeting=ThisActor?true:false;//通过ThisActor是否为空来判断bTargeting是否为真
@@ -104,7 +118,12 @@ void AGAST_PlayerCOntroller::AbilityInputPressed(FGameplayTag InputTag)
 }
 
 void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
-{//只要输入的不是左键，就直接释放技能，因为普通输入没有Tag传入
+{
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_Held))
+	{
+		return;
+	}
+	//只要输入的不是左键，就直接释放技能，因为普通输入没有Tag传入
 	if (!InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
 	{
 		if (GetASC())
@@ -137,6 +156,10 @@ void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
 
 void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_Released))
+	{
+		return;
+	}
 	if (!InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
 	{
 		if (GetASC())
@@ -169,7 +192,12 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 					bAutoRuning=true;
 				}
 			}
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ClickNiagaraSystem,CachedDestination);
+			
+			if (GetASC() && !GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_Pressed))
+			{
+				//当按键是短按且GA中的Electrocute没有激活是才生成
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ClickNiagaraSystem,CachedDestination);
+			}
 		}
 		FollowTime=0.f;
 		bTargeting=false;

@@ -110,4 +110,10 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.Cooldown_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBolt"),FString("火球术CD"));
 	GameplayTags.Cooldown_Lightning_Electrocute=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Lightning.Electrocute"),FString("闪电术CD"));
 
+	/*----------------------------------PlayerTag----------------------------*/
+	GameplayTags.Player_Block_Held=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.Held"),FString("阻挡持续按键的Tag"));
+	GameplayTags.Player_Block_Pressed=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.Pressed"),FString("阻挡按键按下的Tag"));
+	GameplayTags.Player_Block_Released=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.Released"),FString("阻挡按键释放的Tag"));
+	GameplayTags.Player_Block_CursorTrace=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.CursorTrace"),FString("对鼠标追踪检测的阻挡的Tag"));
+
 }

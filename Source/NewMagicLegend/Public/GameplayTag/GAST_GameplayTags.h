@@ -109,7 +109,12 @@ public:
 	//人物用来确定UI图片的标签
 	FGameplayTag Ability_Fire_FireBolt;
 	FGameplayTag Ability_Lightning_Electrocute;
-	
+
+	/*---------Player Tag------------*/
+	FGameplayTag Player_Block_Pressed;
+	FGameplayTag Player_Block_Held;
+	FGameplayTag Player_Block_Released;
+	FGameplayTag Player_Block_CursorTrace;
 	
 private:
 	static FGameplayTags GameplayTags;
