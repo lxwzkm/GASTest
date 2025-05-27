@@ -67,13 +67,13 @@ public:
 
 	/*---------Debuff Type----------*/
 	FGameplayTag Debuff_Burn;
-	FGameplayTag Debuff_Shock;
 	FGameplayTag Debuff_Arcane;
 	FGameplayTag Debuff_Physical;
 	FGameplayTag Debuff_Chance;
 	FGameplayTag Debuff_Damage;
 	FGameplayTag Debuff_Frequency;
 	FGameplayTag Debuff_Duration;
+	FGameplayTag Debuff_Stun;
 	
 	/*---------MontageAttack Tag------------*/
 	FGameplayTag Montage_Attack_1;

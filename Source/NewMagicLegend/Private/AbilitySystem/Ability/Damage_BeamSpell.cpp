@@ -52,7 +52,13 @@ void UDamage_BeamSpell::TraceFirstActor(const FVector& TargetLocation)
 			MouseHitActor=HitResult.GetActor();
 		}
 	}
-	
+	if (ICombatInterface* CombatInterface=Cast<ICombatInterface>(OwnerCharacter))
+	{
+		if (!CombatInterface->GetDeathDelegate().IsAlreadyBound(this,&UDamage_BeamSpell::PrimaryActorDeath))
+		{
+			CombatInterface->GetDeathDelegate().AddDynamic(this,&UDamage_BeamSpell::PrimaryActorDeath);
+		}
+	}
 }
 
 void UDamage_BeamSpell::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets)
@@ -64,7 +70,18 @@ void UDamage_BeamSpell::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTar
 	UGAST_AbilitySystemLibrary::GetLivePlayersWithInRadius(GetAvatarActorFromActorInfo(),LiveCharacters,ActorsToIgnore,850.f,MouseHitActor->GetActorLocation());
 
 	int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel()-1,MaxNumAdditionalTargets);
-	NumAdditionalTargets=5;
+	//NumAdditionalTargets=5;
 
 	UGAST_AbilitySystemLibrary::GetCloestTargets(NumAdditionalTargets,LiveCharacters,OutAdditionalTargets,MouseHitActor->GetActorLocation());
+
+	for (AActor* Target:OutAdditionalTargets)
+	{
+		if (ICombatInterface* CombatInterface=Cast<ICombatInterface>(Target))
+		{
+			if (!CombatInterface->GetDeathDelegate().IsAlreadyBound(this,&UDamage_BeamSpell::AdditionalActorDeath))
+			{
+				CombatInterface->GetDeathDelegate().AddDynamic(this,&UDamage_BeamSpell::AdditionalActorDeath);
+			}
+		}
+	}
 }

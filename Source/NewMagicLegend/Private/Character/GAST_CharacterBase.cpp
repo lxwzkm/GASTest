@@ -7,9 +7,18 @@
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Debuff/DebuffNiagaraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "NewMagicLegend/NewMagicLegend.h"
+
+void AGAST_CharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AGAST_CharacterBase, bIsStunned);
+}
 
 AGAST_CharacterBase::AGAST_CharacterBase()
 {
@@ -147,7 +156,7 @@ void AGAST_CharacterBase::Multicast_HandleDie_Implementation(const FVector& Deat
 	Dissove();
 	BurnDebuffComponent->Deactivate();
 	IsDead=true;
-	OnDeath.Broadcast(this);
+	OnDeathDelegate.Broadcast(this);
 }
 
 FOnASCRegistered AGAST_CharacterBase::GetOnASCRegistered()
@@ -155,9 +164,15 @@ FOnASCRegistered AGAST_CharacterBase::GetOnASCRegistered()
 	return OnASCRegistered;
 }
 
-FOnDeath AGAST_CharacterBase::GetDeathDelegate()
+FOnDeathSignature& AGAST_CharacterBase::GetDeathDelegate()
 {
-	return OnDeath;
+	return OnDeathDelegate;
+}
+
+void AGAST_CharacterBase::ListenForStunChanged(const FGameplayTag DebuffTag, int32 NewCount)
+{
+	bIsStunned=NewCount>0.f;
+	GetCharacterMovement()->MaxWalkSpeed=bIsStunned?0.f:BaseWalkSpeed;
 }
 
 void AGAST_CharacterBase::BeginPlay()

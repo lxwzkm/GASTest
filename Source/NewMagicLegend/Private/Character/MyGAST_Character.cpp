@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Gamemode/GAST_PlayerCOntroller.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 #include "UI/HUD/GAST_HUD.h"
 
 AMyGAST_Character::AMyGAST_Character()
@@ -165,7 +166,8 @@ void AMyGAST_Character::InitActorInfo()
 	//顺便设置从父类继承的ASC和AS变量的指针
 	AbilitySystemComponent=AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet=AuraPlayerState->GetAttributeSet();
-
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTags::Get().Debuff_Stun,EGameplayTagEventType::NewOrRemoved).AddUObject(this,&AMyGAST_Character::ListenForStunChanged);
+	
 	//初始化UI Overlay的相关参数  PC可以有空的，因为客户端只有自己的Controller，服务器有所有的Controller
 	if (AGAST_PlayerCOntroller*PC=Cast<AGAST_PlayerCOntroller>(GetController()))//获取跟Gamemode内一样的Controller才能获取正确的HUD，从而初始化正确的AS和ASC
 	{

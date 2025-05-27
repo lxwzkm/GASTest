@@ -9,7 +9,7 @@
 #include "CombatInterface.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered,UAbilitySystemComponent*);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath,AActor*,DeadActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature,AActor*,DeadActor);
 
 enum class ECharacterClass;
 class UNiagaraSystem;
@@ -92,7 +92,7 @@ public:
 	USkeletalMeshComponent* GetWeaponComponent();
 
 	virtual FOnASCRegistered GetOnASCRegistered()=0;
-	virtual FOnDeath GetDeathDelegate()=0;
+	virtual FOnDeathSignature& GetDeathDelegate()=0;
 
 	virtual void Die(const FVector& DeathImpulse)=0;
 

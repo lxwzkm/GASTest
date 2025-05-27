@@ -38,7 +38,7 @@ class NEWMAGICLEGEND_API AGAST_CharacterBase : public ACharacter,public IAbility
 
 public:
 
-  
+  virtual  void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	AGAST_CharacterBase();
 	/*-------IAbilitySystemInterface-------*/
@@ -64,9 +64,9 @@ public:
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie(const FVector& DeathImpulse);
 	virtual FOnASCRegistered GetOnASCRegistered() override;
-	virtual FOnDeath GetDeathDelegate() override;
+	virtual FOnDeathSignature& GetDeathDelegate() override;
 	
-	
+	virtual void ListenForStunChanged(const FGameplayTag DebuffTag,int32 NewCount);
 protected:
 	virtual void BeginPlay() override;
 
@@ -77,7 +77,7 @@ protected:
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
 
 	FOnASCRegistered OnASCRegistered;
-	FOnDeath OnDeath;
+	FOnDeathSignature OnDeathDelegate;
 
 	UPROPERTY(EditAnywhere,Category="Combat")
 	FName WeaponSocketName;
@@ -152,6 +152,12 @@ protected:
 
 	/* --------- Minions --------- */
 	int32 MinionCount=0;
+
+	UPROPERTY(Replicated,BlueprintReadOnly)
+	bool bIsStunned=false;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Walk")
+	float BaseWalkSpeed=600.f;
 
 private:
 

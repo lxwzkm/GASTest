@@ -32,6 +32,8 @@ AMyGAST_Enemy::AMyGAST_Enemy()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+	BaseWalkSpeed=250.f;
 	
 }
 
@@ -137,7 +139,8 @@ void AMyGAST_Enemy::InitActorInfo()
 	//初始化ASC的OwnerActor和AvatarActor  客户端服务器都调用
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UGAST_AbilitySystemComponent>(AbilitySystemComponent)->AbilitySystemComponentSet();//通知已经初始化完成，可以进行委托绑定了
-
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTags::Get().Debuff_Stun,EGameplayTagEventType::NewOrRemoved).AddUObject(this,&AMyGAST_Enemy::ListenForStunChanged);
+	
 	if (HasAuthority())
 	{
 		InitializeAttributes();
@@ -148,4 +151,13 @@ void AMyGAST_Enemy::InitActorInfo()
 void AMyGAST_Enemy::InitializeAttributes()
 {
 	UGAST_AbilitySystemLibrary::InitializeDefaultsAttributes(this,CharacterClass,Level,AbilitySystemComponent);
+}
+
+void AMyGAST_Enemy::ListenForStunChanged(const FGameplayTag DebuffTag, int32 NewCount)
+{
+	Super::ListenForStunChanged(DebuffTag, NewCount);
+	if (MyAIController&&MyAIController->GetBlackboardComponent())
+	{
+		MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stun"),bIsStunned);
+	}
 }

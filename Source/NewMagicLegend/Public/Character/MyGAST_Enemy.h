@@ -25,6 +25,7 @@ public:
 	AMyGAST_Enemy();
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void ListenForStunChanged(const FGameplayTag DebuffTag, int32 NewCount) override;
 	
 	/*--------EnemyInterface-------*/
 	virtual void HightlightActor() override;//高亮显示的函数
@@ -40,9 +41,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly,Category="Combat")
 	bool bHitReact=false;
-
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Walk")
-	float BaseWalkSpeed=250.f;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
 	float LifeSpan=5.f;
