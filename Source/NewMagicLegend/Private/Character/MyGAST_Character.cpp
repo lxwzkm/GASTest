@@ -8,6 +8,7 @@
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Data/LevelUpInfo.h"
+#include "Debuff/DebuffNiagaraComponent.h"
 #include "Gamemode/GAST_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -54,6 +55,41 @@ void AMyGAST_Character::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 	
 	InitActorInfo();
+}
+
+void AMyGAST_Character::OnRep_Burn()
+{
+	if (bIsBurn)
+	{
+		BurnDebuffComponent->Activate();
+	}
+	else
+	{
+		BurnDebuffComponent->Deactivate();
+	}
+}
+
+void AMyGAST_Character::OnRep_Stunned()
+{
+	if (UGAST_AbilitySystemComponent* AuraASC = Cast<UGAST_AbilitySystemComponent>(AbilitySystemComponent))
+	{
+		const FGameplayTags& GameplayTags = FGameplayTags::Get();
+		FGameplayTagContainer BlockedTags;
+		BlockedTags.AddTag(GameplayTags.Player_Block_CursorTrace);
+		BlockedTags.AddTag(GameplayTags.Player_Block_Held);
+		BlockedTags.AddTag(GameplayTags.Player_Block_Pressed);
+		BlockedTags.AddTag(GameplayTags.Player_Block_Released);
+		if (bIsStunned)
+		{
+			AuraASC->AddLooseGameplayTags(BlockedTags);
+			StunDebuffComponent->Activate();
+		}
+		else
+		{
+			AuraASC->RemoveLooseGameplayTags(BlockedTags);
+			StunDebuffComponent->Deactivate();
+		}
+	}
 }
 
 void AMyGAST_Character::AddToXP_Implementation(int32 InXP)

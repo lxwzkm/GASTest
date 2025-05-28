@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Character/GAST_CharacterBase.h"
-#include "Data/CharacterClassInfo.h"
 #include "Interaction/EnemyInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "MyGAST_Enemy.generated.h"

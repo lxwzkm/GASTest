@@ -28,6 +28,10 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 	BurnDebuffComponent=CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuff");
 	BurnDebuffComponent->SetupAttachment(GetRootComponent());
 	BurnDebuffComponent->DebuffTag=FGameplayTags::Get().Debuff_Burn;
+
+	StunDebuffComponent=CreateDefaultSubobject<UDebuffNiagaraComponent>("StunDebuff");
+	StunDebuffComponent->SetupAttachment(GetRootComponent());
+	StunDebuffComponent->DebuffTag=FGameplayTags::Get().Debuff_Stun;
 	
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
@@ -154,12 +158,15 @@ void AGAST_CharacterBase::Multicast_HandleDie_Implementation(const FVector& Deat
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissove();
+	
 	BurnDebuffComponent->Deactivate();
+	StunDebuffComponent->Deactivate();
+	
 	IsDead=true;
 	OnDeathDelegate.Broadcast(this);
 }
 
-FOnASCRegistered AGAST_CharacterBase::GetOnASCRegistered()
+FOnASCRegistered& AGAST_CharacterBase::GetOnASCRegistered()
 {
 	return OnASCRegistered;
 }
@@ -173,6 +180,16 @@ void AGAST_CharacterBase::ListenForStunChanged(const FGameplayTag DebuffTag, int
 {
 	bIsStunned=NewCount>0.f;
 	GetCharacterMovement()->MaxWalkSpeed=bIsStunned?0.f:BaseWalkSpeed;
+}
+
+void AGAST_CharacterBase::OnRep_Stunned()
+{
+	
+}
+
+void AGAST_CharacterBase::OnRep_Burn()
+{
+	
 }
 
 void AGAST_CharacterBase::BeginPlay()

@@ -11,6 +11,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Debuff/DebuffNiagaraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "UI/Widget/GAST_UserWidgetBase.h"
@@ -161,3 +162,4 @@ void AMyGAST_Enemy::ListenForStunChanged(const FGameplayTag DebuffTag, int32 New
 		MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stun"),bIsStunned);
 	}
 }
+

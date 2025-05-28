@@ -91,7 +91,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	USkeletalMeshComponent* GetWeaponComponent();
 
-	virtual FOnASCRegistered GetOnASCRegistered()=0;
+	virtual FOnASCRegistered& GetOnASCRegistered()=0;
 	virtual FOnDeathSignature& GetDeathDelegate()=0;
 
 	virtual void Die(const FVector& DeathImpulse)=0;

@@ -63,10 +63,15 @@ public:
 	
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie(const FVector& DeathImpulse);
-	virtual FOnASCRegistered GetOnASCRegistered() override;
+	virtual FOnASCRegistered& GetOnASCRegistered() override;
 	virtual FOnDeathSignature& GetDeathDelegate() override;
 	
 	virtual void ListenForStunChanged(const FGameplayTag DebuffTag,int32 NewCount);
+
+	UFUNCTION()
+	virtual void OnRep_Stunned();
+	UFUNCTION()
+	virtual void OnRep_Burn();
 protected:
 	virtual void BeginPlay() override;
 
@@ -75,6 +80,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 
 	FOnASCRegistered OnASCRegistered;
 	FOnDeathSignature OnDeathDelegate;
@@ -153,8 +160,11 @@ protected:
 	/* --------- Minions --------- */
 	int32 MinionCount=0;
 
-	UPROPERTY(Replicated,BlueprintReadOnly)
+	UPROPERTY(Replicated,ReplicatedUsing=OnRep_Stunned,BlueprintReadOnly)
 	bool bIsStunned=false;
+	
+	UPROPERTY(Replicated,ReplicatedUsing=OnRep_Burn,BlueprintReadOnly)
+	bool bIsBurn=false;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Walk")
 	float BaseWalkSpeed=600.f;

@@ -74,13 +74,12 @@ void AGAST_Projectile::OnHit()
 
 void AGAST_Projectile::SphereOverlap(UPrimitiveComponent* OverlappedComponent,AActor* OtherActor,UPrimitiveComponent* OtherComp,int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!DamageEffectParams.SourceASC)return;
+	
 	AActor* SourceActor=DamageEffectParams.SourceASC->GetAvatarActor();
 	if (SourceActor == OtherActor)return;
-
+	if (!UGAST_AbilitySystemLibrary::IsNotFriend(OtherActor,SourceActor))return;
 	if (!bHit)OnHit();
-
-	if (!UGAST_AbilitySystemLibrary::IsNotFriend(OtherActor,SourceActor))
-		return;
 	
 	if (HasAuthority())
 	{

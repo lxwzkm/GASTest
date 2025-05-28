@@ -32,6 +32,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	//在客户端调用的函数，为了在客户端初始化ASC的Actor信息
 	virtual void OnRep_PlayerState() override;
+	virtual void OnRep_Burn() override;
+	virtual void OnRep_Stunned() override;
 
 	/*---------------PlayerInterface-----------------*/
 	virtual void AddToXP_Implementation(int32 InXP) override;
