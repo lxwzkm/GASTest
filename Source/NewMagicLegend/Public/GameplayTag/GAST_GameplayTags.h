@@ -110,6 +110,10 @@ public:
 	FGameplayTag Ability_Fire_FireBolt;
 	FGameplayTag Ability_Lightning_Electrocute;
 
+	FGameplayTag Ability_Passive_HaloOfProtection;
+	FGameplayTag Ability_Passive_LifeSiphon;
+	FGameplayTag Ability_Passive_ManaSiphon;
+
 	/*---------Player Tag------------*/
 	FGameplayTag Player_Block_Pressed;
 	FGameplayTag Player_Block_Held;

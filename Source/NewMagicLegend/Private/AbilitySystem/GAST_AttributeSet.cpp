@@ -231,10 +231,12 @@ void UGAST_AttributeSet::HandleIncomingDamage(const FEffectProperties& EffectPro
 		const bool bFatal=NewHealth<=0.f;//是否是致命伤害
 		if (!bFatal)
 		{
-			
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FGameplayTags::Get().Effect_HitReact);
-			EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			if (EffectProperties.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_GetIsBeingShock(EffectProperties.TargetCharacter))
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FGameplayTags::Get().Effect_HitReact);
+				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
 
 			const FVector& KnockBackForce=UGAST_AbilitySystemLibrary::GetKnockBackForce(EffectProperties.GameplayEffectContextHandle);
 			if (!KnockBackForce.IsNearlyZero(1.f))

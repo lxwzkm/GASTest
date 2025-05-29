@@ -12,6 +12,7 @@ DECLARE_MULTICAST_DELEGATE(FOnStartupAbilitiesGiven)
 DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAbilityStatusChanged,const FGameplayTag& /* AbilityTag */,const FGameplayTag& /* StatusTag*/,int32/*AbilityLevel*/);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnEquipAbility,const FGameplayTag&,AbilityTag,const FGameplayTag&,StatusTag,const FGameplayTag&,Slot,const FGameplayTag&,PreviousSlot);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivePassiveAbility,const FGameplayTag& /* AbilityTag */);
 /**
  * 
  */
@@ -30,6 +31,7 @@ public:
 	FAllAssetTagsContainer AllAssetTagsContainerDelegate;
 	FOnStartupAbilitiesGiven OnStartupAbilitiesGivenDelegate;
 	FOnAbilityStatusChanged OnAbilityStatusChangedDelegate;
+	FDeactivePassiveAbility DeactivePassiveAbilityDelegate;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnEquipAbility OnEquipAbilityDelegate;

@@ -89,6 +89,11 @@ public:
 	void SetInShockLoop(bool bInLoop);
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	bool GetIsBeingShock()const;
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void SetIsBeingShock(bool bIsShock);
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	USkeletalMeshComponent* GetWeaponComponent();
 
 	virtual FOnASCRegistered& GetOnASCRegistered()=0;

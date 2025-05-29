@@ -124,6 +124,16 @@ USkeletalMeshComponent* AGAST_CharacterBase::GetWeaponComponent_Implementation()
 	return Weapon;
 }
 
+void AGAST_CharacterBase::SetIsBeingShock_Implementation(bool bIsShock)
+{
+	bIsBeingShock=bIsShock;
+}
+
+bool AGAST_CharacterBase::GetIsBeingShock_Implementation() const
+{
+	return bIsBeingShock;
+}
+
 UNiagaraSystem* AGAST_CharacterBase::GetImpactEffect_Implementation()
 {
 	return ImpactEffect;

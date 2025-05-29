@@ -59,6 +59,8 @@ public:
 	virtual void UpdateMinionCount_Implementation(int32 Amount = 1) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual USkeletalMeshComponent* GetWeaponComponent_Implementation() override;
+	virtual void SetIsBeingShock_Implementation(bool bIsShock) override;
+	virtual bool GetIsBeingShock_Implementation() const override;
 	/*-------CombatInterface-------*/
 	
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
@@ -165,6 +167,9 @@ protected:
 	
 	UPROPERTY(Replicated,ReplicatedUsing=OnRep_Burn,BlueprintReadOnly)
 	bool bIsBurn=false;
+
+	UPROPERTY(Replicated,BlueprintReadOnly)
+	bool bIsBeingShock=false;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Walk")
 	float BaseWalkSpeed=600.f;
