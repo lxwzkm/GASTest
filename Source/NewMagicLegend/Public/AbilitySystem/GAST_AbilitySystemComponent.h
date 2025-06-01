@@ -13,6 +13,7 @@ DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAbilityStatusChanged,const FGameplayTag& /* AbilityTag */,const FGameplayTag& /* StatusTag*/,int32/*AbilityLevel*/);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnEquipAbility,const FGameplayTag&,AbilityTag,const FGameplayTag&,StatusTag,const FGameplayTag&,Slot,const FGameplayTag&,PreviousSlot);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivePassiveAbility,const FGameplayTag& /* AbilityTag */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnActivePassiveNiagara,const FGameplayTag& /*Ability Tag*/,bool /* bIsActive */);
 /**
  * 
  */
@@ -32,6 +33,7 @@ public:
 	FOnStartupAbilitiesGiven OnStartupAbilitiesGivenDelegate;
 	FOnAbilityStatusChanged OnAbilityStatusChangedDelegate;
 	FDeactivePassiveAbility DeactivePassiveAbilityDelegate;
+	FOnActivePassiveNiagara OnActivePassiveNiagaraDelegate;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnEquipAbility OnEquipAbilityDelegate;
@@ -44,13 +46,22 @@ public:
 	 */
 	void ForEachAbility(const FForEachAbility& Delegate);
 
-	static FGameplayTag GetGameplayTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
+	static FGameplayTag GetAbilityTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetInputTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetAbilityStatusFromAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
 	FGameplayTag GetInputTagByAbilityTag(const FGameplayTag& AbilityTag);
 	FGameplayTag GetStatusByAbiltyTag(const FGameplayTag& AbilityTag);
 	FGameplayAbilitySpec* GetAbilitySpecFromAbilityTag(const FGameplayTag& AbilityTag);
-
+	
+	bool IsSlotEmpty(const FGameplayTag& Slot);
+	static bool IsAbilityHasSlot(const FGameplayAbilitySpec& AbilitySpec,const FGameplayTag& SlotTag);
+	bool IsPassiveAbility(const FGameplayAbilitySpec& AbilitySpec);
+	FGameplayAbilitySpec* GetSlotAbility(const FGameplayTag& Slot);
+	static bool IsAbilityAlreadyEquipped(const FGameplayAbilitySpec& AbilitySpec);
+	static void AssignAbilityInSlot(FGameplayAbilitySpec& Spec,const FGameplayTag& Slot);
+	void ClearAbilityOfSlot(const FGameplayTag& SlotTag);
+	static void ClearSlot(FGameplayAbilitySpec* AbilitySpec);
+	static bool AbilityHasSlot(const FGameplayAbilitySpec& AbilitySpec,const FGameplayTag& SlotTag);
 	
 	/**
 	 * @brief 这个函数的作用是初始化GA
@@ -90,14 +101,16 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_EquipAbility(const FGameplayTag& AbilityTag,const FGameplayTag& SlotTag);
-	void ClearAbilityOfSlot(const FGameplayTag& SlotTag);
-	void ClearSlot(FGameplayAbilitySpec* AbilitySpec);
-	static bool AbilityHasSlot(const FGameplayAbilitySpec& AbilitySpec,const FGameplayTag& SlotTag);
+
 
 	UFUNCTION(Client, Reliable)
 	void Client_EquipAbility(const FGameplayTag& AbilityTag,const FGameplayTag& SlotTag,const FGameplayTag& StautsTag,const FGameplayTag& PreviousSlotTag);
 	
 	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag,FString& OutDescription,FString& OutNextDescription);
+
+	/*由于Broadcast只在本地触发，所以Multicast复制Niagaracomponent的激活关闭的命令 */
+	UFUNCTION(NetMulticast,Reliable)
+	void Multicast_AcitvePassiveNiagara(const FGameplayTag& AbilityTag,bool bIsActiveCom);
 protected:
 	/**
 	 * @brief 回调函数，当GE被应用的时候触发，声明在AbilitySystemComponent.h中

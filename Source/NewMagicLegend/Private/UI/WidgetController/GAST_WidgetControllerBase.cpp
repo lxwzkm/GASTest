@@ -70,7 +70,7 @@ void UGAST_WidgetControllerBase::BroadcastAbilityInfo()
 	AbilityDelegate.BindLambda([this](const FGameplayAbilitySpec& AbilitySpec)
 	{
 		//TODO 拿到AbilitySpec以后，要获取他们的AbilityInfo
-		FGameplayTag AbilityTag = MyAbilitySystemComponent->GetGameplayTagByAbilitySpec(AbilitySpec);
+		FGameplayTag AbilityTag = MyAbilitySystemComponent->GetAbilityTagByAbilitySpec(AbilitySpec);
 		
 		FAAbilityInfo AbilityInfo = AbilityInformation->GetMyAbilityInfoByAbilityTag(AbilityTag);
 		AbilityInfo.InputTag = MyAbilitySystemComponent->GetInputTagByAbilitySpec(AbilitySpec);

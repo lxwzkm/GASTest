@@ -5,6 +5,7 @@
 #include "Character/GAST_CharacterBase.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
+#include "AbilitySystem/PassiveSpell/PassiveSpellNiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Debuff/DebuffNiagaraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,7 +24,7 @@ void AGAST_CharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 AGAST_CharacterBase::AGAST_CharacterBase()
 {
  
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	
 	BurnDebuffComponent=CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuff");
 	BurnDebuffComponent->SetupAttachment(GetRootComponent());
@@ -43,7 +44,17 @@ AGAST_CharacterBase::AGAST_CharacterBase()
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");//实例化组件
 	Weapon->SetupAttachment(GetMesh(),FName("WeaponHandSocket"));//根据插槽名称设置武器的吸附插槽
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);//设置组件的碰撞是否开启
-	
+
+	//SceneComponent控制PassiveNIagara的旋转
+	MySceneComponent=CreateDefaultSubobject<USceneComponent>(FName("MyScene"));
+	MySceneComponent->SetupAttachment(GetRootComponent());
+
+	HaloOfProtectionNiagara=CreateDefaultSubobject<UPassiveSpellNiagaraComponent>("HaloOfProtectionNiagara");
+	HaloOfProtectionNiagara->SetupAttachment(MySceneComponent);
+	LifeSiphonNiagara=CreateDefaultSubobject<UPassiveSpellNiagaraComponent>("LifeSiphonNiagara");
+	LifeSiphonNiagara->SetupAttachment(MySceneComponent);
+	ManaSiphonNiagara=CreateDefaultSubobject<UPassiveSpellNiagaraComponent>("ManaSiphonNiagara");
+	ManaSiphonNiagara->SetupAttachment(MySceneComponent);
 }
 
 UAbilitySystemComponent* AGAST_CharacterBase::GetAbilitySystemComponent() const
@@ -206,6 +217,12 @@ void AGAST_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AGAST_CharacterBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	MySceneComponent->SetWorldRotation(FRotator::ZeroRotator);
 }
 
 void AGAST_CharacterBase::InitActorInfo()

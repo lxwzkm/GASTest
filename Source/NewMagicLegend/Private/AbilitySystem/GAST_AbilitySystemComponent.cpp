@@ -43,7 +43,7 @@ void UGAST_AbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegat
 	
 }
 
-FGameplayTag UGAST_AbilitySystemComponent::GetGameplayTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec)
+FGameplayTag UGAST_AbilitySystemComponent::GetAbilityTagByAbilitySpec(const FGameplayAbilitySpec& AbilitySpec)
 {
 	if (AbilitySpec.Ability)
 	{
@@ -110,6 +110,7 @@ FGameplayTag UGAST_AbilitySystemComponent::GetStatusByAbiltyTag(const FGameplayT
 
 FGameplayAbilitySpec* UGAST_AbilitySystemComponent::GetAbilitySpecFromAbilityTag(const FGameplayTag& AbilityTag)
 {
+	FScopedAbilityListLock ScopedLocked(*this);
 	for (auto& AbilitySpec:GetActivatableAbilities())
 	{
 		for (FGameplayTag Tag:AbilitySpec.Ability.Get()->AbilityTags)
@@ -119,6 +120,57 @@ FGameplayAbilitySpec* UGAST_AbilitySystemComponent::GetAbilitySpecFromAbilityTag
 		}
 	}
 	return nullptr;
+}
+
+bool UGAST_AbilitySystemComponent::IsSlotEmpty(const FGameplayTag& Slot)
+{
+	FScopedAbilityListLock AbilityListLock(*this);
+	for (FGameplayAbilitySpec& AbilitySpec:GetActivatableAbilities())
+	{
+		if (IsAbilityHasSlot(AbilitySpec, Slot))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool UGAST_AbilitySystemComponent::IsAbilityHasSlot(const FGameplayAbilitySpec& AbilitySpec,
+	const FGameplayTag& SlotTag)
+{
+	return AbilitySpec.DynamicAbilityTags.HasTagExact(SlotTag);
+}
+
+bool UGAST_AbilitySystemComponent::IsPassiveAbility(const FGameplayAbilitySpec& AbilitySpec)
+{
+	UMyAbilityInfo* AbilityInfo=UGAST_AbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	const FGameplayTag AbilityTag=GetAbilityTagByAbilitySpec(AbilitySpec);
+	const FAAbilityInfo Info=AbilityInfo->GetMyAbilityInfoByAbilityTag(AbilityTag);
+	return Info.AbilityType.MatchesTagExact(FGameplayTags::Get().Ability_Type_Passive);
+}
+
+FGameplayAbilitySpec* UGAST_AbilitySystemComponent::GetSlotAbility(const FGameplayTag& Slot)
+{
+	FScopedAbilityListLock AbilityListLock(*this);
+	for (FGameplayAbilitySpec& AbilitySpec:GetActivatableAbilities())
+	{
+		if (IsAbilityHasSlot(AbilitySpec, Slot))
+		{
+			return &AbilitySpec;
+		}
+	}
+	return nullptr;
+}
+
+bool UGAST_AbilitySystemComponent::IsAbilityAlreadyEquipped(const FGameplayAbilitySpec& AbilitySpec)
+{
+	return AbilitySpec.DynamicAbilityTags.HasTag(FGameplayTag::RequestGameplayTag("Input"));
+}
+
+void UGAST_AbilitySystemComponent::AssignAbilityInSlot(FGameplayAbilitySpec& Spec, const FGameplayTag& Slot)
+{
+	ClearSlot(&Spec);
+	Spec.DynamicAbilityTags.AddTag(Slot);
 }
 
 void UGAST_AbilitySystemComponent::GiveCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbility)
@@ -166,6 +218,7 @@ void UGAST_AbilitySystemComponent::AbilityInputPressed(const FGameplayTag& Input
 {
 	if (!InputTag.IsValid())return;
 
+	FScopedAbilityListLock ScopedLocked(*this);
 	for (auto& AbilitySpec:GetActivatableAbilities())
 	{
 		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
@@ -183,6 +236,7 @@ void UGAST_AbilitySystemComponent::AbilityInputHeld(const FGameplayTag& InputTag
 {
 	if (!InputTag.IsValid())return;
 
+	FScopedAbilityListLock ScopedLocked(*this);
 	for (auto& AbilitySpec:GetActivatableAbilities())
 	{
 		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
@@ -200,6 +254,7 @@ void UGAST_AbilitySystemComponent::AbilityInputReleased(const FGameplayTag& Inpu
 {
 	if (!InputTag.IsValid())return;
 
+	FScopedAbilityListLock ScopedLocked(*this);
 	for (auto& AbilitySpec:GetActivatableAbilities())
 	{
 		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag) && AbilitySpec.IsActive())
@@ -240,7 +295,7 @@ void UGAST_AbilitySystemComponent::UpgradeAttributePoints(const FGameplayTag& At
 {
 	if (GetAvatarActor()->Implements<UPlayerInterface>())
 	{
-		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor())>0)
+		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
 		{
 			Server_UpgradeAttributePoints(AttributeTag);
 		}
@@ -292,23 +347,49 @@ void UGAST_AbilitySystemComponent::Server_EquipAbility_Implementation(const FGam
 {
 	if (FGameplayAbilitySpec* AbilitySpec=GetAbilitySpecFromAbilityTag(AbilityTag))
 	{
+		
 		const FGameplayTag PreviouSlot=GetInputTagByAbilitySpec(*AbilitySpec);
 		FGameplayTag Status= GetAbilityStatusFromAbilitySpec(*AbilitySpec);
 		
 		const bool bStatusVaild= Status==FGameplayTags::Get().Ability_Status_Equipped||Status==FGameplayTags::Get().Ability_Status_Unlocked;
 		if (bStatusVaild)
 		{
-			//清除当前要装备的插槽内的所有技能
-			ClearAbilityOfSlot(SlotTag);
-			//清除当前技能的插槽
-			ClearSlot(AbilitySpec);
-			//将技能装备到新插槽内
-			AbilitySpec->DynamicAbilityTags.AddTag(SlotTag);
-			if (Status.MatchesTagExact(FGameplayTags::Get().Ability_Status_Unlocked))
+			if (!IsSlotEmpty(SlotTag))
 			{
-				AbilitySpec->DynamicAbilityTags.RemoveTag(FGameplayTags::Get().Ability_Status_Unlocked);
-				AbilitySpec->DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Equipped);
+				if (FGameplayAbilitySpec* SpecWitSlot=GetSlotAbility(SlotTag))
+				{
+					//当前要装备的技能槽已经装备了这个技能
+					if (AbilitySpec->DynamicAbilityTags.HasTagExact(SlotTag))
+					{
+						Client_EquipAbility(AbilityTag,SlotTag,FGameplayTags::Get().Ability_Status_Equipped,PreviouSlot);
+						return;
+					}
+
+					//判断当前要装备的slot内的技能是否为被动技能
+					if (IsPassiveAbility(*SpecWitSlot))
+					{
+						FGameplayTag PreslotAbilityTag=GetAbilityTagByAbilitySpec(*SpecWitSlot);
+						//关掉前一个Niagara特效
+						Multicast_AcitvePassiveNiagara(PreslotAbilityTag,false);
+						DeactivePassiveAbilityDelegate.Broadcast(PreslotAbilityTag);
+					}
+					//清除原slot内的插槽
+					ClearSlot(SpecWitSlot);
+				}
 			}
+			//判断当前技能之前是否是装备过的，来确定是否需要激活被动技能
+			if (!IsAbilityAlreadyEquipped(*AbilitySpec))
+			{
+				//如果没有装备过且为被动技能，激活它，如果是其他情况，被动技能不需要特别处理
+				if (IsPassiveAbility(*AbilitySpec))
+				{
+					//激活Passive的Niagara效果
+					Multicast_AcitvePassiveNiagara(AbilityTag,true);
+					TryActivateAbility(AbilitySpec->Handle);
+				}
+			}
+			//为装备的技能分配slot
+			AssignAbilityInSlot(*AbilitySpec,SlotTag);
 			MarkAbilitySpecDirty(*AbilitySpec);
 		}
 		Client_EquipAbility(AbilityTag,SlotTag,FGameplayTags::Get().Ability_Status_Equipped,PreviouSlot);
@@ -331,7 +412,6 @@ void UGAST_AbilitySystemComponent::ClearSlot( FGameplayAbilitySpec* AbilitySpec)
 {
 	FGameplayTag SlotTag=GetInputTagByAbilitySpec(*AbilitySpec);
 	AbilitySpec->DynamicAbilityTags.RemoveTag(SlotTag);
-	MarkAbilitySpecDirty(*AbilitySpec);
 }
 
 bool UGAST_AbilitySystemComponent::AbilityHasSlot(const FGameplayAbilitySpec& AbilitySpec,
@@ -374,4 +454,10 @@ bool UGAST_AbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag
 	}
 	OutNextDescription = FString();
 	return false;
+}
+
+void UGAST_AbilitySystemComponent::Multicast_AcitvePassiveNiagara_Implementation(const FGameplayTag& AbilityTag,
+	bool bIsActiveCom)
+{
+	OnActivePassiveNiagaraDelegate.Broadcast(AbilityTag, bIsActiveCom);
 }

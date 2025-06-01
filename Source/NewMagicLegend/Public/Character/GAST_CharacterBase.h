@@ -11,6 +11,7 @@
 #include "Interaction/CombatInterface.h"
 #include "GAST_CharacterBase.generated.h"
 
+class UPassiveSpellNiagaraComponent;
 class UDebuffNiagaraComponent;
 enum class ECharacterClass;
 
@@ -61,12 +62,12 @@ public:
 	virtual USkeletalMeshComponent* GetWeaponComponent_Implementation() override;
 	virtual void SetIsBeingShock_Implementation(bool bIsShock) override;
 	virtual bool GetIsBeingShock_Implementation() const override;
+	virtual FOnASCRegistered& GetOnASCRegistered() override;
+	virtual FOnDeathSignature& GetDeathDelegate() override;
 	/*-------CombatInterface-------*/
 	
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie(const FVector& DeathImpulse);
-	virtual FOnASCRegistered& GetOnASCRegistered() override;
-	virtual FOnDeathSignature& GetDeathDelegate() override;
 	
 	virtual void ListenForStunChanged(const FGameplayTag DebuffTag,int32 NewCount);
 
@@ -76,6 +77,7 @@ public:
 	virtual void OnRep_Burn();
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;//给玩家和敌人装备的武器的骨骼体组件
@@ -184,4 +186,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage>HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UPassiveSpellNiagaraComponent> HaloOfProtectionNiagara;
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UPassiveSpellNiagaraComponent> LifeSiphonNiagara;
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UPassiveSpellNiagaraComponent> ManaSiphonNiagara;
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USceneComponent> MySceneComponent;
 };
