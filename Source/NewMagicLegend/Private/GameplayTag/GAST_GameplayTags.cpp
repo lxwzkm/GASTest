@@ -102,9 +102,11 @@ void FGameplayTags::InitializeGameplayTags()
 
 	GameplayTags.Ability_Type_Offsive=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Type.Offsive"),FString("主动类型的技能"));
 	GameplayTags.Ability_Type_Passive=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Type.Passive"),FString("被动类型的技能"));
-	
+
+	/*----------------------------------AbilitySpellTag----------------------------*/
 	GameplayTags.Ability_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Fire.FireBolt"),FString("火球术标签"));
 	GameplayTags.Ability_Lightning_Electrocute=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Lightning.Electrocute"),FString("闪电术标签"));
+	GameplayTags.Ability_Arcane_ArcaneShards=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Arcane.ArcaneShards"),FString("奥术碎片标签"));
 
 	GameplayTags.Ability_Passive_LifeSiphon=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.LifeSiphon"),FString("血量吸取"));
 	GameplayTags.Ability_Passive_ManaSiphon=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.ManaSiphon"),FString("法力吸取"));
@@ -113,6 +115,7 @@ void FGameplayTags::InitializeGameplayTags()
 	/*----------------------------------CooldownTag----------------------------*/
 	GameplayTags.Cooldown_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBolt"),FString("火球术CD"));
 	GameplayTags.Cooldown_Lightning_Electrocute=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Lightning.Electrocute"),FString("闪电术CD"));
+	GameplayTags.Cooldown_Arcane_ArcaneShards=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Arcane.ArcaneShards"),FString("奥术碎片CD"));
 
 	/*----------------------------------PlayerTag----------------------------*/
 	GameplayTags.Player_Block_Held=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.Held"),FString("阻挡持续按键的Tag"));

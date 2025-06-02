@@ -6,7 +6,9 @@
 #include "AbilitySystemComponent.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
+#include "Actor/MagicCircle.h"
 #include "Camera/CameraComponent.h"
+#include "Components/DecalComponent.h"
 #include "Data/LevelUpInfo.h"
 #include "Debuff/DebuffNiagaraComponent.h"
 #include "Gamemode/GAST_PlayerState.h"
@@ -184,6 +186,24 @@ int32 AMyGAST_Character::GetSpellPoints_Implementation()
 	AGAST_PlayerState* MyPlayerState= GetPlayerState<AGAST_PlayerState>();
 	check(MyPlayerState);
 	return MyPlayerState->GetSpellPoints();
+}
+
+void AMyGAST_Character::ShowMagicCircle_Implementation(UMaterialInterface* MaterialInterface)
+{
+	if (AGAST_PlayerCOntroller* PlayerCOntroller=Cast<AGAST_PlayerCOntroller>(GetController()))
+	{
+		PlayerCOntroller->ShowMagicCircle(MaterialInterface);
+		PlayerCOntroller->bShowMouseCursor=false;
+	}
+}
+
+void AMyGAST_Character::HideMagicCircle_Implementation()
+{
+	if (AGAST_PlayerCOntroller* PlayerCOntroller=Cast<AGAST_PlayerCOntroller>(GetController()))
+	{
+		PlayerCOntroller->HideMagicCircle();
+		PlayerCOntroller->bShowMouseCursor=true;
+	}
 }
 
 int32 AMyGAST_Character::GetPlayerLevel_Implementation()

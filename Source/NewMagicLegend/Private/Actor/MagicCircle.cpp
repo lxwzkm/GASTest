@@ -11,8 +11,8 @@ AMagicCircle::AMagicCircle()
  	
 	PrimaryActorTick.bCanEverTick = true;
 
-	MagicCircle=CreateDefaultSubobject<UDecalComponent>("MagicCircle");
-	MagicCircle->SetupAttachment(GetRootComponent());
+	MagicCircleDecal=CreateDefaultSubobject<UDecalComponent>("MagicCircle");
+	MagicCircleDecal->SetupAttachment(GetRootComponent());
 }
 
 

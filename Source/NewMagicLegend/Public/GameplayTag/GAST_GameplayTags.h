@@ -105,10 +105,13 @@ public:
 	/*---------Cooldown Tag------------*/
 	FGameplayTag Cooldown_Fire_FireBolt;
 	FGameplayTag Cooldown_Lightning_Electrocute;
+	FGameplayTag Cooldown_Arcane_ArcaneShards;
+
 
 	//人物用来确定UI图片的标签
 	FGameplayTag Ability_Fire_FireBolt;
 	FGameplayTag Ability_Lightning_Electrocute;
+	FGameplayTag Ability_Arcane_ArcaneShards;
 
 	FGameplayTag Ability_Passive_HaloOfProtection;
 	FGameplayTag Ability_Passive_LifeSiphon;

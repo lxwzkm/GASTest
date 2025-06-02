@@ -9,6 +9,7 @@
 #include "UI/Widget/GAST_FloatTextWidgetComponent.h"
 #include "GAST_PlayerCOntroller.generated.h"
 
+class AMagicCircle;
 class UNiagaraSystem;
 class USplineComponent;
 class IEnemyInterface;
@@ -28,6 +29,12 @@ public:
 
 	UFUNCTION(Client,Reliable)
 	void ShowFloatingText(float Damage,ACharacter* TargetCharacter, bool bIsBlockedHit,bool bIsCriticalHit);
+
+	UFUNCTION(BlueprintCallable)
+	void ShowMagicCircle(UMaterialInterface* MaterialInterface=nullptr);
+	UFUNCTION(BlueprintCallable)
+	void HideMagicCircle();
+	AMagicCircle* GetMagicCircle()const;
 	
 protected:
 	/* ----系统自带的虚函数重写---- */
@@ -118,6 +125,14 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AMagicCircle> MagicCircleClass;
+
+	UPROPERTY()
+	TObjectPtr<AMagicCircle> MagicCircle;
+
+	void SetMagicCircleLocation();
 
 	void AutoRun();
 };

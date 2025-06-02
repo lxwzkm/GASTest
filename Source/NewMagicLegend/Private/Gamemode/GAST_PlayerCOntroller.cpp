@@ -9,6 +9,8 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Actor/MagicCircle.h"
+#include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "GameplayTag/GAST_GameplayTags.h"
@@ -20,6 +22,32 @@ AGAST_PlayerCOntroller::AGAST_PlayerCOntroller()
 	bReplicates=true;//可以被复制到客户端
 
 	SplineComponent=CreateDefaultSubobject<USplineComponent>("Spline");//实例化样条曲线
+}
+
+void AGAST_PlayerCOntroller::ShowMagicCircle(UMaterialInterface* MaterialInterface)
+{
+	if (MagicCircle==nullptr)
+	{
+		MagicCircle=GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass);
+		if (MaterialInterface!=nullptr)
+		{
+			MagicCircle->MagicCircleDecal->SetMaterial(0,MaterialInterface);
+		}
+	}
+}
+
+void AGAST_PlayerCOntroller::HideMagicCircle()
+{
+	if (MagicCircle!=nullptr)
+	{
+		MagicCircle->Destroy();
+		MagicCircle=nullptr;
+	}
+}
+
+AMagicCircle* AGAST_PlayerCOntroller::GetMagicCircle() const
+{
+	return MagicCircle;
 }
 
 void AGAST_PlayerCOntroller::ShowFloatingText_Implementation(float Damage, ACharacter* TargetCharacter, bool bIsBlockedHit,bool bIsCriticalHit)
@@ -40,6 +68,16 @@ void AGAST_PlayerCOntroller::PlayerTick(float DeltaTime)
 
 	CursorTrace();
 	AutoRun();
+	SetMagicCircleLocation();
+}
+
+void AGAST_PlayerCOntroller::SetMagicCircleLocation()
+{
+	if (MagicCircle!=nullptr)
+	{
+		MagicCircle->SetActorLocation(UnderCursor.ImpactPoint);
+	}
+	
 }
 
 void AGAST_PlayerCOntroller::AutoRun()
