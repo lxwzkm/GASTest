@@ -16,6 +16,7 @@
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Input/GAST_EnhancedInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "NewMagicLegend/NewMagicLegend.h"
 
 AGAST_PlayerCOntroller::AGAST_PlayerCOntroller()
 {
@@ -108,8 +109,9 @@ void AGAST_PlayerCOntroller::CursorTrace()
 		ThisActor=nullptr;
 		return;
 	}
-	
-	GetHitResultUnderCursor(ECC_Visibility,false,UnderCursor);
+
+	ECollisionChannel TraceChannel=MagicCircle!=nullptr? ECC_ExcludePlayers: ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel,false,UnderCursor);
 
 	if (!UnderCursor.bBlockingHit)return;//如果没有遇到阻挡，就返回
 

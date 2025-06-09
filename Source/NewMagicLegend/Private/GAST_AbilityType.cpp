@@ -69,9 +69,26 @@ bool FMyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map
 		{
 			RepBits |= 1 << 15;
 		}
+
+		if (bIsRadialDamge)
+		{
+			RepBits |= 1 << 16;
+			if (RadialDamageInnerRadius>0.f)
+			{
+				RepBits |= 1 << 17;
+			}
+			if (RadialDamageOuterRadius>0.f)
+			{
+				RepBits |= 1 << 18;
+			}
+			if (!RadialDamageOrigin.IsNearlyZero())
+			{
+				RepBits |= 1 << 19;
+			}
+		}
 	}
 	
-	Ar.SerializeBits(&RepBits, 16);
+	Ar.SerializeBits(&RepBits, 19);
 
 	if (RepBits & (1 << 0))
 	{
@@ -156,13 +173,29 @@ bool FMyGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map
 	{
 		KnockBackForce.NetSerialize(Ar, Map, bOutSuccess);
 	}
+
+	if (RepBits & (1 << 16))
+	{
+		Ar<<bIsRadialDamge;
+		if (RepBits & (1 << 17))
+		{
+			Ar<<RadialDamageInnerRadius;
+		}
+		if (RepBits & (1 << 18))
+		{
+			Ar<<RadialDamageOuterRadius;
+		}
+		if (RepBits & (1 << 19))
+		{
+			Ar<<RadialDamageOrigin;
+		}
+	}
 	
 	if (Ar.IsLoading())
 	{
 		AddInstigator(Instigator.Get(), EffectCauser.Get()); // Just to initialize InstigatorAbilitySystemComponent
 	}
-	
-	
+
 	bOutSuccess = true;
 	return true;
 }

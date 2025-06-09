@@ -42,6 +42,7 @@ public:
   virtual  void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	AGAST_CharacterBase();
+	
 	/*-------IAbilitySystemInterface-------*/
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet()const;
@@ -64,12 +65,13 @@ public:
 	virtual bool GetIsBeingShock_Implementation() const override;
 	virtual FOnASCRegistered& GetOnASCRegistered() override;
 	virtual FOnDeathSignature& GetDeathDelegate() override;
+	virtual FOnRadialDamageSignature& GetRaidalDamageDelegate() override;
 	/*-------CombatInterface-------*/
 	
 	UFUNCTION(NetMulticast,Reliable)//客户端服务器均调用，处理死亡事件
 	virtual void Multicast_HandleDie(const FVector& DeathImpulse);
-	
 	virtual void ListenForStunChanged(const FGameplayTag DebuffTag,int32 NewCount);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UFUNCTION()
 	virtual void OnRep_Stunned();
@@ -89,6 +91,7 @@ protected:
 
 	FOnASCRegistered OnASCRegistered;
 	FOnDeathSignature OnDeathDelegate;
+	FOnRadialDamageSignature OnRadialDamageDelegate;
 
 	UPROPERTY(EditAnywhere,Category="Combat")
 	FName WeaponSocketName;

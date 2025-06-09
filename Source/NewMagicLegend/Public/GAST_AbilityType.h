@@ -69,6 +69,18 @@ struct FDamageEffectParams
 	
 	UPROPERTY(BlueprintReadWrite)
 	FVector KnockBackForce=FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsRadialDamge=false;
+
+	UPROPERTY(BlueprintReadWrite)
+	float RadialDamageInnerRadius=0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float RadialDamageOuterRadius=0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector RadialDamageOrigin=FVector::ZeroVector;
 	
 };
 
@@ -87,6 +99,10 @@ public:
 	float GetDebuffFrequency()const{return Debuff_Frequency;}
 	FVector GetDeathImpulse()const {return DeathImpulse;}
 	FVector GetKnockBackForce()const{return KnockBackForce;}
+	bool GetbIsRadialDamage()const{return bIsRadialDamge;}
+	float GetRadialDamageInnerRadius()const{return RadialDamageInnerRadius;}
+	float GetRadialDamageOuterRadius()const{return RadialDamageOuterRadius;}
+	FVector GetRaddialDamageOrigin()const{return RadialDamageOrigin;}
 	TSharedPtr<FGameplayTag> GetDamageType()const{return DamageType;}
 	
 	void SetIsCriticalHit(const bool& InIsCriticalHit){bCriticalHit=InIsCriticalHit;}
@@ -97,6 +113,10 @@ public:
 	void SetDebuff_Frequency(const float& InFrequency){Debuff_Frequency=InFrequency;}
 	void SetDeathImpulse(const FVector& ImPulse){DeathImpulse=ImPulse;}
 	void SetKnockBackForce(const FVector& InKnockBack){KnockBackForce = InKnockBack;}
+	void SetbIsRadialDamage(const bool& InIsRadialDamge){bIsRadialDamge=InIsRadialDamge;}
+	void SetRadialDamageInnerRadius(const float& InInnerRadius){RadialDamageInnerRadius=InInnerRadius;}
+	void SetRadialDamageOuterRadius(const float& InOuterRadius){RadialDamageOuterRadius=InOuterRadius;}
+	void SetRadialDamageOrigin(const FVector& InOrigin){RadialDamageOrigin=InOrigin;}
 	void SetDamageType(const TSharedPtr<FGameplayTag>& InDamageType){DamageType=InDamageType;}
 	
 	/** Returns the actual struct used for serialization, subclasses must override this! */
@@ -152,6 +172,18 @@ protected:
 
 	UPROPERTY()
 	FVector KnockBackForce=FVector::ZeroVector;
+
+	UPROPERTY()
+	bool bIsRadialDamge=false;
+
+	UPROPERTY()
+	float RadialDamageInnerRadius=0.f;
+
+	UPROPERTY()
+	float RadialDamageOuterRadius=0.f;
+
+	UPROPERTY()
+	FVector RadialDamageOrigin=FVector::ZeroVector;
 	
 	TSharedPtr<FGameplayTag> DamageType;
 };

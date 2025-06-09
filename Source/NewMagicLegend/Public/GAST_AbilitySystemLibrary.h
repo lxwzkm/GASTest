@@ -82,6 +82,14 @@ public:
 	static FVector GetDeathImpulse(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
 	UFUNCTION(BlueprintPure,Category="Context")
 	static FVector GetKnockBackForce(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static bool GetbIsRadialDamage(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
+	UFUNCTION(BlueprintPure,Category="Context")
+	static FVector GetRadialDamageOrigin(const FGameplayEffectContextHandle& GameplayEffectContextHandle);
 
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsBlocked);
@@ -101,6 +109,14 @@ public:
 	static void SetDeathImpulse(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,const FVector& InDeathImpulse);
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static void SetKnockBackForce(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,const FVector& InKnockBackForce);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetIsRadialDamage(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,bool bInIsRadialDamage);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetRadialDamageInnerRadius(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,float InInnerRadius);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetRadialDamageOuterRadius(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,float InOuterRadius);
+	UFUNCTION(BlueprintCallable,Category="Context")
+	static void SetRadialDamageOrigin(UPARAM(ref) FGameplayEffectContextHandle& GameplayEffectContextHandle,const FVector& InDamageOrigin);
 
 	UFUNCTION(BlueprintCallable,Category="Context")
 	static FGameplayEffectContextHandle ApplyDamageEffectToTarget(const FDamageEffectParams& DamageEffectParams);
@@ -143,5 +159,4 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void AsyncLoadImage(const FString& Path);
 };
-
 

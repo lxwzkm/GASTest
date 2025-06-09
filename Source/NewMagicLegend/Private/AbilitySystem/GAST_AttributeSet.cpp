@@ -13,7 +13,9 @@
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "UObject/UnrealTypePrivate.h"
 
 UGAST_AttributeSet::UGAST_AttributeSet()
 {
@@ -241,6 +243,7 @@ void UGAST_AttributeSet::HandleIncomingDamage(const FEffectProperties& EffectPro
 			const FVector& KnockBackForce=UGAST_AbilitySystemLibrary::GetKnockBackForce(EffectProperties.GameplayEffectContextHandle);
 			if (!KnockBackForce.IsNearlyZero(1.f))
 			{
+				EffectProperties.TargetCharacter->GetMesh()->GetAnimInstance()->SetRootMotionMode(ERootMotionMode::Type::NoRootMotionExtraction);
 				EffectProperties.TargetCharacter->LaunchCharacter(KnockBackForce,true,true);
 				
 			}

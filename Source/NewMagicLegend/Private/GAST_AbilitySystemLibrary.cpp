@@ -247,6 +247,53 @@ FVector UGAST_AbilitySystemLibrary::GetKnockBackForce(const FGameplayEffectConte
 	return FVector::ZeroVector;
 }
 
+bool UGAST_AbilitySystemLibrary::GetbIsRadialDamage(const FGameplayEffectContextHandle& GameplayEffectContextHandle)
+{
+	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	const FMyGameplayEffectContext* MyEffectContext=static_cast<const FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		return MyEffectContext->GetbIsRadialDamage();
+	}
+	return false;
+}
+
+float UGAST_AbilitySystemLibrary::GetRadialDamageInnerRadius(
+	const FGameplayEffectContextHandle& GameplayEffectContextHandle)
+{
+	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	const FMyGameplayEffectContext* MyEffectContext=static_cast<const FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		return MyEffectContext->GetRadialDamageInnerRadius();
+	}
+	return 0.f;
+}
+
+float UGAST_AbilitySystemLibrary::GetRadialDamageOuterRadius(
+	const FGameplayEffectContextHandle& GameplayEffectContextHandle)
+{
+	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	const FMyGameplayEffectContext* MyEffectContext=static_cast<const FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		return MyEffectContext->GetRadialDamageOuterRadius();
+	}
+	return 0.f;
+}
+
+FVector UGAST_AbilitySystemLibrary::GetRadialDamageOrigin(
+	const FGameplayEffectContextHandle& GameplayEffectContextHandle)
+{
+	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	const FMyGameplayEffectContext* MyEffectContext=static_cast<const FMyGameplayEffectContext*>(EffectContext);
+	if (MyEffectContext)
+	{
+		return MyEffectContext->GetRaddialDamageOrigin();
+	}
+	return FVector::ZeroVector;
+}
+
 void UGAST_AbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& GameplayEffectContextHandle,
                                                bool bInIsBlocked)
 {
@@ -330,6 +377,38 @@ void UGAST_AbilitySystemLibrary::SetKnockBackForce(FGameplayEffectContextHandle&
 	}
 }
 
+void UGAST_AbilitySystemLibrary::SetIsRadialDamage(FGameplayEffectContextHandle& GameplayEffectContextHandle,
+	bool bInIsRadialDamage)
+{
+	FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	FMyGameplayEffectContext* MyEffectContext=static_cast<FMyGameplayEffectContext*>(EffectContext);
+	MyEffectContext->SetbIsRadialDamage(bInIsRadialDamage);
+}
+
+void UGAST_AbilitySystemLibrary::SetRadialDamageInnerRadius(
+	FGameplayEffectContextHandle& GameplayEffectContextHandle, float InInnerRadius)
+{
+	FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	FMyGameplayEffectContext* MyEffectContext=static_cast<FMyGameplayEffectContext*>(EffectContext);
+	MyEffectContext->SetRadialDamageInnerRadius(InInnerRadius);
+}
+
+void UGAST_AbilitySystemLibrary::SetRadialDamageOuterRadius(
+	FGameplayEffectContextHandle& GameplayEffectContextHandle, float InOuterRadius)
+{
+	FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	FMyGameplayEffectContext* MyEffectContext=static_cast<FMyGameplayEffectContext*>(EffectContext);
+	MyEffectContext->SetRadialDamageOuterRadius(InOuterRadius);
+}
+
+void UGAST_AbilitySystemLibrary::SetRadialDamageOrigin(FGameplayEffectContextHandle& GameplayEffectContextHandle,
+	const FVector& InDamageOrigin)
+{
+	FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
+	FMyGameplayEffectContext* MyEffectContext=static_cast<FMyGameplayEffectContext*>(EffectContext);
+	MyEffectContext->SetRadialDamageOrigin(InDamageOrigin);
+}
+
 FGameplayEffectContextHandle UGAST_AbilitySystemLibrary::ApplyDamageEffectToTarget(const FDamageEffectParams& DamageEffectParams)
 {
 	const FGameplayTags& GameplayTags=FGameplayTags::Get();
@@ -340,6 +419,11 @@ FGameplayEffectContextHandle UGAST_AbilitySystemLibrary::ApplyDamageEffectToTarg
 	
 	SetDeathImpulse(Context,DamageEffectParams.DeathImpulse);
 	SetKnockBackForce(Context,DamageEffectParams.KnockBackForce);
+	
+	SetIsRadialDamage(Context,DamageEffectParams.bIsRadialDamge);
+	SetRadialDamageInnerRadius(Context,DamageEffectParams.RadialDamageInnerRadius);
+	SetRadialDamageOuterRadius(Context,DamageEffectParams.RadialDamageOuterRadius);
+	SetRadialDamageOrigin(Context,DamageEffectParams.RadialDamageOrigin);
 	
 	FGameplayEffectSpecHandle SpecHandle= DamageEffectParams.SourceASC->MakeOutgoingSpec(DamageEffectParams.DamageEffectClass,DamageEffectParams.AbilityLevel,Context);
 

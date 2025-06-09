@@ -197,10 +197,23 @@ FOnDeathSignature& AGAST_CharacterBase::GetDeathDelegate()
 	return OnDeathDelegate;
 }
 
+FOnRadialDamageSignature& AGAST_CharacterBase::GetRaidalDamageDelegate()
+{
+	return OnRadialDamageDelegate;
+}
+
 void AGAST_CharacterBase::ListenForStunChanged(const FGameplayTag DebuffTag, int32 NewCount)
 {
 	bIsStunned=NewCount>0.f;
 	GetCharacterMovement()->MaxWalkSpeed=bIsStunned?0.f:BaseWalkSpeed;
+}
+
+float AGAST_CharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	float TakenDamage= Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnRadialDamageDelegate.Broadcast(TakenDamage);
+	return TakenDamage;
 }
 
 void AGAST_CharacterBase::OnRep_Stunned()

@@ -10,6 +10,7 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered,UAbilitySystemComponent*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature,AActor*,DeadActor);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnRadialDamageSignature,float/*DamageAmount*/);
 
 enum class ECharacterClass;
 class UNiagaraSystem;
@@ -98,6 +99,7 @@ public:
 
 	virtual FOnASCRegistered& GetOnASCRegistered()=0;
 	virtual FOnDeathSignature& GetDeathDelegate()=0;
+	virtual FOnRadialDamageSignature& GetRaidalDamageDelegate()=0;
 
 	virtual void Die(const FVector& DeathImpulse)=0;
 

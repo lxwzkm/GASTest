@@ -9,6 +9,7 @@
 #include "GAST_AbilityType.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct MyDamageStatics
 {
@@ -144,6 +145,7 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 	}
 
 	const FGameplayEffectSpec OwningSpec= ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle GameplayEffectContextHandle= OwningSpec.GetContext();
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.SourceTags=OwningSpec.CapturedSourceTags.GetAggregatedTags();
 	EvaluateParameters.TargetTags=OwningSpec.CapturedTargetTags.GetAggregatedTags();
@@ -166,6 +168,30 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 		Resistance=FMath::Clamp(Resistance,0.f,100.f);
 
 		TempDamage*=(100.f-Resistance)/100.f;
+		if (TempDamage<=0.f)continue;
+		//进行径向伤害的判断和计算
+		//1.重写TakeDamage函数在CharacterBase上
+		//2.在接口中创建一个委托，并增加一个获取的纯虚函数
+		//3.重写获取函数，并在TakeDamage中广播伤害
+		//4.绑定Lambda函数接收结果
+		//5.ApplyRadialDamage
+		if (UGAST_AbilitySystemLibrary::GetbIsRadialDamage(GameplayEffectContextHandle))
+		{
+			if (ICombatInterface* CombatInterface=Cast<ICombatInterface>(TargetAvatar))
+			{
+				CombatInterface->GetRaidalDamageDelegate().AddLambda([&](float DamageAmount)
+				{
+					TempDamage=DamageAmount;
+				});
+			}
+			
+			UGameplayStatics::ApplyRadialDamageWithFalloff(TargetAvatar,TempDamage,0.f,
+				UGAST_AbilitySystemLibrary::GetRadialDamageOrigin(GameplayEffectContextHandle),
+				UGAST_AbilitySystemLibrary::GetRadialDamageInnerRadius(GameplayEffectContextHandle),
+				UGAST_AbilitySystemLibrary::GetRadialDamageOuterRadius(GameplayEffectContextHandle),
+				1.f,UDamageType::StaticClass(),TArray<AActor*>(),SourAvatar,nullptr);
+		}
+		
 		Damage+=TempDamage;
 	}
 	//是否被格挡
@@ -174,8 +200,7 @@ void UExecuCalcu_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 	BlockChance=FMath::Max<float>(0.f,BlockChance);
 	const bool bBlocked=FMath::RandRange(1.f,100.f)<=BlockChance;
 	Damage=bBlocked?Damage*=0.5f:Damage;
-
-	FGameplayEffectContextHandle GameplayEffectContextHandle= OwningSpec.GetContext();
+	
 	UGAST_AbilitySystemLibrary::SetIsBlockHit(GameplayEffectContextHandle,bBlocked);
 
 	//护甲与护甲穿透的效果应用

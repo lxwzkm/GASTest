@@ -14,6 +14,7 @@ class NEWMAGICLEGEND_API UDamage_BeamSpell : public UDamageGameplayAbility
 {
 	GENERATED_BODY()
 public:
+	
 	UFUNCTION(BlueprintCallable)
 	void StoreMouseHitResult(const FHitResult& HitResult);
 

@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GAST_AbilitySystemLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UDamageGameplayAbility::CauseDamageToTarget(AActor* TargetActor)
 {
@@ -16,13 +17,15 @@ void UDamageGameplayAbility::CauseDamageToTarget(AActor* TargetActor)
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
 }
 
-FDamageEffectParams UDamageGameplayAbility::MakeDamageParams(AActor* TargetActor)
+FDamageEffectParams UDamageGameplayAbility::MakeDamageParams(AActor* TargetActor, FVector RadialDamageOrigin,
+	bool bKnockBackOverride, FVector KnockBackDirectionOverride, bool bDeathImpluseOverride,
+	FVector DeathDirectionOverride, bool bPitchOverride, float PitchOverride)
 {
 	FDamageEffectParams DamageParams;
 	DamageParams.WorldContext=GetAvatarActorFromActorInfo();
 	DamageParams.SourceASC=GetAbilitySystemComponentFromActorInfo();
 	DamageParams.AbilityLevel=GetAbilityLevel();
-	DamageParams.BaseDamage=DamageValue.GetValueAtLevel(20);//GetAbilityLevel()
+	DamageParams.BaseDamage=DamageValue.GetValueAtLevel(GetAbilityLevel());//GetAbilityLevel()
 	DamageParams.DamageType=DamageType;
 	DamageParams.TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	DamageParams.Debuff_Chance=Debuff_Chance;
@@ -33,13 +36,54 @@ FDamageEffectParams UDamageGameplayAbility::MakeDamageParams(AActor* TargetActor
 	DamageParams.DeathImpulseMagnitude=DeathImpulseMagnitude;
 	DamageParams.KnockBackMagnitude=KnockBackMagnitude;
 	DamageParams.KnockBackChance=KnockBackChance;
+	
 	if (IsValid(TargetActor))
 	{
 		FRotator ToTarget=(TargetActor->GetActorLocation()-GetAvatarActorFromActorInfo()->GetActorLocation()).Rotation();
-		ToTarget.Pitch=45.f;
 		FVector KnockBackForce=ToTarget.Vector();
-		DamageParams.KnockBackForce=KnockBackForce * DamageParams.KnockBackMagnitude;
-		DamageParams.DeathImpulse=KnockBackForce * DamageParams.KnockBackMagnitude;
+		if (bPitchOverride)
+		{
+			ToTarget.Pitch=PitchOverride;
+		}
+		if (!bKnockBackOverride)
+		{
+			DamageParams.KnockBackForce=KnockBackForce * KnockBackMagnitude;
+		}
+		if (!bDeathImpluseOverride)
+		{
+			DamageParams.DeathImpulse=KnockBackForce * DeathImpulseMagnitude;
+		}
+	}
+
+	if (bKnockBackOverride)
+	{
+		KnockBackDirectionOverride.Normalize();
+		DamageParams.KnockBackForce=KnockBackDirectionOverride * KnockBackMagnitude;
+		if (bPitchOverride)
+		{
+			FRotator Rotation= KnockBackDirectionOverride.Rotation();
+			Rotation.Pitch=PitchOverride;
+			DamageParams.KnockBackForce=Rotation.Vector()*KnockBackMagnitude;
+		}
+	}
+	if (bDeathImpluseOverride)
+	{
+		DeathDirectionOverride.Normalize();
+		DamageParams.DeathImpulse=DeathDirectionOverride*DeathImpulseMagnitude;
+		if (bPitchOverride)
+		{
+			FRotator Rotation= DeathDirectionOverride.Rotation();
+			Rotation.Pitch=PitchOverride;
+			DamageParams.DeathImpulse=Rotation.Vector()*DeathImpulseMagnitude;
+		}
+	}
+	
+	if (bIsRadialDamge)
+	{
+		DamageParams.bIsRadialDamge=bIsRadialDamge;
+		DamageParams.RadialDamageInnerRadius=RadialDamageInnerRadius;
+		DamageParams.RadialDamageOuterRadius=RadialDamageOuterRadius;
+		DamageParams.RadialDamageOrigin=RadialDamageOrigin;
 	}
 	return DamageParams;
 }
