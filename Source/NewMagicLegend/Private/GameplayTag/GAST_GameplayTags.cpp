@@ -105,6 +105,7 @@ void FGameplayTags::InitializeGameplayTags()
 
 	/*----------------------------------AbilitySpellTag----------------------------*/
 	GameplayTags.Ability_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Fire.FireBolt"),FString("火球术标签"));
+	GameplayTags.Ability_Fire_FireBlast=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Fire.FireBlast"),FString("火球冲击标签"));
 	GameplayTags.Ability_Lightning_Electrocute=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Lightning.Electrocute"),FString("闪电术标签"));
 	GameplayTags.Ability_Arcane_ArcaneShards=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Arcane.ArcaneShards"),FString("奥术碎片标签"));
 
@@ -114,6 +115,7 @@ void FGameplayTags::InitializeGameplayTags()
 	
 	/*----------------------------------CooldownTag----------------------------*/
 	GameplayTags.Cooldown_Fire_FireBolt=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBolt"),FString("火球术CD"));
+	GameplayTags.Cooldown_Fire_FireBlast=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBlast"),FString("火球冲击CD"));
 	GameplayTags.Cooldown_Lightning_Electrocute=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Lightning.Electrocute"),FString("闪电术CD"));
 	GameplayTags.Cooldown_Arcane_ArcaneShards=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Arcane.ArcaneShards"),FString("奥术碎片CD"));
 
