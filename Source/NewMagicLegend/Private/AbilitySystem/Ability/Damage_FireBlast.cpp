@@ -52,6 +52,7 @@ TArray<AProjectile_FIreBall*> UDamage_FireBlast::SpawnProjectile_FIreBalls()
 		Transform.SetRotation(Rotator.Quaternion());
 		AProjectile_FIreBall* FIreBall= GetWorld()->SpawnActorDeferred<AProjectile_FIreBall>(FireBallClass,Transform,GetOwningActorFromActorInfo(),CurrentActorInfo->PlayerController->GetPawn(),ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		FIreBall->DamageEffectParams=MakeDamageParams();
+		FIreBall->ActorToReturn=GetAvatarActorFromActorInfo();
 		FireBalls.Add(FIreBall);
 		FIreBall->FinishSpawning(Transform);
 	}

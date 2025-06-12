@@ -17,7 +17,7 @@ class NEWMAGICLEGEND_API UDamage_FireBlast : public UDamageGameplayAbility
 public:
 	virtual FString GetCurrentLevelDescription(int32 Level) override;
 	virtual FString GetNextLevelDescription(int32 Level) override;
-
+protected:
 	UFUNCTION(BlueprintCallable)
 	TArray<AProjectile_FIreBall*> SpawnProjectile_FIreBalls();
 

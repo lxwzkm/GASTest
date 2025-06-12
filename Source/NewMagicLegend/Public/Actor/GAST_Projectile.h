@@ -35,9 +35,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintCallable)
 	void OnHit();
 
-
+	bool IsValiedOverlap(AActor* OtherActor);
 	/**
 	 * @brief 碰撞的回调函数
 	 */
