@@ -551,6 +551,48 @@ TArray<FVector> UGAST_AbilitySystemLibrary::EvenlyRatatorVectors(const FVector& 
 	return Vectors;
 }
 
+void UGAST_AbilitySystemLibrary::SetRadialDamageEffectParams(FDamageEffectParams& DamageEffectParams,bool bInIsRadialDamage,float RadialInnerRadius,float RadialOuterRadius,FVector RadialOrigin)
+{
+	DamageEffectParams.bIsRadialDamge=bInIsRadialDamage;
+	DamageEffectParams.RadialDamageOrigin=RadialOrigin;
+	DamageEffectParams.RadialDamageInnerRadius=RadialInnerRadius;
+	DamageEffectParams.RadialDamageOuterRadius=RadialOuterRadius;
+}
+
+void UGAST_AbilitySystemLibrary::SetKnockBackDirection(FDamageEffectParams& DamageEffectParams, FVector Direction,
+	float Maginuted)
+{
+	Direction.Normalize();
+	if (Maginuted > 0)
+	{
+		DamageEffectParams.KnockBackForce=Direction*Maginuted;
+	}
+	else
+	{
+		DamageEffectParams.KnockBackForce=Direction*DamageEffectParams.KnockBackMagnitude;
+	}
+}
+
+void UGAST_AbilitySystemLibrary::SetDeathImpulseDirection(FDamageEffectParams& DamageEffectParams, FVector Direction,
+	float Maginuted)
+{
+	Direction.Normalize();
+	if (Maginuted > 0)
+	{
+		DamageEffectParams.DeathImpulse=Direction*Maginuted;
+	}
+	else
+	{
+		DamageEffectParams.DeathImpulse=Direction*DamageEffectParams.DeathImpulseMagnitude;
+	}
+}
+
+void UGAST_AbilitySystemLibrary::SetDamageParamsTargetASC(FDamageEffectParams& DamageEffectParams,
+	UAbilitySystemComponent* ASC)
+{
+	DamageEffectParams.TargetASC=ASC;
+}
+
 void UGAST_AbilitySystemLibrary::AsyncLoadImage(const FString& Path)
 {
 	AsyncTask(ENamedThreads::Type::AnyBackgroundThreadNormalTask,[Path]()

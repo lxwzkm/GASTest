@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
+#include "GAST_AbilityType.h"
 #include "Data/CharacterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
@@ -151,6 +153,21 @@ public:
 	static TArray<FRotator> EvenlySpaceRotators(const FVector& Forward,const FVector& Axis,float Spread,int32 NumRatators);
 	UFUNCTION(BlueprintPure,Category="Combat")
 	static TArray<FVector> EvenlyRatatorVectors(const FVector& Forward,const FVector& Axis,float Spread,int32 NumVectors);
+
+	/*
+	 * 设置DamageEffectParams
+	 */
+	UFUNCTION(BlueprintCallable,Category="Damage")
+	static void SetRadialDamageEffectParams(UPARAM(ref)FDamageEffectParams & DamageEffectParams,bool bInIsRadialDamage,float RadialInnerRadius,float RadialOuterRadius,FVector RadialOrigin);
+
+	UFUNCTION(BlueprintCallable,Category="Damage")
+	static void SetKnockBackDirection(UPARAM(ref)FDamageEffectParams& DamageEffectParams,FVector Direction,float Maginuted=0.f);
+
+	UFUNCTION(BlueprintCallable,Category="Damage")
+	static void SetDeathImpulseDirection(UPARAM(ref)FDamageEffectParams& DamageEffectParams,FVector Direction,float Maginuted=0.f);
+
+	UFUNCTION(BlueprintCallable,Category="Damage")
+	static void SetDamageParamsTargetASC(UPARAM(ref)FDamageEffectParams& DamageEffectParams,UAbilitySystemComponent*ASC);
 
 	/**
 	 * 异步加载图片
