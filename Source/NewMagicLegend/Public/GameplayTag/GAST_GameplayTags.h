@@ -124,6 +124,9 @@ public:
 	FGameplayTag Player_Block_Held;
 	FGameplayTag Player_Block_Released;
 	FGameplayTag Player_Block_CursorTrace;
+
+	/*---------GameplayCue Tag------------*/
+	FGameplayTag Gameplaycue_FireBlast;
 	
 private:
 	static FGameplayTags GameplayTags;

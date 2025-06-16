@@ -36,7 +36,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintCallable)
-	void OnHit();
+	 virtual void OnHit();
 
 	bool IsValiedOverlap(AActor* OtherActor);
 	/**
@@ -45,12 +45,11 @@ protected:
 	UFUNCTION()
 	virtual void SphereOverlap(UPrimitiveComponent* OverlappedComponent,AActor* OtherActor,UPrimitiveComponent* OtherComp,int32 OtherBodyIndex,bool bFromSweep, const FHitResult& SweepResult);
 	
-
+	bool bHit=false;
 private:
 
 	//为了防止网络传播顺序的极端情况，destroy会从服务器复制到客户端，但是如果客户端的Overlap还没有触发，destroy就到了，会直接触发destroy而不会播放特效和声音，
 	//所以当我们在客户端收到destroy时，如果还没有播放过特效，就会进入重写的destroy中播放特效和声音
-	bool bHit=false;
 
 	float LifeSpan=15.f;
 	

@@ -125,4 +125,6 @@ void FGameplayTags::InitializeGameplayTags()
 	GameplayTags.Player_Block_Released=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.Released"),FString("阻挡按键释放的Tag"));
 	GameplayTags.Player_Block_CursorTrace=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.CursorTrace"),FString("对鼠标追踪检测的阻挡的Tag"));
 
+	/*----------------------------------GamecueTag----------------------------*/
+	GameplayTags.Gameplaycue_FireBlast=UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Gameplaycue.FireBlast"),FString("Gameplaycue的识别Tag"));
 }

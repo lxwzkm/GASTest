@@ -4,7 +4,9 @@
 #include "Actor/Projectile_FIreBall.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GameplayCueManager.h"
 #include "GAST_AbilitySystemLibrary.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 
 void AProjectile_FIreBall::BeginPlay()
 {
@@ -27,4 +29,16 @@ void AProjectile_FIreBall::SphereOverlap(UPrimitiveComponent* OverlappedComponen
 		}
 		
 	}
+}
+
+void AProjectile_FIreBall::OnHit()
+{
+	if (GetOwner())
+	{
+		FGameplayCueParameters Parameters;
+		Parameters.Location= GetActorLocation();
+		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetOwner(),FGameplayTags::Get().Gameplaycue_FireBlast,Parameters);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "FireBlast");
+	}
+	bHit=true;
 }
