@@ -23,6 +23,23 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UMVVM_LoadSlotViewModel> LoadSlotViewModelClass;
+
+	/*
+	 * 不同状态下Slot按钮的回调函数
+	 */
+
+	UFUNCTION(BlueprintCallable)
+	void ButtonNewGamePressed(int32 Slot);
+
+	UFUNCTION(BlueprintCallable)
+	void ButtonNewSlotPressed(int32 Slot,const FString& SlotName);
+
+	UFUNCTION(BlueprintCallable)
+	void ButtonSelectSlotPressed(int32 Slot);
+
+	int32 GetLoadSlotNum() const { return LoadSlotNum; };
+	void SetLoadSlotNum(int32 Num);
+	
 private:
 	UPROPERTY()
 	TMap<int32,UMVVM_LoadSlotViewModel*> SlotViewModels;
@@ -33,4 +50,7 @@ private:
 	TObjectPtr<UMVVM_LoadSlotViewModel> LoadSlotViewModel_1;
 	UPROPERTY()
 	TObjectPtr<UMVVM_LoadSlotViewModel> LoadSlotViewModel_2;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess=true))
+	int32 LoadSlotNum;
 };

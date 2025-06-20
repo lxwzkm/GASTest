@@ -14,6 +14,6 @@ class NEWMAGICLEGEND_API ULoadScreenWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void BlueprintInitializeWidget();
 };
