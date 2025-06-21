@@ -17,4 +17,6 @@ void ALoadCsreenHud::BeginPlay()
 	LoadScreenWidget=CreateWidget<ULoadScreenWidget>(GetWorld(),LoadCsreenWidgetClass);
 	LoadScreenWidget->AddToViewport();
 	LoadScreenWidget->BlueprintInitializeWidget();
+
+	LoadScreenViewModel->LoadData();
 }

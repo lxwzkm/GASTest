@@ -15,6 +15,6 @@ void UMVVM_LoadSlotViewModel::SetPlayerName(const FString& NewPlayerName)
 
 void UMVVM_LoadSlotViewModel::InitializeSlot()
 {
-	//TODO:检查存档状态，并广播对应的索引坐标
-	SetSwitcherIndex.Broadcast(2);
+	const int32 SlotIndex=SaveSlotStatus.GetValue();
+	SetSwitcherIndex.Broadcast(SlotIndex);
 }

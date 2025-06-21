@@ -24,9 +24,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
 	TObjectPtr<UMyAbilityInfo>AbilityInformation;
-
-	void SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot,int32 LoadSlotIndex);
-
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> SlotSaveGameClass;
+	
+	void SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot,int32 LoadSlotIndex);
+
+	ULoadSlotSaveGame* GetSaveDataFromSlot(const FString& LoadSlotName,int32 Index);
+
+	void DeleteSlot(const FString& LoadSlotName,int32 Index);
 };

@@ -6,6 +6,14 @@
 #include "GameFramework/SaveGame.h"
 #include "LoadSlotSaveGame.generated.h"
 
+UENUM()
+enum SaveSlotStatus
+{
+	Vacant,
+	EnteryName,
+	Taken
+};
+
 /**
  * 
  */
@@ -20,7 +28,10 @@ public:
 
 	UPROPERTY()
 	int32 LoadSlotIndex=0;
-
+	/*------------- 储存的信息 ------------------------*/
 	UPROPERTY()
 	FString PlayerName=FString("默认名称");
+	
+	UPROPERTY()
+	TEnumAsByte<SaveSlotStatus> SlotStatus=Vacant;
 };

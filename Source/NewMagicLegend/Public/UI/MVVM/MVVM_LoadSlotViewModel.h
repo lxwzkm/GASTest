@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
+#include "Gamemode/LoadSlotSaveGame.h"
 #include "MVVM_LoadSlotViewModel.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetSwitcherIndex,int32,SwitcherIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetEnableSelectButton,bool,EnableSelectButton);
 
 /**
  * 
@@ -20,6 +22,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnSetSwitcherIndex SetSwitcherIndex;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnSetEnableSelectButton SetEnableSelectButton;
+
 	void SetLoadSlotName(const FString& NewLoadSlotName);
 	void SetPlayerName(const FString& NewPlayerName);
 	
@@ -27,7 +32,10 @@ public:
 	FString GetPlayerName()const { return PlayerName; };
 	void InitializeSlot();
 
-
+	UPROPERTY()
+	TEnumAsByte<SaveSlotStatus> SaveSlotStatus;
+	UPROPERTY()
+	int32 LoadSlotIndex;
 private:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess="true"));
 	FString LoadSlotName;

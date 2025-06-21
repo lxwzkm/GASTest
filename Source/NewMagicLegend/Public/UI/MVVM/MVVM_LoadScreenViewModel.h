@@ -6,6 +6,8 @@
 #include "MVVMViewModelBase.h"
 #include "MVVM_LoadScreenViewModel.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonSelected);
+
 class UMVVM_LoadSlotViewModel;
 /**
  * 
@@ -16,6 +18,9 @@ class NEWMAGICLEGEND_API UMVVM_LoadScreenViewModel : public UMVVMViewModelBase
 	GENERATED_BODY()
 public:
 
+	UPROPERTY(BlueprintAssignable)
+	FOnButtonSelected OnButtonSelected;
+	
 	void InitializeLoadSlot();
 
 	UFUNCTION(BlueprintPure)
@@ -37,8 +42,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ButtonSelectSlotPressed(int32 Slot);
 
+	UFUNCTION(BlueprintCallable)
+	void DeleteButtonPressed();
+
 	int32 GetLoadSlotNum() const { return LoadSlotNum; };
 	void SetLoadSlotNum(int32 Num);
+
+	void LoadData();
 	
 private:
 	UPROPERTY()
@@ -50,6 +60,9 @@ private:
 	TObjectPtr<UMVVM_LoadSlotViewModel> LoadSlotViewModel_1;
 	UPROPERTY()
 	TObjectPtr<UMVVM_LoadSlotViewModel> LoadSlotViewModel_2;
+
+	UPROPERTY()
+	TObjectPtr<UMVVM_LoadSlotViewModel> SelectedLoadSlot;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess=true))
 	int32 LoadSlotNum;

@@ -9,14 +9,36 @@
 
 void AGAST_Gamemodebase::SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot, int32 LoadSlotIndex)
 {
-	const bool bLoadSlotExist=UGameplayStatics::DoesSaveGameExist(LoadSlot->GetLoadSlotName(),LoadSlotIndex);
-	if(bLoadSlotExist)
-	{
-		UGameplayStatics::DeleteGameInSlot(LoadSlot->GetLoadSlotName(),LoadSlotIndex);
-	}
+	DeleteSlot(LoadSlot->GetLoadSlotName(), LoadSlotIndex);
+	
 	USaveGame* SaveGameObj= UGameplayStatics::CreateSaveGameObject(SlotSaveGameClass);
 	ULoadSlotSaveGame* LoadSlotSaveGame=Cast<ULoadSlotSaveGame>(SaveGameObj);
 	LoadSlotSaveGame->PlayerName=LoadSlot->GetPlayerName();
+	LoadSlotSaveGame->SlotStatus=LoadSlot->SaveSlotStatus;
 
 	UGameplayStatics::SaveGameToSlot(LoadSlotSaveGame,LoadSlot->GetLoadSlotName(),LoadSlotIndex);
+}
+
+ULoadSlotSaveGame* AGAST_Gamemodebase::GetSaveDataFromSlot(const FString& LoadSlotName, int32 Index)
+{
+	USaveGame* SaveGameObject=nullptr;
+	if (UGameplayStatics::DoesSaveGameExist(LoadSlotName,Index))
+	{
+		SaveGameObject=UGameplayStatics::LoadGameFromSlot(LoadSlotName,Index);
+	}
+	else
+	{
+		SaveGameObject=UGameplayStatics::CreateSaveGameObject(SlotSaveGameClass);
+	}
+	ULoadSlotSaveGame* LoadSlotViewModel=Cast<ULoadSlotSaveGame>(SaveGameObject);
+	return LoadSlotViewModel;
+}
+
+void AGAST_Gamemodebase::DeleteSlot(const FString& LoadSlotName, int32 Index)
+{
+	const bool bLoadSlotExist=UGameplayStatics::DoesSaveGameExist(LoadSlotName,Index);
+	if(bLoadSlotExist)
+	{
+		UGameplayStatics::DeleteGameInSlot(LoadSlotName,Index);
+	}
 }
