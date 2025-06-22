@@ -27,10 +27,24 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> SlotSaveGameClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	FString DefaultMapName;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> DefaultMap;
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FString,TSoftObjectPtr<UWorld>> Maps;
 	
 	void SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot,int32 LoadSlotIndex);
 
 	ULoadSlotSaveGame* GetSaveDataFromSlot(const FString& LoadSlotName,int32 Index);
 
 	void DeleteSlot(const FString& LoadSlotName,int32 Index);
+
+	void TravelToMap(UMVVM_LoadSlotViewModel* LoadSlot);
+
+protected:
+	virtual void BeginPlay() override;
 };

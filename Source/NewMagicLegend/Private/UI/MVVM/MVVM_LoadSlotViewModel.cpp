@@ -13,6 +13,11 @@ void UMVVM_LoadSlotViewModel::SetPlayerName(const FString& NewPlayerName)
 	UE_MVVM_SET_PROPERTY_VALUE(PlayerName,NewPlayerName);
 }
 
+void UMVVM_LoadSlotViewModel::SetMapName(const FString& NewMapName)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(MapName,NewMapName);
+}
+
 void UMVVM_LoadSlotViewModel::InitializeSlot()
 {
 	const int32 SlotIndex=SaveSlotStatus.GetValue();

@@ -41,6 +41,8 @@ void UMVVM_LoadScreenViewModel::ButtonNewSlotPressed(int32 Slot, const FString& 
 	{
 		SlotViewModels[Slot]->SetPlayerName(SlotName);
 		SlotViewModels[Slot]->SaveSlotStatus=Taken;
+		SlotViewModels[Slot]->SetMapName(MyGameMode->DefaultMapName);
+		
 		MyGameMode->SaveLoadSlot(SlotViewModels[Slot],Slot);
 		SlotViewModels[Slot]->InitializeSlot();
 	}
@@ -76,6 +78,15 @@ void UMVVM_LoadScreenViewModel::DeleteButtonPressed()
 	}
 }
 
+void UMVVM_LoadScreenViewModel::PlayButtonPressed()
+{
+	AGAST_Gamemodebase* Gamemodebase=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this));
+	if (SelectedLoadSlot)
+	{
+		Gamemodebase->TravelToMap(SelectedLoadSlot);
+	}
+}
+
 void UMVVM_LoadScreenViewModel::SetLoadSlotNum(int32 Num)
 {
 	UE_MVVM_SET_PROPERTY_VALUE(LoadSlotNum, Num);
@@ -90,6 +101,7 @@ void UMVVM_LoadScreenViewModel::LoadData()
 
 		Slot.Value->SaveSlotStatus=SaveSlotObject->SlotStatus;
 		Slot.Value->SetPlayerName(SaveSlotObject->PlayerName);
+		Slot.Value->SetMapName(SaveSlotObject->MapName);
 		Slot.Value->InitializeSlot();
 	}
 }

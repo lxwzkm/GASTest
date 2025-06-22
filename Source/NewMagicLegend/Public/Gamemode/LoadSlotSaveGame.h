@@ -31,6 +31,8 @@ public:
 	/*------------- 储存的信息 ------------------------*/
 	UPROPERTY()
 	FString PlayerName=FString("默认名称");
+	UPROPERTY()
+	FString MapName=FString("Map");
 	
 	UPROPERTY()
 	TEnumAsByte<SaveSlotStatus> SlotStatus=Vacant;

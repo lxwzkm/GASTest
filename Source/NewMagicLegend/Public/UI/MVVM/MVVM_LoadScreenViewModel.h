@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeleteButtonPressed();
 
+	UFUNCTION(BlueprintCallable)
+	void PlayButtonPressed();
+
 	int32 GetLoadSlotNum() const { return LoadSlotNum; };
 	void SetLoadSlotNum(int32 Num);
 

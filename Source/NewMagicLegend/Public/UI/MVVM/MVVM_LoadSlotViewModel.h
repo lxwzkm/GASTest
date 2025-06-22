@@ -27,9 +27,12 @@ public:
 
 	void SetLoadSlotName(const FString& NewLoadSlotName);
 	void SetPlayerName(const FString& NewPlayerName);
+	void SetMapName(const FString& NewMapName);
 	
 	FString GetLoadSlotName()const { return LoadSlotName; };
 	FString GetPlayerName()const { return PlayerName; };
+	FString GetMapName()const { return MapName; };
+	
 	void InitializeSlot();
 
 	UPROPERTY()
@@ -41,4 +44,6 @@ private:
 	FString LoadSlotName;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess="true"))
 	FString PlayerName;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess="true"))
+	FString MapName;
 };

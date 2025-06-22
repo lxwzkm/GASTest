@@ -15,6 +15,7 @@ void AGAST_Gamemodebase::SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot, int32 L
 	ULoadSlotSaveGame* LoadSlotSaveGame=Cast<ULoadSlotSaveGame>(SaveGameObj);
 	LoadSlotSaveGame->PlayerName=LoadSlot->GetPlayerName();
 	LoadSlotSaveGame->SlotStatus=LoadSlot->SaveSlotStatus;
+	LoadSlotSaveGame->MapName=LoadSlot->GetMapName();
 
 	UGameplayStatics::SaveGameToSlot(LoadSlotSaveGame,LoadSlot->GetLoadSlotName(),LoadSlotIndex);
 }
@@ -41,4 +42,16 @@ void AGAST_Gamemodebase::DeleteSlot(const FString& LoadSlotName, int32 Index)
 	{
 		UGameplayStatics::DeleteGameInSlot(LoadSlotName,Index);
 	}
+}
+
+void AGAST_Gamemodebase::TravelToMap(UMVVM_LoadSlotViewModel* LoadSlot)
+{
+	UGameplayStatics::OpenLevelBySoftObjectPtr(LoadSlot,Maps.FindChecked(LoadSlot->GetMapName()));
+}
+
+void AGAST_Gamemodebase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Maps.Add(DefaultMapName,DefaultMap);
 }
