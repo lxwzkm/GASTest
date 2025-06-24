@@ -3,6 +3,7 @@
 
 #include "UI/MVVM/MVVM_LoadScreenViewModel.h"
 
+#include "Gamemode/GAST_GameInstance.h"
 #include "Gamemode/GAST_Gamemodebase.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/MVVM/MVVM_LoadSlotViewModel.h"
@@ -42,9 +43,15 @@ void UMVVM_LoadScreenViewModel::ButtonNewSlotPressed(int32 Slot, const FString& 
 		SlotViewModels[Slot]->SetPlayerName(SlotName);
 		SlotViewModels[Slot]->SaveSlotStatus=Taken;
 		SlotViewModels[Slot]->SetMapName(MyGameMode->DefaultMapName);
+		SlotViewModels[Slot]->PlayerStartTag=MyGameMode->DefaultsStartTag;
 		
 		MyGameMode->SaveLoadSlot(SlotViewModels[Slot],Slot);
 		SlotViewModels[Slot]->InitializeSlot();
+
+		UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(MyGameMode->GetGameInstance());
+		MyGameInstance->LoadSlotName=SlotName;
+		MyGameInstance->LoadSlotIndex=Slot;
+		MyGameInstance->PlayerStartTag=MyGameMode->DefaultsStartTag;
 	}
 }
 
@@ -81,8 +88,11 @@ void UMVVM_LoadScreenViewModel::DeleteButtonPressed()
 void UMVVM_LoadScreenViewModel::PlayButtonPressed()
 {
 	AGAST_Gamemodebase* Gamemodebase=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this));
+	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(Gamemodebase->GetGameInstance());
+	
 	if (SelectedLoadSlot)
 	{
+		MyGameInstance->PlayerStartTag=SelectedLoadSlot->PlayerStartTag;
 		Gamemodebase->TravelToMap(SelectedLoadSlot);
 	}
 }
@@ -102,6 +112,7 @@ void UMVVM_LoadScreenViewModel::LoadData()
 		Slot.Value->SaveSlotStatus=SaveSlotObject->SlotStatus;
 		Slot.Value->SetPlayerName(SaveSlotObject->PlayerName);
 		Slot.Value->SetMapName(SaveSlotObject->MapName);
+		Slot.Value->PlayerStartTag=SaveSlotObject->PlayerStartTag;
 		Slot.Value->InitializeSlot();
 	}
 }

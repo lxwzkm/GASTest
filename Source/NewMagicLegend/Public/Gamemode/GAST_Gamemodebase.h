@@ -35,6 +35,9 @@ public:
 	TSoftObjectPtr<UWorld> DefaultMap;
 
 	UPROPERTY(EditDefaultsOnly)
+	FName DefaultsStartTag;
+
+	UPROPERTY(EditDefaultsOnly)
 	TMap<FString,TSoftObjectPtr<UWorld>> Maps;
 	
 	void SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot,int32 LoadSlotIndex);
@@ -44,6 +47,8 @@ public:
 	void DeleteSlot(const FString& LoadSlotName,int32 Index);
 
 	void TravelToMap(UMVVM_LoadSlotViewModel* LoadSlot);
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 protected:
 	virtual void BeginPlay() override;

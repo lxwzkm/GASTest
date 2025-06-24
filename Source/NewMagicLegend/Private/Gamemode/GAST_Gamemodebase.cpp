@@ -3,6 +3,8 @@
 
 #include "Gamemode/GAST_Gamemodebase.h"
 
+#include "GameFramework/PlayerStart.h"
+#include "Gamemode/GAST_GameInstance.h"
 #include "Gamemode/LoadSlotSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/MVVM/MVVM_LoadSlotViewModel.h"
@@ -16,6 +18,7 @@ void AGAST_Gamemodebase::SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot, int32 L
 	LoadSlotSaveGame->PlayerName=LoadSlot->GetPlayerName();
 	LoadSlotSaveGame->SlotStatus=LoadSlot->SaveSlotStatus;
 	LoadSlotSaveGame->MapName=LoadSlot->GetMapName();
+	LoadSlotSaveGame->PlayerStartTag=LoadSlot->PlayerStartTag;
 
 	UGameplayStatics::SaveGameToSlot(LoadSlotSaveGame,LoadSlot->GetLoadSlotName(),LoadSlotIndex);
 }
@@ -47,6 +50,30 @@ void AGAST_Gamemodebase::DeleteSlot(const FString& LoadSlotName, int32 Index)
 void AGAST_Gamemodebase::TravelToMap(UMVVM_LoadSlotViewModel* LoadSlot)
 {
 	UGameplayStatics::OpenLevelBySoftObjectPtr(LoadSlot,Maps.FindChecked(LoadSlot->GetMapName()));
+}
+
+AActor* AGAST_Gamemodebase::ChoosePlayerStart_Implementation(AController* Player)
+{
+	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(GetGameInstance());
+	TArray<AActor*> AllPlayerActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(),APlayerStart::StaticClass(),AllPlayerActors);
+	if (AllPlayerActors.Num() > 0)
+	{
+		AActor* SelectedPlayerActor=AllPlayerActors[0];
+		for (AActor* PlayerActor : AllPlayerActors)
+		{
+			if (APlayerStart* PlayerStart=Cast<APlayerStart>(PlayerActor))
+			{
+				if (PlayerStart->PlayerStartTag==MyGameInstance->PlayerStartTag)
+				{
+					SelectedPlayerActor=PlayerActor;
+					break;
+				}
+			}
+		}
+		return SelectedPlayerActor;
+	}
+	return nullptr;
 }
 
 void AGAST_Gamemodebase::BeginPlay()
