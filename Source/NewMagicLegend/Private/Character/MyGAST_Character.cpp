@@ -14,8 +14,11 @@
 #include "Gamemode/GAST_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Gamemode/GAST_Gamemodebase.h"
 #include "Gamemode/GAST_PlayerCOntroller.h"
+#include "Gamemode/LoadSlotSaveGame.h"
 #include "GameplayTag/GAST_GameplayTags.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/HUD/GAST_HUD.h"
 
 AMyGAST_Character::AMyGAST_Character()
@@ -203,6 +206,19 @@ void AMyGAST_Character::HideMagicCircle_Implementation()
 	{
 		PlayerCOntroller->HideMagicCircle();
 		PlayerCOntroller->bShowMouseCursor=true;
+	}
+}
+
+void AMyGAST_Character::SaveProgess_Implementation(const FName& CheckPoint)
+{
+	AGAST_Gamemodebase* MyGameMode=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this));
+	if (MyGameMode)
+	{
+		ULoadSlotSaveGame* SaveGameObject=MyGameMode->RetrievelSaveGameData();
+
+		SaveGameObject->PlayerStartTag=CheckPoint;
+
+		MyGameMode->SaveInGameProgessData(SaveGameObject);
 	}
 }
 

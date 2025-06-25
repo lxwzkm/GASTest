@@ -52,6 +52,26 @@ void AGAST_Gamemodebase::TravelToMap(UMVVM_LoadSlotViewModel* LoadSlot)
 	UGameplayStatics::OpenLevelBySoftObjectPtr(LoadSlot,Maps.FindChecked(LoadSlot->GetMapName()));
 }
 
+ULoadSlotSaveGame* AGAST_Gamemodebase::RetrievelSaveGameData()
+{
+	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(GetGameInstance());
+	const FString InLoadSlotName=MyGameInstance->LoadSlotName;
+	const int32 InLoadSlotIndex=MyGameInstance->LoadSlotIndex;
+
+	return GetSaveDataFromSlot(InLoadSlotName,InLoadSlotIndex);
+}
+
+void AGAST_Gamemodebase::SaveInGameProgessData(ULoadSlotSaveGame* SaveData)
+{
+	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(GetGameInstance());
+	const FString InLoadSlotName=MyGameInstance->LoadSlotName;
+	const int32 InLoadSlotIndex=MyGameInstance->LoadSlotIndex;
+
+	MyGameInstance->PlayerStartTag=SaveData->PlayerStartTag;
+
+	UGameplayStatics::SaveGameToSlot(SaveData,InLoadSlotName,InLoadSlotIndex);
+}
+
 AActor* AGAST_Gamemodebase::ChoosePlayerStart_Implementation(AController* Player)
 {
 	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(GetGameInstance());

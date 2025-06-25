@@ -93,6 +93,8 @@ void UMVVM_LoadScreenViewModel::PlayButtonPressed()
 	if (SelectedLoadSlot)
 	{
 		MyGameInstance->PlayerStartTag=SelectedLoadSlot->PlayerStartTag;
+		MyGameInstance->LoadSlotName=SelectedLoadSlot->GetLoadSlotName();
+		MyGameInstance->LoadSlotIndex=SelectedLoadSlot->LoadSlotIndex;
 		Gamemodebase->TravelToMap(SelectedLoadSlot);
 	}
 }

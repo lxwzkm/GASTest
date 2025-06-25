@@ -51,6 +51,7 @@ public:
 
 	virtual void ShowMagicCircle_Implementation(UMaterialInterface* MaterialInterface = nullptr) override;
 	virtual void HideMagicCircle_Implementation() override;
+	virtual void SaveProgess_Implementation(const FName& CheckPoint) override;
 	/*---------------CombatIntergace-----------------*/
 	virtual int32 GetPlayerLevel_Implementation() override;
 	
