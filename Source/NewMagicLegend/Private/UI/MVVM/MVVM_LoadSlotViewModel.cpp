@@ -18,6 +18,11 @@ void UMVVM_LoadSlotViewModel::SetMapName(const FString& NewMapName)
 	UE_MVVM_SET_PROPERTY_VALUE(MapName,NewMapName);
 }
 
+void UMVVM_LoadSlotViewModel::SetPlayerLevel(const int32& NewPlayerLevel)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(PlayerLevel,NewPlayerLevel);
+}
+
 void UMVVM_LoadSlotViewModel::InitializeSlot()
 {
 	const int32 SlotIndex=SaveSlotStatus.GetValue();

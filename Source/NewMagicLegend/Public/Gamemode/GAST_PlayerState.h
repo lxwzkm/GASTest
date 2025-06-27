@@ -13,6 +13,7 @@ class UAttributeSet;
 class UAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangedSignature,int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerLevelChangedSignature,int32,bool/* 是否是加载等级 */);
 
 /**
  * 
@@ -48,7 +49,7 @@ public:
 
 	/*----------------- 处理经验值和升级 -----------------------------------*/
 	FOnPlayerStateChangedSignature OnXPChangeDelegate;
-	FOnPlayerStateChangedSignature OnLevelChangeDelegate;
+	FOnPlayerLevelChangedSignature OnLevelChangeDelegate;
 	FOnPlayerStateChangedSignature OnSpellPointsChangeDelegate;
 	FOnPlayerStateChangedSignature OnAttributePointsChangeDelegate;
 	
@@ -60,6 +61,8 @@ public:
 
 	void AddToSpelPoints(int32 InSpellPoints);
 	void AddToAttributePoints(int32 InAttributePoints);
+	void SetSpellPoints(int32 InSpellPoints);
+	void SetAttributePoints(int32 InAttributePoints);
 	
 private:
 	UPROPERTY(VisibleAnywhere,ReplicatedUsing=OnRep_Level,Category="PlayerClassDefaults")

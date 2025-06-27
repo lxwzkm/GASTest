@@ -9,6 +9,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+class ULoadSlotSaveGame;
 struct FGameplayTag;
 struct FDamageEffectParams;
 class UMyAbilityInfo;
@@ -47,6 +48,7 @@ public:
 	 * 初始化属性（敌人）
 	 */
 	static void InitializeDefaultsAttributes(const UObject* WordContext,ECharacterClass CharacterClass,float Level,UAbilitySystemComponent*ASC);
+	static void InitializeDefaultsAttributesFromDisk(const UObject* WordContext,UAbilitySystemComponent*ASC,ULoadSlotSaveGame* SaveGame);
 	/*
 	 * 初始化敌人技能
 	 */

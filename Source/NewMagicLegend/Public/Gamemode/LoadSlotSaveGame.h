@@ -35,6 +35,28 @@ public:
 	FString MapName=FString("Map");
 	UPROPERTY()
 	FName PlayerStartTag=FName();
+	UPROPERTY()
+	bool bIsFirstLoadin=true;
+
+	//Player
+	UPROPERTY()
+	int32 PlayerLevel=1;
+	UPROPERTY()
+	int32 XP=0;
+	UPROPERTY()
+	int32 AttributePoints=0;
+	UPROPERTY()
+	int32 SpellPoints=0;
+
+	//Attribute
+	UPROPERTY()
+	int32 Intelligence=0;
+	UPROPERTY()
+	int32 Strength=0;
+	UPROPERTY()
+	int32 Resilience=0;
+	UPROPERTY()
+	int32 Vigor=0;
 	
 	UPROPERTY()
 	TEnumAsByte<SaveSlotStatus> SlotStatus=Vacant;

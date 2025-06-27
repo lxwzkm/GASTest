@@ -41,13 +41,13 @@ UAttributeSet* AGAST_PlayerState::GetAttributeSet() const
 void AGAST_PlayerState::SetLevel(int32 InLevel)
 {
 	Level=InLevel;
-	OnLevelChangeDelegate.Broadcast(Level);
+	OnLevelChangeDelegate.Broadcast(Level,true);
 }
 
 void AGAST_PlayerState::AddToLevel(int32 InLevel)
 {
 	Level+=InLevel;
-	OnLevelChangeDelegate.Broadcast(Level);
+	OnLevelChangeDelegate.Broadcast(Level,false);
 }
 
 void AGAST_PlayerState::AddToSpelPoints(int32 InSpellPoints)
@@ -60,6 +60,16 @@ void AGAST_PlayerState::AddToAttributePoints(int32 InAttributePoints)
 {
 	AttributePoints+=InAttributePoints;
 	OnAttributePointsChangeDelegate.Broadcast(AttributePoints);
+}
+
+void AGAST_PlayerState::SetSpellPoints(int32 InSpellPoints)
+{
+	SpellPoints = InSpellPoints;
+}
+
+void AGAST_PlayerState::SetAttributePoints(int32 InAttributePoints)
+{
+	AttributePoints = InAttributePoints;
 }
 
 void AGAST_PlayerState::SetXP(int32 InXP)
@@ -76,7 +86,7 @@ void AGAST_PlayerState::AddToXP(int32 InXP)
 
 void AGAST_PlayerState::OnRep_Level(int32 OldLevel)
 {
-	OnLevelChangeDelegate.Broadcast(Level);
+	OnLevelChangeDelegate.Broadcast(Level,false);
 }
 
 void AGAST_PlayerState::OnRep_XP(int32 OldXP)

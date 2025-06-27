@@ -73,7 +73,7 @@ protected:
 
 	/*---------------------------  PlayerStateChange  ----------------------------*/
 	UPROPERTY(BlueprintAssignable,Category="GAS|PlayerState")
-	FOnPlayerStateChangeSignature OnPlayerLevelChangeDelegate;
+	FOnPlayerLevelChangeSignature OnPlayerLevelChangeDelegate;
 	
 	/*---------------------------  回调函数  -----------------------------*/
 	void OnXPChange(int32 XP);

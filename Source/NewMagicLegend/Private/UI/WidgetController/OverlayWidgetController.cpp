@@ -80,9 +80,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	}
 	/*---------------------------  PlayerStateChange  ----------------------------*/
 	GetPlayerState()->OnLevelChangeDelegate.AddLambda(
-[this](int32 NewLevel)
+[this](int32 NewLevel,bool InIsLoadIn)
 		{
-			OnPlayerLevelChangeDelegate.Broadcast(NewLevel);
+			OnPlayerLevelChangeDelegate.Broadcast(NewLevel,InIsLoadIn);
 		}
 	);
 

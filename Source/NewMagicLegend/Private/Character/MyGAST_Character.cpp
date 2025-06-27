@@ -4,8 +4,10 @@
 #include "Character/MyGAST_Character.h"
 
 #include "AbilitySystemComponent.h"
+#include "GAST_AbilitySystemLibrary.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
+#include "AbilitySystem/GAST_AttributeSet.h"
 #include "Actor/MagicCircle.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -52,7 +54,34 @@ void AMyGAST_Character::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitActorInfo();//初始化角色属性信息
-	GiveCharacterAbilites();//初始化角色技能
+	LoadProgess();
+}
+
+void AMyGAST_Character::LoadProgess()
+{
+	AGAST_Gamemodebase* MyGameMode=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this));
+	if (MyGameMode)
+	{
+		ULoadSlotSaveGame* SaveGameObject=MyGameMode->RetrievelSaveGameData();
+		if (SaveGameObject==nullptr)return;
+
+		if (SaveGameObject->bIsFirstLoadin)
+		{
+			InitializeAttributes();
+			GiveCharacterAbilites();
+		}
+		else
+		{
+			if (AGAST_PlayerState* MyPlayerState=Cast<AGAST_PlayerState>(GetPlayerState()))
+			{
+				MyPlayerState->SetLevel(SaveGameObject->PlayerLevel);
+				MyPlayerState->SetXP(SaveGameObject->XP);
+				MyPlayerState->SetAttributePoints(SaveGameObject->AttributePoints);
+				MyPlayerState->SetSpellPoints(SaveGameObject->SpellPoints);
+			}
+			UGAST_AbilitySystemLibrary::InitializeDefaultsAttributesFromDisk(this,AbilitySystemComponent,SaveGameObject);
+		}
+	}
 }
 
 void AMyGAST_Character::OnRep_PlayerState()
@@ -215,9 +244,22 @@ void AMyGAST_Character::SaveProgess_Implementation(const FName& CheckPoint)
 	if (MyGameMode)
 	{
 		ULoadSlotSaveGame* SaveGameObject=MyGameMode->RetrievelSaveGameData();
-
+		if (SaveGameObject==nullptr)return;
+		
 		SaveGameObject->PlayerStartTag=CheckPoint;
+		if (AGAST_PlayerState* MyPlayerState=Cast<AGAST_PlayerState>(GetPlayerState()))
+		{
+			SaveGameObject->PlayerLevel=MyPlayerState->GetPlayerLevel();
+			SaveGameObject->XP=MyPlayerState->GetCurrentXP();
+			SaveGameObject->AttributePoints=MyPlayerState->GetAttributePoints();
+			SaveGameObject->SpellPoints=MyPlayerState->GetSpellPoints();
+		}
+		SaveGameObject->Strength=UGAST_AttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
+		SaveGameObject->Intelligence=UGAST_AttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
+		SaveGameObject->Resilience=UGAST_AttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
+		SaveGameObject->Vigor=UGAST_AttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
 
+		SaveGameObject->bIsFirstLoadin=false;
 		MyGameMode->SaveInGameProgessData(SaveGameObject);
 	}
 }
@@ -251,6 +293,6 @@ void AMyGAST_Character::InitActorInfo()
 
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
 	//初始化主要信息，调用父类函数
-	InitializeAttributes();
+	//InitializeAttributes();  //改为从磁盘加载
 }
 

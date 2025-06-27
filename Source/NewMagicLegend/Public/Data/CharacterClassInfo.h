@@ -51,10 +51,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
 	TMap<ECharacterClass,FCharacterAttribute>CharacterClassDefaultsInfo;
-	
+
+	UPROPERTY(EditDefaultsOnly,Category="Common CharacterAttribute")
+	TSubclassOf<UGameplayEffect>PrimaryAttribute_SetByCaller;
 	//玩家共有的属性
 	UPROPERTY(EditDefaultsOnly,Category="Common CharacterAttribute")
 	TSubclassOf<UGameplayEffect>SecondaryAttribute;
+
+	UPROPERTY(EditDefaultsOnly,Category="Common CharacterAttribute")
+	TSubclassOf<UGameplayEffect>SecondaryAttribute_Infinite;
 
 	UPROPERTY(EditDefaultsOnly,Category="Common CharacterAttribute")
 	TSubclassOf<UGameplayEffect>VitalAttribute;

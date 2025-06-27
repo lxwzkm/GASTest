@@ -9,6 +9,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "Gamemode/GAST_Gamemodebase.h"
 #include "Gamemode/GAST_PlayerState.h"
+#include "Gamemode/LoadSlotSaveGame.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Interaction/CombatInterface.h"
 #include "UI/WidgetController/GAST_WidgetControllerBase.h"
@@ -72,8 +73,7 @@ USpellMenuWidgetController* UGAST_AbilitySystemLibrary::GetSpellMenuWidgetContro
 	return nullptr;
 }
 
-void UGAST_AbilitySystemLibrary::InitializeDefaultsAttributes(const UObject* WordContext, ECharacterClass
-                                                              CharacterClass, float Level, UAbilitySystemComponent* ASC)
+void UGAST_AbilitySystemLibrary::InitializeDefaultsAttributes(const UObject* WordContext, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
 
 	AActor* AvatarActor= ASC->GetAvatarActor();
@@ -94,6 +94,37 @@ void UGAST_AbilitySystemLibrary::InitializeDefaultsAttributes(const UObject* Wor
 	FGameplayEffectContextHandle VitalContextHandle=ASC->MakeEffectContext();
 	VitalContextHandle.AddSourceObject(AvatarActor);
 	const FGameplayEffectSpecHandle VitalEffectSpecHandle= ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttribute,Level,VitalContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*VitalEffectSpecHandle.Data.Get());
+}
+
+void UGAST_AbilitySystemLibrary::InitializeDefaultsAttributesFromDisk(const UObject* WordContext,UAbilitySystemComponent* ASC, ULoadSlotSaveGame* SaveGame)
+{
+	AActor* AvatarActor= ASC->GetAvatarActor();
+
+	UCharacterClassInfo* CharacterClassInfo=GetCharacterClassInfo(WordContext);
+
+	const FGameplayTags& GameplayTags=FGameplayTags::Get();
+	AActor* SourceActor=ASC->GetAvatarActor();
+	
+	FGameplayEffectContextHandle Context= ASC->MakeEffectContext();
+	Context.AddSourceObject(SourceActor);
+	
+	FGameplayEffectSpecHandle SpecHandle= ASC->MakeOutgoingSpec(CharacterClassInfo->PrimaryAttribute_SetByCaller,1.f,Context);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Attributes_Primary_Strength,SaveGame->Strength);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Attributes_Primary_Intelligence,SaveGame->Intelligence);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Attributes_Primary_Resilience,SaveGame->Resilience);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Attributes_Primary_Vigor,SaveGame->Vigor);
+	ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle SecondaryContextHandle=ASC->MakeEffectContext();
+	SecondaryContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle SecondaryEffectSpecHandle= ASC->MakeOutgoingSpec(CharacterClassInfo->SecondaryAttribute_Infinite,1.f,SecondaryContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*SecondaryEffectSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle VitalContextHandle=ASC->MakeEffectContext();
+	VitalContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle VitalEffectSpecHandle= ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttribute,1.f,VitalContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalEffectSpecHandle.Data.Get());
 }
 

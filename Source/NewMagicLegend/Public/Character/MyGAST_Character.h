@@ -57,6 +57,8 @@ public:
 	
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastLevelUp()const;
+	UFUNCTION()
+	void LoadProgess();
 private:
 	virtual void InitActorInfo() override;
 
