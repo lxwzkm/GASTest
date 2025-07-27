@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/SaveGame.h"
 #include "LoadSlotSaveGame.generated.h"
+
+class UGameplayAbility;
 
 UENUM()
 enum SaveSlotStatus
@@ -13,6 +16,67 @@ enum SaveSlotStatus
 	EnteryName,
 	Taken
 };
+
+USTRUCT()
+struct FSavedActor
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName ActorName=FName();
+
+	UPROPERTY()
+	FTransform ActorTransform=FTransform();
+
+	//序列化保存的Actor的其他信息，只有携带SaveGame的specifier的才可以被marked
+	UPROPERTY()
+	TArray<uint8> Bytes;
+};
+inline bool operator==(const FSavedActor& lhs, const FSavedActor& rhs)
+{
+	return lhs.ActorName==rhs.ActorName;
+}
+
+USTRUCT()
+struct FSavedMap
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString MapAssestName=FString();
+
+	UPROPERTY()
+	TArray<FSavedActor> SavedActors;
+};
+
+USTRUCT(BlueprintType)
+struct FSavedAbility
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Default")
+	TSubclassOf<UGameplayAbility> AbilityClass;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Default")
+	FGameplayTag AbilityStatus=FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Default")
+	FGameplayTag AbilitySlot=FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Default")
+	FGameplayTag AbilityTag=FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Default")
+	FGameplayTag AbilityType=FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Default")
+	int32 AbilityLevel=1;
+};
+
+inline bool operator==(const FSavedAbility& lhs, const FSavedAbility& rhs)
+{
+	return lhs.AbilityTag.MatchesTagExact(rhs.AbilityTag);
+}
 
 /**
  * 
@@ -57,6 +121,17 @@ public:
 	int32 Resilience=0;
 	UPROPERTY()
 	int32 Vigor=0;
+
+	//Ability
+	UPROPERTY()
+	TArray<FSavedAbility> SavedAbilities;
+
+	//Map
+	UPROPERTY()
+	TArray<FSavedMap> SavedMaps;
+
+	FSavedMap GetSavedMapByMapName(const FString& InMapName);
+	bool HasMap(const FString& InMapName) const;
 	
 	UPROPERTY()
 	TEnumAsByte<SaveSlotStatus> SlotStatus=Vacant;

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerStart.h"
+#include "Interaction/SavedInterface.h"
 #include "CheckPoint.generated.h"
 
 class USphereComponent;
@@ -11,7 +12,7 @@ class USphereComponent;
  * 
  */
 UCLASS()
-class NEWMAGICLEGEND_API ACheckPoint : public APlayerStart
+class NEWMAGICLEGEND_API ACheckPoint : public APlayerStart,public ISavedInterface
 {
 	GENERATED_BODY()
 public:
@@ -21,6 +22,9 @@ public:
 	void CheckPointReached(UMaterialInstanceDynamic* DynamicMaterial);
 
 	void HandleGlowEffects();
+
+	UPROPERTY(SaveGame)
+	bool bCheckPointReached=false;
 protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()

@@ -47,6 +47,8 @@ public:
 	ULoadSlotSaveGame* RetrievelSaveGameData();
 	void SaveInGameProgessData(ULoadSlotSaveGame* SaveData);
 
+	void SavedWorldState(UWorld* World);
+
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 protected:

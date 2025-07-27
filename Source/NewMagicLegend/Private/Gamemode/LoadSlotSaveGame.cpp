@@ -3,3 +3,26 @@
 
 #include "Gamemode/LoadSlotSaveGame.h"
 
+FSavedMap ULoadSlotSaveGame::GetSavedMapByMapName(const FString& InMapName)
+{
+	for (const FSavedMap& Map:SavedMaps)
+	{
+		if (Map.MapAssestName==InMapName)
+		{
+			return Map;
+		}
+	}
+	return FSavedMap();
+}
+
+bool ULoadSlotSaveGame::HasMap(const FString& InMapName) const
+{
+	for (const FSavedMap& Map:SavedMaps)
+	{
+		if (Map.MapAssestName==InMapName)
+		{
+			return true;
+		}
+	}
+	return false;
+}

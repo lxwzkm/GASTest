@@ -23,4 +23,5 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void ReciveActiveNiagara(const FGameplayTag& AbilityTag,bool bIsActiveCom);
+	void ActivateIfEquipped(UGAST_AbilitySystemComponent* MyASC);
 };

@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GAST_AbilitySystemLibrary.h"
 #include "AbilitySystem/GAST_AbilitySystemComponent.h"
+#include "GameplayTag/GAST_GameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 UPassiveSpellNiagaraComponent::UPassiveSpellNiagaraComponent()
@@ -20,6 +21,7 @@ void UPassiveSpellNiagaraComponent::BeginPlay()
 	if (UGAST_AbilitySystemComponent* MyASC=Cast<UGAST_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner())))
 	{
 		MyASC->OnActivePassiveNiagaraDelegate.AddUObject(this,& UPassiveSpellNiagaraComponent::ReciveActiveNiagara);
+		ActivateIfEquipped(MyASC);
 	}
 	else if (ICombatInterface* CombatInterface=Cast<ICombatInterface>(GetOwner()))
 	{
@@ -29,6 +31,7 @@ void UPassiveSpellNiagaraComponent::BeginPlay()
 			if (UGAST_AbilitySystemComponent* MyASC=Cast<UGAST_AbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner())))
 			{
 				MyASC->OnActivePassiveNiagaraDelegate.AddUObject(this,& UPassiveSpellNiagaraComponent::ReciveActiveNiagara);
+				ActivateIfEquipped(MyASC);
 			}
 		});
 	}
@@ -48,4 +51,15 @@ void UPassiveSpellNiagaraComponent::ReciveActiveNiagara(const FGameplayTag& Abil
 		}
 	}
 	
+}
+
+void UPassiveSpellNiagaraComponent::ActivateIfEquipped(UGAST_AbilitySystemComponent* MyASC)
+{
+	if (MyASC->bGivenAbility)
+	{
+		if (MyASC->GetStatusByAbiltyTag(AbilityPassiveTag).MatchesTagExact(FGameplayTags::Get().Ability_Status_Equipped))
+		{
+			Activate();
+		}
+	}
 }

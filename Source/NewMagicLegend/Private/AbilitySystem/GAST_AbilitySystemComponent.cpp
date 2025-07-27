@@ -10,6 +10,7 @@
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "AbilitySystem/Ability/GAST_GameplayAbilityBase.h"
 #include "Data/MyAbilityInfo.h"
+#include "Gamemode/LoadSlotSaveGame.h"
 #include "Interaction/PlayerInterface.h"
 #include "NewMagicLegend/MyLog.h"
 
@@ -197,11 +198,39 @@ void UGAST_AbilitySystemComponent::GiveCharacterPassiveAbilities(const TArray<TS
 	for (auto AbilitySpec:StartupPassiveAbility)
 	{
 		FGameplayAbilitySpec Ability= FGameplayAbilitySpec(AbilitySpec,1);
+		Ability.DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Equipped);
 		GiveAbilityAndActivateOnce(Ability);
 	}
 }
 
-
+void UGAST_AbilitySystemComponent::GiveCharacterAbilitiesFromSaveData(const ULoadSlotSaveGame* SaveData)
+{
+	for (auto Data:SaveData->SavedAbilities)
+	{
+		const TSubclassOf<UGameplayAbility> AbilityClass=Data.AbilityClass;
+		FGameplayAbilitySpec AbilitySpec=FGameplayAbilitySpec(AbilityClass,Data.AbilityLevel);
+		
+		AbilitySpec.DynamicAbilityTags.AddTag(Data.AbilitySlot);
+		AbilitySpec.DynamicAbilityTags.AddTag(Data.AbilityStatus);
+		if (Data.AbilityType.MatchesTagExact(FGameplayTags::Get().Ability_Type_Offsive))
+		{
+			GiveAbility(AbilitySpec);
+		}
+		else if (Data.AbilityType.MatchesTagExact(FGameplayTags::Get().Ability_Type_Passive))
+		{
+			if (Data.AbilityStatus.MatchesTagExact(FGameplayTags::Get().Ability_Status_Equipped))
+			{
+				GiveAbilityAndActivateOnce(AbilitySpec);
+			}
+			else
+			{
+				GiveAbility(AbilitySpec);
+			}
+		}
+	}
+	bGivenAbility=true;
+	OnStartupAbilitiesGivenDelegate.Broadcast();
+}
 
 void UGAST_AbilitySystemComponent::OnRep_ActivateAbilities()
 {
@@ -369,6 +398,9 @@ void UGAST_AbilitySystemComponent::Server_EquipAbility_Implementation(const FGam
 					if (IsPassiveAbility(*SpecWitSlot))
 					{
 						FGameplayTag PreslotAbilityTag=GetAbilityTagByAbilitySpec(*SpecWitSlot);
+						//将移除出去的技能的状态改成未装备的
+						SpecWitSlot->DynamicAbilityTags.RemoveTag(GetStatusByAbiltyTag(PreslotAbilityTag));
+						SpecWitSlot->DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Unlocked);
 						//关掉前一个Niagara特效
 						Multicast_AcitvePassiveNiagara(PreslotAbilityTag,false);
 						DeactivePassiveAbilityDelegate.Broadcast(PreslotAbilityTag);
@@ -387,6 +419,9 @@ void UGAST_AbilitySystemComponent::Server_EquipAbility_Implementation(const FGam
 					Multicast_AcitvePassiveNiagara(AbilityTag,true);
 					TryActivateAbility(AbilitySpec->Handle);
 				}
+				//将技能的状态更新为已装备
+				AbilitySpec->DynamicAbilityTags.RemoveTag(GetStatusByAbiltyTag(AbilityTag));
+				AbilitySpec->DynamicAbilityTags.AddTag(FGameplayTags::Get().Ability_Status_Equipped);
 			}
 			//为装备的技能分配slot
 			AssignAbilityInSlot(*AbilitySpec,SlotTag);

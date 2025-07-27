@@ -7,7 +7,8 @@
 #include "GameplayTagContainer.h"
 #include "GAST_AbilitySystemComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FAllAssetTagsContainer,const FGameplayTagContainer&/*GE所属的全部Tag*/)
+class ULoadSlotSaveGame;
+DECLARE_MULTICAST_DELEGATE_OneParam(FAllAssetTagsContainer, const FGameplayTagContainer&/*GE所属的全部Tag*/)
 DECLARE_MULTICAST_DELEGATE(FOnStartupAbilitiesGiven)
 DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAbilityStatusChanged,const FGameplayTag& /* AbilityTag */,const FGameplayTag& /* StatusTag*/,int32/*AbilityLevel*/);
@@ -41,8 +42,8 @@ public:
 	bool bGivenAbility=false;
 
 	/**
-     * @brief 遍历所有已经激活的函数，将他们广播给OverlayController,由OverlayWidgetController创建Delegate并调用函数
-     * @param 
+     * @brief 遍历所有已经激活的技能，为每个技能执行传入广播所绑定的回调函数
+     * @param Delegate 绑定了回调函数的委托
 	 */
 	void ForEachAbility(const FForEachAbility& Delegate);
 
@@ -69,6 +70,7 @@ public:
 	 */
 	void GiveCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbility);
 	void GiveCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbility);
+	void GiveCharacterAbilitiesFromSaveData(const ULoadSlotSaveGame* SaveData);
 
 	void AbilityInputPressed(const FGameplayTag& InputTag);
 	

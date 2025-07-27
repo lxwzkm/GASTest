@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PassiveNiagaraComponent
 
 
 #include "Debuff/DebuffNiagaraComponent.h"
@@ -21,14 +21,16 @@ void UDebuffNiagaraComponent::BeginPlay()
 	UAbilitySystemComponent* ASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner());
 	if (ASC)
 	{
+		
 		ASC->RegisterGameplayTagEvent(DebuffTag,EGameplayTagEventType::NewOrRemoved).AddUObject(this,&UDebuffNiagaraComponent::OnDebuffChanged);
 	}
 	else if (CombatInterface)
 	{
 		//接收广播，当ASC有效时会广播
-		CombatInterface->GetOnASCRegistered().AddWeakLambda(GetOwner(),[this](UAbilitySystemComponent* InASC)
+		CombatInterface->GetOnASCRegistered().AddWeakLambda(GetOwner(),[&](UAbilitySystemComponent* InASC)
 		{
 			InASC->RegisterGameplayTagEvent(DebuffTag,EGameplayTagEventType::NewOrRemoved).AddUObject(this,&UDebuffNiagaraComponent::OnDebuffChanged);
+
 		});
 	}
 	if (CombatInterface)
@@ -56,3 +58,4 @@ void UDebuffNiagaraComponent::DeathActor(AActor* DeadActor)
 {
 	Deactivate();
 }
+

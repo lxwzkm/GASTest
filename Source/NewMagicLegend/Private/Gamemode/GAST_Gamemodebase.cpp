@@ -3,10 +3,13 @@
 
 #include "Gamemode/GAST_Gamemodebase.h"
 
+#include "EngineUtils.h"
 #include "GameFramework/PlayerStart.h"
 #include "Gamemode/GAST_GameInstance.h"
 #include "Gamemode/LoadSlotSaveGame.h"
+#include "Interaction/SavedInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "UI/MVVM/MVVM_LoadSlotViewModel.h"
 
 void AGAST_Gamemodebase::SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot, int32 LoadSlotIndex)
@@ -70,6 +73,53 @@ void AGAST_Gamemodebase::SaveInGameProgessData(ULoadSlotSaveGame* SaveData)
 	MyGameInstance->PlayerStartTag=SaveData->PlayerStartTag;
 
 	UGameplayStatics::SaveGameToSlot(SaveData,InLoadSlotName,InLoadSlotIndex);
+}
+
+void AGAST_Gamemodebase::SavedWorldState(UWorld* World)
+{
+	FString CurrentMapName=World->GetMapName();
+	CurrentMapName.RemoveFromStart(World->StreamingLevelsPrefix);
+	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(GetGameInstance());
+	check(MyGameInstance);
+	if (ULoadSlotSaveGame* SaveGame=GetSaveDataFromSlot(MyGameInstance->LoadSlotName,MyGameInstance->LoadSlotIndex))
+	{
+		if (!SaveGame->HasMap(CurrentMapName))
+		{
+			FSavedMap NewSavedMap;
+			NewSavedMap.MapAssestName=CurrentMapName;
+			SaveGame->SavedMaps.Add(NewSavedMap);
+		}
+
+		FSavedMap CurrentSavedMap=SaveGame->GetSavedMapByMapName(CurrentMapName);
+		CurrentSavedMap.SavedActors.Empty();
+
+		for (FActorIterator It(World); It; ++It)//遍历世界里的Actors
+		{
+			AActor* Actor=*It;
+
+			if (!IsValid(Actor) || !Actor->Implements<USavedInterface>())continue;
+
+			FSavedActor NewActor;
+			NewActor.ActorName=Actor->GetFName();
+			NewActor.ActorTransform=Actor->GetTransform();
+
+			FMemoryWriter Writer(NewActor.Bytes);//将数据写入内存（TArray<uint8>）
+			FObjectAndNameAsStringProxyArchive Archive(Writer,true);//特化的Archive，能序列化UObject引用为字符串形式，适用于SaveGame场景
+			Archive.ArIsSaveGame=true;//关键标记！如果你在UProperty上加了SaveGame标记（UPROPERTY(SaveGame)），则只有在这个标记为 true 时这些属性才会被序列化！
+
+			Actor->Serialize(Archive);//将Actor序列化,只序列化有SaveGame标记的属性变量
+			CurrentSavedMap.SavedActors.AddUnique(NewActor);
+		}
+
+		for (FSavedMap& Map:SaveGame->SavedMaps)
+		{
+			if (Map.MapAssestName==CurrentMapName)
+			{
+				Map=CurrentSavedMap;//替换原有的存档数据
+			}
+		}
+		UGameplayStatics::SaveGameToSlot(SaveGame,MyGameInstance->LoadSlotName,MyGameInstance->LoadSlotIndex);
+	}
 }
 
 AActor* AGAST_Gamemodebase::ChoosePlayerStart_Implementation(AController* Player)

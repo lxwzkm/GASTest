@@ -7,6 +7,7 @@
 #include "NiagaraComponent.h"
 #include "DebuffNiagaraComponent.generated.h"
 
+class UGAST_AbilitySystemComponent;
 /**
  * 
  */
@@ -24,4 +25,5 @@ public:
 	void OnDebuffChanged(const FGameplayTag InDebuffTag,int32 NewCount);
 	UFUNCTION()
 	void DeathActor(AActor* DeadActor);
+
 };

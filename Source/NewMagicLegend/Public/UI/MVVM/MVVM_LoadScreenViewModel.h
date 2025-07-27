@@ -6,12 +6,14 @@
 #include "MVVMViewModelBase.h"
 #include "MVVM_LoadScreenViewModel.generated.h"
 
+class UGameplayAbility;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonSelected);
 
 class UMVVM_LoadSlotViewModel;
 /**
  * 
  */
+
 UCLASS()
 class NEWMAGICLEGEND_API UMVVM_LoadScreenViewModel : public UMVVMViewModelBase
 {

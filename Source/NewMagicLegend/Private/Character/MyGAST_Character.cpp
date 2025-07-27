@@ -12,6 +12,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Data/LevelUpInfo.h"
+#include "Data/MyAbilityInfo.h"
 #include "Debuff/DebuffNiagaraComponent.h"
 #include "Gamemode/GAST_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -72,6 +73,11 @@ void AMyGAST_Character::LoadProgess()
 		}
 		else
 		{
+			;
+			if (UGAST_AbilitySystemComponent* MyASC=Cast<UGAST_AbilitySystemComponent>(AbilitySystemComponent))
+			{
+				MyASC->GiveCharacterAbilitiesFromSaveData(SaveGameObject);
+			}
 			if (AGAST_PlayerState* MyPlayerState=Cast<AGAST_PlayerState>(GetPlayerState()))
 			{
 				MyPlayerState->SetLevel(SaveGameObject->PlayerLevel);
@@ -259,6 +265,27 @@ void AMyGAST_Character::SaveProgess_Implementation(const FName& CheckPoint)
 		SaveGameObject->Resilience=UGAST_AttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
 		SaveGameObject->Vigor=UGAST_AttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
 
+		if (!HasAuthority())return;
+		UGAST_AbilitySystemComponent* MyASC=Cast<UGAST_AbilitySystemComponent>(AbilitySystemComponent);
+		FForEachAbility EachAbility;
+		SaveGameObject->SavedAbilities.Empty();
+		EachAbility.BindLambda([&](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			UMyAbilityInfo* AbilityInfo=UGAST_AbilitySystemLibrary::GetAbilityInfo(this);
+			FGameplayTag AbilityTag=MyASC->GetAbilityTagByAbilitySpec(AbilitySpec);
+			const FAAbilityInfo Info=AbilityInfo->GetMyAbilityInfoByAbilityTag(AbilityTag);
+			
+			FSavedAbility SavedAbility;
+			SavedAbility.AbilityClass=Info.AbilityClass;
+			SavedAbility.AbilitySlot=MyASC->GetInputTagByAbilityTag(AbilityTag);
+			SavedAbility.AbilityStatus=MyASC->GetStatusByAbiltyTag(AbilityTag);
+			SavedAbility.AbilityType=Info.AbilityType;
+			SavedAbility.AbilityLevel=AbilitySpec.Level;
+			//防止多次保存同样的技能
+			SaveGameObject->SavedAbilities.AddUnique(SavedAbility);
+		});
+		MyASC->ForEachAbility(EachAbility);
+		
 		SaveGameObject->bIsFirstLoadin=false;
 		MyGameMode->SaveInGameProgessData(SaveGameObject);
 	}
