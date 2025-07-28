@@ -56,6 +56,12 @@ void AMyGAST_Character::PossessedBy(AController* NewController)
 
 	InitActorInfo();//初始化角色属性信息
 	LoadProgess();
+
+	AGAST_Gamemodebase* MyGameMode=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this));
+	if (MyGameMode)
+	{
+		MyGameMode->LoadWorldState(GetWorld());
+	}
 }
 
 void AMyGAST_Character::LoadProgess()

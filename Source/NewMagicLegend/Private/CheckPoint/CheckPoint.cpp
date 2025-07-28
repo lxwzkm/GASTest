@@ -4,7 +4,9 @@
 #include "CheckPoint/CheckPoint.h"
 
 #include "Components/SphereComponent.h"
+#include "Gamemode/GAST_Gamemodebase.h"
 #include "Interaction/PlayerInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 ACheckPoint::ACheckPoint(const FObjectInitializer& ObjectInitializer)
 		: Super(ObjectInitializer)
@@ -31,6 +33,14 @@ void ACheckPoint::HandleGlowEffects()
 	CheckPointReached(DynamicMaterial);
 }
 
+void ACheckPoint::LoadActor_Implementation()
+{
+	if (bCheckPointReached)
+	{
+		HandleGlowEffects();
+	}
+}
+
 void ACheckPoint::BeginPlay()
 {
 	Super::BeginPlay();
@@ -43,6 +53,11 @@ void ACheckPoint::SphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	if (OtherActor->Implements<UPlayerInterface>())
 	{
+		bCheckPointReached=true;
+		if (AGAST_Gamemodebase* MyGm=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this)))
+		{
+			MyGm->SavedWorldState(GetWorld());
+		}
 		IPlayerInterface::Execute_SaveProgess(OtherActor,PlayerStartTag);
 		HandleGlowEffects();
 	}

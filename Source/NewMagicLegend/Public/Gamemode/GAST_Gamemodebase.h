@@ -48,6 +48,7 @@ public:
 	void SaveInGameProgessData(ULoadSlotSaveGame* SaveData);
 
 	void SavedWorldState(UWorld* World);
+	void LoadWorldState(UWorld* World);
 
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 

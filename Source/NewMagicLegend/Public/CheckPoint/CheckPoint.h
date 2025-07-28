@@ -20,8 +20,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void CheckPointReached(UMaterialInstanceDynamic* DynamicMaterial);
-
 	void HandleGlowEffects();
+
+	/* -----SavedInterface--------- */
+	virtual bool ShouldReplaceTransform_Implementation() override {return false;}
+	virtual void LoadActor_Implementation() override;
 
 	UPROPERTY(SaveGame)
 	bool bCheckPointReached=false;

@@ -122,6 +122,44 @@ void AGAST_Gamemodebase::SavedWorldState(UWorld* World)
 	}
 }
 
+void AGAST_Gamemodebase::LoadWorldState(UWorld* World)
+{
+	FString CurrentMapName=World->GetMapName();
+	CurrentMapName.RemoveFromStart(World->StreamingLevelsPrefix);
+
+	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(GetGameInstance());
+	check(MyGameInstance);
+
+	if (UGameplayStatics::DoesSaveGameExist(MyGameInstance->LoadSlotName,MyGameInstance->LoadSlotIndex))
+	{
+		ULoadSlotSaveGame* SaveGame=Cast<ULoadSlotSaveGame>(UGameplayStatics::LoadGameFromSlot(MyGameInstance->LoadSlotName,MyGameInstance->LoadSlotIndex));
+		auto SavedMap=SaveGame->GetSavedMapByMapName(CurrentMapName);
+		for (FActorIterator it(World);it;++it)
+		{
+			AActor* Actor=*it;
+			if (!Actor->Implements<USavedInterface>())continue;
+
+			for (FSavedActor& SavedActor:SavedMap.SavedActors)
+			{
+				if (SavedActor.ActorName==Actor->GetFName())
+				{
+					if (ISavedInterface::Execute_ShouldReplaceTransform(Actor))
+					{
+						Actor->SetActorTransform(SavedActor.ActorTransform);
+					}
+
+					FMemoryReader MemoryReader(SavedActor.Bytes);
+					FObjectAndNameAsStringProxyArchive Archive(MemoryReader,true);
+					Archive.ArIsSaveGame=true;
+					Actor->Serialize(Archive);
+
+					ISavedInterface::Execute_LoadActor(Actor);
+				}
+			}
+		}
+	}
+}
+
 AActor* AGAST_Gamemodebase::ChoosePlayerStart_Implementation(AController* Player)
 {
 	UGAST_GameInstance* MyGameInstance=Cast<UGAST_GameInstance>(GetGameInstance());
