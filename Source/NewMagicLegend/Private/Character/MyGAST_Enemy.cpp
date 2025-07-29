@@ -14,6 +14,7 @@
 #include "Debuff/DebuffNiagaraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
+#include "NewMagicLegend/NewMagicLegend.h"
 #include "UI/Widget/GAST_UserWidgetBase.h"
 
 AMyGAST_Enemy::AMyGAST_Enemy()
@@ -96,15 +97,15 @@ void AMyGAST_Enemy::HitReactTagChanged(FGameplayTag CallbackTag, int32 NewCount)
 	}
 }
 
-void AMyGAST_Enemy::HightlightActor()
+void AMyGAST_Enemy::HightlightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->CustomDepthStencilValue=250.f;
+	GetMesh()->CustomDepthStencilValue=CUSTOM_DEPTH_RED;
 	Weapon->SetRenderCustomDepth(true);
-	Weapon->CustomDepthStencilValue=250.f;
+	Weapon->CustomDepthStencilValue=CUSTOM_DEPTH_RED;
 }
 
-void AMyGAST_Enemy::UnHighlightActor()
+void AMyGAST_Enemy::UnHighlightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);

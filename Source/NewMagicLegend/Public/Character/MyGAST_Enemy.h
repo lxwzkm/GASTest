@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/GAST_CharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "Interaction/HightLightInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "MyGAST_Enemy.generated.h"
 
@@ -17,7 +18,7 @@ class UWidgetComponent;
  * 
  */
 UCLASS()
-class NEWMAGICLEGEND_API AMyGAST_Enemy : public AGAST_CharacterBase,public IEnemyInterface
+class NEWMAGICLEGEND_API AMyGAST_Enemy : public AGAST_CharacterBase,public IEnemyInterface,public IHightLightInterface
 {
 	GENERATED_BODY()
 public:
@@ -27,8 +28,8 @@ public:
 	virtual void ListenForStunChanged(const FGameplayTag DebuffTag, int32 NewCount) override;
 	
 	/*--------EnemyInterface-------*/
-	virtual void HightlightActor() override;//高亮显示的函数
-	virtual void UnHighlightActor() override;//取消高亮显示的函数
+	virtual void HightlightActor_Implementation() override;//高亮显示的函数
+	virtual void UnHighlightActor_Implementation() override;//取消高亮显示的函数
 	virtual void SetCombatTarget_Implementation(AActor* Target) override;
 	virtual AActor* GetCombatTarget_Implementation() override;
 

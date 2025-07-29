@@ -9,6 +9,7 @@
 #include "UI/Widget/GAST_FloatTextWidgetComponent.h"
 #include "GAST_PlayerCOntroller.generated.h"
 
+class IHightLightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class USplineComponent;
@@ -16,6 +17,13 @@ class IEnemyInterface;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
+
+enum class ETargetingStatus
+{
+	TargetingEnemy,
+	TargetingNonEnemy,
+	NoTTargeting
+};
 
 /**
  * 
@@ -35,7 +43,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HideMagicCircle();
 	AMagicCircle* GetMagicCircle()const;
-	
+
+	static void HighLightActor(AActor* InActor);
+	static void UnHighLightActor(AActor* InActor);
 protected:
 	/* ----系统自带的虚函数重写---- */
 	virtual void PlayerTick(float DeltaTime) override;
@@ -52,8 +62,8 @@ private:
 	TObjectPtr<UInputAction>ShiftAction;
 	bool bShiftPressed=false;
 
-	IEnemyInterface* LastActor;
-	IEnemyInterface* ThisActor;
+	TObjectPtr<AActor> LastActor;
+	TObjectPtr<AActor> ThisActor;
 	FHitResult UnderCursor;
 
 	void Move(const FInputActionValue& InputActionValue);//移动操作的回调函数
@@ -115,7 +125,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float ShortPressThread=0.5f;//判定是否是短按的阈值
 
-	bool bTargeting=false;//是否在瞄准敌人
+	//是否在瞄准敌人
+	ETargetingStatus TargetingStatus=ETargetingStatus::NoTTargeting;
 	bool bAutoRuning=false;//是否在自动行走
 
 	UPROPERTY(EditAnywhere)

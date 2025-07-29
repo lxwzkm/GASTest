@@ -16,6 +16,7 @@
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "Input/GAST_EnhancedInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "Interaction/HightLightInterface.h"
 #include "NewMagicLegend/NewMagicLegend.h"
 
 AGAST_PlayerCOntroller::AGAST_PlayerCOntroller()
@@ -49,6 +50,22 @@ void AGAST_PlayerCOntroller::HideMagicCircle()
 AMagicCircle* AGAST_PlayerCOntroller::GetMagicCircle() const
 {
 	return MagicCircle;
+}
+
+void AGAST_PlayerCOntroller::HighLightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHightLightInterface>())
+	{
+		IHightLightInterface::Execute_HightlightActor(InActor);
+	}
+}
+
+void AGAST_PlayerCOntroller::UnHighLightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHightLightInterface>())
+	{
+		IHightLightInterface::Execute_UnHighlightActor(InActor);
+	}
 }
 
 void AGAST_PlayerCOntroller::ShowFloatingText_Implementation(float Damage, ACharacter* TargetCharacter, bool bIsBlockedHit,bool bIsCriticalHit)
@@ -103,8 +120,8 @@ void AGAST_PlayerCOntroller::CursorTrace()
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_CursorTrace))
 	{
 		//如果在选中敌人的状态，取消高光
-		if (LastActor)LastActor->UnHighlightActor();
-		if (ThisActor)ThisActor->UnHighlightActor();
+		UnHighLightActor(LastActor);
+		UnHighLightActor(ThisActor);
 		LastActor=nullptr;
 		ThisActor=nullptr;
 		return;
@@ -116,27 +133,34 @@ void AGAST_PlayerCOntroller::CursorTrace()
 	if (!UnderCursor.bBlockingHit)return;//如果没有遇到阻挡，就返回
 
 	LastActor=ThisActor;
-	ThisActor=Cast<IEnemyInterface>(UnderCursor.GetActor());
-
+	if (IsValid(UnderCursor.GetActor()) && UnderCursor.GetActor()->Implements<UHightLightInterface>())
+	{
+		ThisActor = UnderCursor.GetActor();
+	}
+	else
+	{
+		ThisActor = nullptr;
+	}
+	
 	if (LastActor==nullptr)
 	{
 		if (ThisActor!=nullptr)
 		{
-			ThisActor->HightlightActor();
+			HighLightActor(ThisActor);
 		}
 	}
 	else
 	{//Last Actor!=null
 		if (ThisActor==nullptr)
 		{
-			LastActor->UnHighlightActor();
+			UnHighLightActor(LastActor);
 		}
 		else
 		{
 			if (LastActor!=ThisActor)
 			{
-				if (LastActor)LastActor->UnHighlightActor();
-				if (ThisActor)ThisActor->HightlightActor();
+				UnHighLightActor(LastActor);
+				HighLightActor(ThisActor);
 			}
 		}
 	}
@@ -150,8 +174,16 @@ void AGAST_PlayerCOntroller::AbilityInputPressed(FGameplayTag InputTag)
 	}
 	if (InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
 	{
-		bTargeting=ThisActor?true:false;//通过ThisActor是否为空来判断bTargeting是否为真
-		bAutoRuning=false;//此时还不知道是否是短按，所以设置为false
+		if (IsValid(ThisActor))
+		{
+			TargetingStatus=ThisActor->Implements<UEnemyInterface>()?ETargetingStatus::TargetingEnemy:ETargetingStatus::TargetingNonEnemy;
+			bAutoRuning=false;//此时还不知道是否是短按，所以设置为false
+		}
+		else
+		{
+			TargetingStatus=ETargetingStatus::NoTTargeting;
+		}
+		
 	}
 	if (GetASC())GetASC()->AbilityInputPressed(InputTag);
 
@@ -173,7 +205,7 @@ void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
 		return;
 	}
 	//如果敌人高亮或shift被按下就释放技能，否则就移动
-	if (bTargeting||bShiftPressed)
+	if (TargetingStatus==ETargetingStatus::TargetingEnemy||bShiftPressed)
 	{
 		if (GetASC())
 		{
@@ -211,7 +243,7 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 	//输入是鼠标左键，直接通知ASC释放按键释放的技能
 	GetASC()->AbilityInputReleased(InputTag);
 	//如果敌人没有高亮且shift按键也松开了，移动到鼠标点击的目的地
-	if (!bTargeting&&!bShiftPressed)
+	if (TargetingStatus!=ETargetingStatus::TargetingEnemy&&!bShiftPressed)
 	{
 		APawn* ControlledPawn=GetPawn();
 		if (FollowTime<=ShortPressThread&&ControlledPawn)
@@ -240,7 +272,7 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 			}
 		}
 		FollowTime=0.f;
-		bTargeting=false;
+		TargetingStatus=ETargetingStatus::NoTTargeting;
 	}
 }
 
