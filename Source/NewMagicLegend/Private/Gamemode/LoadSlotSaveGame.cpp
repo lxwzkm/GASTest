@@ -7,7 +7,7 @@ FSavedMap ULoadSlotSaveGame::GetSavedMapByMapName(const FString& InMapName)
 {
 	for (const FSavedMap& Map:SavedMaps)
 	{
-		if (Map.MapAssestName==InMapName)
+		if (Map.MapName==InMapName)
 		{
 			return Map;
 		}
@@ -19,7 +19,7 @@ bool ULoadSlotSaveGame::HasMap(const FString& InMapName) const
 {
 	for (const FSavedMap& Map:SavedMaps)
 	{
-		if (Map.MapAssestName==InMapName)
+		if (Map.MapName==InMapName)
 		{
 			return true;
 		}

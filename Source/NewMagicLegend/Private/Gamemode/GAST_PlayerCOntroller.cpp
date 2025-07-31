@@ -195,7 +195,7 @@ void AGAST_PlayerCOntroller::AbilityInputHeld(FGameplayTag InputTag)
 	{
 		return;
 	}
-	//只要输入的不是左键，就直接释放技能，因为普通输入没有Tag传入
+	//只要输入的不是左键，就直接释放技能，因为移动输入没有Tag传入
 	if (!InputTag.MatchesTagExact(FGameplayTags::Get().Input_LMB))
 	{
 		if (GetASC())
@@ -248,13 +248,23 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 		APawn* ControlledPawn=GetPawn();
 		if (FollowTime<=ShortPressThread&&ControlledPawn)
 		{
+			//判断当前点击的是不是接入了高亮接口的Actor，如果是要移动到固定的目标点，需要替换CachedDestination的位置,且不生成点击位置的Niagara
+			if (IsValid(ThisActor) && ThisActor->Implements<UHightLightInterface>())
+			{
+				IHightLightInterface::Execute_SetMoveToLocation(ThisActor,CachedDestination);
+			}
+			else if (GetASC() && !GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_Pressed))
+			{
+				//当按键是短按且GA中的Electrocute没有激活是才生成
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ClickNiagaraSystem,CachedDestination);
+			}
+			
 			if (UNavigationPath* Path= UNavigationSystemV1::FindPathToLocationSynchronously(this,ControlledPawn->GetActorLocation(),CachedDestination))
 			{
 				SplineComponent->ClearSplinePoints();
 				for (auto& PointsLoc:Path->PathPoints)
 				{
 					SplineComponent->AddSplinePoint(PointsLoc,ESplineCoordinateSpace::World);
-					
 				}
 				if (Path->PathPoints.Num()>0)
 				{
@@ -263,12 +273,6 @@ void AGAST_PlayerCOntroller::AbilityInputReleased(FGameplayTag InputTag)
 					//启动自动移动
 					bAutoRuning=true;
 				}
-			}
-			
-			if (GetASC() && !GetASC()->HasMatchingGameplayTag(FGameplayTags::Get().Player_Block_Pressed))
-			{
-				//当按键是短按且GA中的Electrocute没有激活是才生成
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ClickNiagaraSystem,CachedDestination);
 			}
 		}
 		FollowTime=0.f;

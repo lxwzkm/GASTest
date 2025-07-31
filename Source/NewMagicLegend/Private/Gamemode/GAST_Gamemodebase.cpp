@@ -75,7 +75,7 @@ void AGAST_Gamemodebase::SaveInGameProgessData(ULoadSlotSaveGame* SaveData)
 	UGameplayStatics::SaveGameToSlot(SaveData,InLoadSlotName,InLoadSlotIndex);
 }
 
-void AGAST_Gamemodebase::SavedWorldState(UWorld* World)
+void AGAST_Gamemodebase::SavedWorldState(UWorld* World,const FString& DestinationMapAssetName)
 {
 	FString CurrentMapName=World->GetMapName();
 	CurrentMapName.RemoveFromStart(World->StreamingLevelsPrefix);
@@ -83,10 +83,16 @@ void AGAST_Gamemodebase::SavedWorldState(UWorld* World)
 	check(MyGameInstance);
 	if (ULoadSlotSaveGame* SaveGame=GetSaveDataFromSlot(MyGameInstance->LoadSlotName,MyGameInstance->LoadSlotIndex))
 	{
+		if (!DestinationMapAssetName.IsEmpty())
+		{
+			SaveGame->MapAssetName=DestinationMapAssetName;
+			SaveGame->MapName=GetMapNameFromMapAssetName(DestinationMapAssetName);
+		}
+		
 		if (!SaveGame->HasMap(CurrentMapName))
 		{
 			FSavedMap NewSavedMap;
-			NewSavedMap.MapAssestName=CurrentMapName;
+			NewSavedMap.MapName=CurrentMapName;
 			SaveGame->SavedMaps.Add(NewSavedMap);
 		}
 
@@ -113,7 +119,7 @@ void AGAST_Gamemodebase::SavedWorldState(UWorld* World)
 
 		for (FSavedMap& Map:SaveGame->SavedMaps)
 		{
-			if (Map.MapAssestName==CurrentMapName)
+			if (Map.MapName==CurrentMapName)
 			{
 				Map=CurrentSavedMap;//替换原有的存档数据
 			}
@@ -158,6 +164,18 @@ void AGAST_Gamemodebase::LoadWorldState(UWorld* World)
 			}
 		}
 	}
+}
+
+FString AGAST_Gamemodebase::GetMapNameFromMapAssetName(const FString& MapAssetName) const
+{
+	for (auto& Map:Maps)
+	{
+		if (Map.Value.ToSoftObjectPath().GetAssetName()==MapAssetName)
+		{
+			return Map.Key;
+		}
+	}
+	return  FString();
 }
 
 AActor* AGAST_Gamemodebase::ChoosePlayerStart_Implementation(AController* Player)

@@ -28,16 +28,17 @@ public:
 	virtual void ListenForStunChanged(const FGameplayTag DebuffTag, int32 NewCount) override;
 	
 	/*--------EnemyInterface-------*/
-	virtual void HightlightActor_Implementation() override;//高亮显示的函数
-	virtual void UnHighlightActor_Implementation() override;//取消高亮显示的函数
 	virtual void SetCombatTarget_Implementation(AActor* Target) override;
 	virtual AActor* GetCombatTarget_Implementation() override;
 
 	/*--------CombatInterface-------*/
 	virtual int32 GetPlayerLevel_Implementation() override;
-
 	virtual void Die(const FVector& DeathImpulse) override;
-	
+
+	/*--------CombatInterface-------*/
+	virtual void HightlightActor_Implementation() override;//高亮显示的函数
+	virtual void UnHighlightActor_Implementation() override;//取消高亮显示的函数
+	virtual void SetMoveToLocation_Implementation(FVector& OutComponentLocation) override;
 
 	UPROPERTY(BlueprintReadOnly,Category="Combat")
 	bool bHitReact=false;

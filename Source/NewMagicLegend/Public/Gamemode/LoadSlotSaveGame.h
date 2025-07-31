@@ -43,7 +43,7 @@ struct FSavedMap
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FString MapAssestName=FString();
+	FString MapName=FString();
 
 	UPROPERTY()
 	TArray<FSavedActor> SavedActors;
@@ -97,6 +97,8 @@ public:
 	FString PlayerName=FString("默认名称");
 	UPROPERTY()
 	FString MapName=FString("Map");
+	UPROPERTY()
+	FString MapAssetName=FString("MapAssetName");
 	UPROPERTY()
 	FName PlayerStartTag=FName();
 	UPROPERTY()

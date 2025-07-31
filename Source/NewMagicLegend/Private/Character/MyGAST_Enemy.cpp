@@ -11,7 +11,6 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Debuff/DebuffNiagaraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTag/GAST_GameplayTags.h"
 #include "NewMagicLegend/NewMagicLegend.h"
@@ -36,7 +35,11 @@ AMyGAST_Enemy::AMyGAST_Enemy()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	BaseWalkSpeed=250.f;
-	
+
+	GetMesh()->CustomDepthStencilValue=CUSTOM_DEPTH_RED;
+	Weapon->CustomDepthStencilValue=CUSTOM_DEPTH_RED;
+	GetMesh()->MarkRenderStateDirty();
+	Weapon->MarkRenderStateDirty();
 }
 
 void AMyGAST_Enemy::BeginPlay()
@@ -100,7 +103,7 @@ void AMyGAST_Enemy::HitReactTagChanged(FGameplayTag CallbackTag, int32 NewCount)
 void AMyGAST_Enemy::HightlightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->CustomDepthStencilValue=CUSTOM_DEPTH_RED;
+
 	Weapon->SetRenderCustomDepth(true);
 	Weapon->CustomDepthStencilValue=CUSTOM_DEPTH_RED;
 }
@@ -109,6 +112,11 @@ void AMyGAST_Enemy::UnHighlightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void AMyGAST_Enemy::SetMoveToLocation_Implementation(FVector& OutComponentLocation)
+{
+	//什么也不做，其他的实现是会把OutComponentLocation替换成自身的一个固定的位置
 }
 
 void AMyGAST_Enemy::SetCombatTarget_Implementation(AActor* Target)

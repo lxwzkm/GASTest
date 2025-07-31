@@ -47,11 +47,13 @@ public:
 	ULoadSlotSaveGame* RetrievelSaveGameData();
 	void SaveInGameProgessData(ULoadSlotSaveGame* SaveData);
 
-	void SavedWorldState(UWorld* World);
+	void SavedWorldState(UWorld* World,const FString& DestinationMapAssetName=FString(""));
 	void LoadWorldState(UWorld* World);
+	FString GetMapNameFromMapAssetName(const FString& MapAssetName)const;
 
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 protected:
 	virtual void BeginPlay() override;
 };
+
