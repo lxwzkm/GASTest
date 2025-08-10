@@ -177,13 +177,13 @@ void AGAST_PlayerCOntroller::AbilityInputPressed(FGameplayTag InputTag)
 		if (IsValid(ThisActor))
 		{
 			TargetingStatus=ThisActor->Implements<UEnemyInterface>()?ETargetingStatus::TargetingEnemy:ETargetingStatus::TargetingNonEnemy;
-			bAutoRuning=false;//此时还不知道是否是短按，所以设置为false
+			
 		}
 		else
 		{
 			TargetingStatus=ETargetingStatus::NoTTargeting;
 		}
-		
+		bAutoRuning=false;//此时还不知道是否是短按，所以设置为false
 	}
 	if (GetASC())GetASC()->AbilityInputPressed(InputTag);
 
@@ -320,13 +320,14 @@ void AGAST_PlayerCOntroller::SetupInputComponent()
 	EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&AGAST_PlayerCOntroller::Move);
 	EnhancedInputComponent->BindAction(ShiftAction,ETriggerEvent::Started,this,&AGAST_PlayerCOntroller::ShiftPressed);
 	EnhancedInputComponent->BindAction(ShiftAction,ETriggerEvent::Completed,this,&AGAST_PlayerCOntroller::ShiftReleased);
+	EnhancedInputComponent->BindAction(QuitAction,ETriggerEvent::Started,this,&AGAST_PlayerCOntroller::QuitGame);
 	//调用GAST_EnhancedInputComponent中的绑定函数，将InputConfig中的输入行为、Tag与回调函数进行绑定
 	EnhancedInputComponent->BindAbilityActions(InputConfig,this,&ThisClass::AbilityInputPressed,&ThisClass::AbilityInputHeld,&ThisClass::AbilityInputReleased);
 }
 
 void AGAST_PlayerCOntroller::Move(const FInputActionValue& InputActionValue)
 {
-	
+	if (bAutoRuning)bAutoRuning=false;
 	const FVector2D InputValue=InputActionValue.Get<FVector2D>();//处理接收到的输入数据
 	const FRotator ControllerRotation=GetControlRotation();//获取控制器的旋转
 	const FRotator YawRotation(0.f,ControllerRotation.Yaw,0.f);//将控制器的旋转只保留Yaw的旋转包装起来

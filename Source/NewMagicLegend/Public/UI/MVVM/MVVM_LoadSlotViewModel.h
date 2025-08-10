@@ -43,6 +43,8 @@ public:
 	int32 LoadSlotIndex;
 	UPROPERTY()
 	FName PlayerStartTag;
+	UPROPERTY()
+	FString MapAssetName;
 private:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess="true"));
 	FString LoadSlotName;

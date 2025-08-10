@@ -77,6 +77,8 @@ public:
 	virtual void OnRep_Stunned();
 	UFUNCTION()
 	virtual void OnRep_Burn();
+
+	void SetCharacterClass(const ECharacterClass& InCharacterClass){CharacterClass=InCharacterClass;}
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GAST_Gamemodebase.generated.h"
+class ULootTiers;
 class USaveGame;
 class ULoadSlotSaveGame;
 class UMVVM_LoadSlotViewModel;
@@ -24,6 +25,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
 	TObjectPtr<UMyAbilityInfo>AbilityInformation;
+
+	UPROPERTY(EditDefaultsOnly,Category="CharacterClassInfo")
+	TObjectPtr<ULootTiers> LootTiers;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> SlotSaveGameClass;
@@ -53,6 +57,7 @@ public:
 
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
+	void CharacterDead(ACharacter* DeadCharacter);
 protected:
 	virtual void BeginPlay() override;
 };

@@ -54,6 +54,7 @@ public:
 	virtual void SaveProgess_Implementation(const FName& CheckPoint) override;
 	/*---------------CombatIntergace-----------------*/
 	virtual int32 GetPlayerLevel_Implementation() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastLevelUp()const;
@@ -62,5 +63,6 @@ public:
 private:
 	virtual void InitActorInfo() override;
 
-
+	float DeadTime=5.f;
+	FTimerHandle TimerHandle;
 };

@@ -40,9 +40,14 @@ void UMVVM_LoadScreenViewModel::ButtonNewSlotPressed(int32 Slot, const FString& 
 {
 	if (AGAST_Gamemodebase* MyGameMode=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this)))
 	{
+		if (!IsValid(MyGameMode))
+		{
+			GEngine->AddOnScreenDebugMessage(1,5.f,FColor::Red,"LoadFailed,SwitchPlayer");
+		}
 		SlotViewModels[Slot]->SetPlayerName(SlotName);
 		SlotViewModels[Slot]->SaveSlotStatus=Taken;
 		SlotViewModels[Slot]->SetMapName(MyGameMode->DefaultMapName);
+		SlotViewModels[Slot]->MapAssetName=MyGameMode->DefaultMap.ToSoftObjectPath().GetAssetName();
 		SlotViewModels[Slot]->PlayerStartTag=MyGameMode->DefaultsStartTag;
 		SlotViewModels[Slot]->SetPlayerLevel(1);
 		
@@ -108,6 +113,7 @@ void UMVVM_LoadScreenViewModel::SetLoadSlotNum(int32 Num)
 void UMVVM_LoadScreenViewModel::LoadData()
 {
 	AGAST_Gamemodebase* MyGameMode=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this));
+	if (!IsValid(MyGameMode))return;
 	for (auto Slot:SlotViewModels)
 	{
 		ULoadSlotSaveGame* SaveSlotObject=MyGameMode->GetSaveDataFromSlot(Slot.Value->GetLoadSlotName(),Slot.Key);

@@ -5,14 +5,65 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AGAST_EffectActor::AGAST_EffectActor()
 {
  
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("RootScene"));
 }
+
+void AGAST_EffectActor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	InitializeLocation=GetActorLocation();
+	CalculatedLocation=GetActorLocation();
+	CalculatedRotation=GetActorRotation();
+}
+
+void AGAST_EffectActor::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	RunningTime+=DeltaSeconds;
+	float SinPeriod = 2*PI/SinperiodConstant;
+	if (RunningTime>SinPeriod)
+	{
+		RunningTime=0;
+	}
+	SinMovement(DeltaSeconds);	
+}
+
+void AGAST_EffectActor::SinMovement(float DeltaTime)
+{
+	if (bRotation)
+	{
+		const FRotator DeltaRotation(0.f,DeltaTime*RotationRate,0.f);
+		CalculatedRotation=UKismetMathLibrary::ComposeRotators(CalculatedRotation,DeltaRotation);
+	}
+	if (bSinMovement)
+	{
+		const float Sine=SinAmplitude*FMath::Sin(RunningTime*SinperiodConstant);
+		CalculatedLocation=InitializeLocation+FVector(0.f,0.f,Sine);
+	}
+}
+void AGAST_EffectActor::StartRotateMovement()
+{
+	bRotation=true;
+	CalculatedRotation=GetActorRotation();
+}
+
+void AGAST_EffectActor::StartSinMovement()
+{
+	bSinMovement=true;
+	InitializeLocation=GetActorLocation();
+	CalculatedLocation=GetActorLocation();
+}
+
 
 void AGAST_EffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> Effect)
 {//1 获取目标人物的ASC  2 让目标人物的ASC将效果应用在自己身上
@@ -37,13 +88,6 @@ void AGAST_EffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGa
 	{
 		Destroy();
 	}
-}
-
-
-void AGAST_EffectActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
 }
 
 void AGAST_EffectActor::OnOverlap(AActor* TargetActor)

@@ -9,6 +9,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GAST_AbilitySystemLibrary.generated.h"
 
+class ULootTiers;
 class ULoadSlotSaveGame;
 struct FGameplayTag;
 struct FDamageEffectParams;
@@ -59,11 +60,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable,Category="Character")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WordContext);
-
 	UFUNCTION(BlueprintCallable,Category="Character")
 	static UMyAbilityInfo* GetAbilityInfo(const UObject* WordContext);
 	UFUNCTION(BlueprintCallable,Category="Character")
 	static UMyAbilityInfo* GetAbilityInfoFromPlayerState(const UObject* WordContext);
+	UFUNCTION(BlueprintCallable,Category="Character",meta =(DefaultToSelf="WordContext"))
+	static ULootTiers* GetLootTiers(const UObject* WordContext);
 
 	/**
 	 * 处理自定义的GameplayEffectContext事件
@@ -171,6 +173,9 @@ public:
 	UFUNCTION(BlueprintCallable,Category="Damage")
 	static void SetDamageParamsTargetASC(UPARAM(ref)FDamageEffectParams& DamageEffectParams,UAbilitySystemComponent*ASC);
 
+	UFUNCTION(BlueprintCallable,Category="Common")
+	static AGAST_Gamemodebase* GetMyGamemodeBase(const UObject* WordContext);
+	
 	/**
 	 * 异步加载图片
 	 */

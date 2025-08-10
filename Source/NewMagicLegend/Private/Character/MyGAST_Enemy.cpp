@@ -141,6 +141,7 @@ void AMyGAST_Enemy::Die(const FVector& DeathImpulse)
 	{
 		MyAIController->GetBlackboardComponent()->SetValueAsBool(FName("AmIDead"),true);
 	}
+	SpawnLootTiers();
 	Super::Die(DeathImpulse);
 }
 

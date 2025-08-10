@@ -10,6 +10,7 @@
 #include "AbilitySystem/GAST_AttributeSet.h"
 #include "Actor/MagicCircle.h"
 #include "Camera/CameraComponent.h"
+#include "Character/MyGAST_Enemy.h"
 #include "Components/DecalComponent.h"
 #include "Data/LevelUpInfo.h"
 #include "Data/MyAbilityInfo.h"
@@ -302,6 +303,23 @@ int32 AMyGAST_Character::GetPlayerLevel_Implementation()
 	AGAST_PlayerState* MyPlayerState = GetPlayerState<AGAST_PlayerState>();//GetPlayerState是一个继承下来的模板函数
 	check(MyPlayerState);
 	return MyPlayerState->GetPlayerLevel();
+}
+
+void AMyGAST_Character::Die(const FVector& DeathImpulse)
+{
+	Super::Die(DeathImpulse);
+
+	FTimerDelegate DeathTimerDelegate;
+	DeathTimerDelegate.BindLambda([this]()
+	{
+		AGAST_Gamemodebase* MyGamemode=UGAST_AbilitySystemLibrary::GetMyGamemodeBase(this);
+		if (MyGamemode)
+		{
+			MyGamemode->CharacterDead(this);
+		}
+	});
+	GetWorldTimerManager().SetTimer(TimerHandle,DeathTimerDelegate,DeadTime,false);
+	PlayerCamera->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 }
 
 void AMyGAST_Character::InitActorInfo()

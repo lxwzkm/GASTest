@@ -4,6 +4,7 @@
 #include "Gamemode/GAST_Gamemodebase.h"
 
 #include "EngineUtils.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/PlayerStart.h"
 #include "Gamemode/GAST_GameInstance.h"
 #include "Gamemode/LoadSlotSaveGame.h"
@@ -21,6 +22,7 @@ void AGAST_Gamemodebase::SaveLoadSlot(UMVVM_LoadSlotViewModel* LoadSlot, int32 L
 	LoadSlotSaveGame->PlayerName=LoadSlot->GetPlayerName();
 	LoadSlotSaveGame->SlotStatus=LoadSlot->SaveSlotStatus;
 	LoadSlotSaveGame->MapName=LoadSlot->GetMapName();
+	LoadSlotSaveGame->MapAssetName=LoadSlot->MapAssetName;
 	LoadSlotSaveGame->PlayerStartTag=LoadSlot->PlayerStartTag;
 
 	UGameplayStatics::SaveGameToSlot(LoadSlotSaveGame,LoadSlot->GetLoadSlotName(),LoadSlotIndex);
@@ -200,6 +202,14 @@ AActor* AGAST_Gamemodebase::ChoosePlayerStart_Implementation(AController* Player
 		return SelectedPlayerActor;
 	}
 	return nullptr;
+}
+
+void AGAST_Gamemodebase::CharacterDead(ACharacter* DeadCharacter)
+{
+	ULoadSlotSaveGame* SaveGame= RetrievelSaveGameData();
+	if (!IsValid(SaveGame))return;
+
+	UGameplayStatics::OpenLevel(DeadCharacter,FName(SaveGame->MapAssetName));
 }
 
 void AGAST_Gamemodebase::BeginPlay()

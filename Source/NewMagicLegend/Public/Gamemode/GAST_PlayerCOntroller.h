@@ -46,6 +46,9 @@ public:
 
 	static void HighLightActor(AActor* InActor);
 	static void UnHighLightActor(AActor* InActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void QuitGame(const FInputActionValue& InputActionValue);
 protected:
 	/* ----系统自带的虚函数重写---- */
 	virtual void PlayerTick(float DeltaTime) override;
@@ -54,12 +57,12 @@ protected:
 private:
 	UPROPERTY(EditAnywhere,Category="Input")
 	TObjectPtr<UInputMappingContext> PlayerContext;
-
 	UPROPERTY(EditAnywhere,Category="Input")
 	TObjectPtr<UInputAction>MoveAction;
-
 	UPROPERTY(EditAnywhere,Category="Input")
 	TObjectPtr<UInputAction>ShiftAction;
+	UPROPERTY(EditAnywhere,Category="Input")
+	TObjectPtr<UInputAction>QuitAction;
 	bool bShiftPressed=false;
 
 	TObjectPtr<AActor> LastActor;
@@ -69,6 +72,7 @@ private:
 	void Move(const FInputActionValue& InputActionValue);//移动操作的回调函数
 	void ShiftPressed(const FInputActionValue& InputActionValue) {bShiftPressed=true;}
 	void ShiftReleased(const FInputActionValue& InputActionValue){bShiftPressed=false;}
+
 
 	void CursorTrace();//内部给PlayerTick调用的函数，主要用来处理鼠标下面是否是敌人来显示或删除高光
 

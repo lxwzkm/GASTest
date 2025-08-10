@@ -175,6 +175,14 @@ UMyAbilityInfo* UGAST_AbilitySystemLibrary::GetAbilityInfoFromPlayerState(const 
 	return PS->AbilityInformation;
 }
 
+ULootTiers* UGAST_AbilitySystemLibrary::GetLootTiers(const UObject* WordContext)
+{
+	AGAST_Gamemodebase*Gamemodebase=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(WordContext));
+	if (Gamemodebase==nullptr)return nullptr;
+
+	return Gamemodebase->LootTiers;
+}
+
 bool UGAST_AbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& GameplayEffectContextHandle)
 {
 	const FGameplayEffectContext* EffectContext=GameplayEffectContextHandle.Get();
@@ -622,6 +630,11 @@ void UGAST_AbilitySystemLibrary::SetDamageParamsTargetASC(FDamageEffectParams& D
 	UAbilitySystemComponent* ASC)
 {
 	DamageEffectParams.TargetASC=ASC;
+}
+
+AGAST_Gamemodebase* UGAST_AbilitySystemLibrary::GetMyGamemodeBase(const UObject* WordContext)
+{
+	return Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(WordContext));
 }
 
 void UGAST_AbilitySystemLibrary::AsyncLoadImage(const FString& Path)

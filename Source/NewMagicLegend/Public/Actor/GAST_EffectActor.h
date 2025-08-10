@@ -34,9 +34,32 @@ class NEWMAGICLEGEND_API AGAST_EffectActor : public AActor
 	
 public:	
 	AGAST_EffectActor();
-
+	virtual void Tick(float DeltaSeconds) override;
 	UFUNCTION(BlueprintCallable)
 	void ApplyEffectToTarget(AActor* TargetActor,TSubclassOf<UGameplayEffect> Effect);//这个函数是用来将Actor的GE用在触发重叠的人身上的
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	bool bRotation=false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	float RotationRate=45.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	bool bSinMovement=false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	float SinAmplitude=1.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	float SinperiodConstant=1.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	FVector InitializeLocation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	FVector CalculatedLocation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category="SinMovement")
+	FRotator CalculatedRotation;
+
+	UFUNCTION(BlueprintCallable)
+	void StartRotateMovement();
+	UFUNCTION(BlueprintCallable)
+	void StartSinMovement();
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -72,7 +95,10 @@ protected:
 
 	TMap<FActiveGameplayEffectHandle,UAbilitySystemComponent*> ActiveInfiniteEffects;//用来储存所有Infinite效果
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="ApplyEffect")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="ApplyEffect")
 	float ActorLevel=1.f;
-
+private:
+	float RunningTime=0.f;
+	void SinMovement(float DeltaTime);
 };
+

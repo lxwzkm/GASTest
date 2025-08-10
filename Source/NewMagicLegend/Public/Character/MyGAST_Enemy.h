@@ -47,6 +47,9 @@ public:
 	float LifeSpan=5.f;
 
 	void HitReactTagChanged(FGameplayTag CallbackTag,int32 NewCount);
+	void SetLevel(int32 NewLevel){Level=NewLevel;}
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLootTiers();
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent>HealthBar;

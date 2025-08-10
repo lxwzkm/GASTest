@@ -83,7 +83,11 @@ void ACheckPoint::SphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		bCheckPointReached=true;
 		if (AGAST_Gamemodebase* MyGm=Cast<AGAST_Gamemodebase>(UGameplayStatics::GetGameMode(this)))
 		{
-			MyGm->SavedWorldState(GetWorld());
+			//保存下当前地图的mapAssetname
+			FString MapName=GetWorld()->GetMapName();
+			MapName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+			
+			MyGm->SavedWorldState(GetWorld(),MapName);
 		}
 		IPlayerInterface::Execute_SaveProgess(OtherActor,PlayerStartTag);
 		HandleGlowEffects();
